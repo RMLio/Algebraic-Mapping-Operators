@@ -1,92 +1,104 @@
 # Algebraic Mapping Operators
 
+A library of Algebraic Mapping Operators. These operators serve the purpose of constructing a mapping language-independent mapping plan.
 
+This document contains an introduction and explanation for the operators, as first described [here](https://s-minoo.github.io/ISWC2023_paper_412.pdf) and further finalized in [the WIP paper](./wip_paper.pdf).
+## Building blocks
+### Mapping plan
+A Mapping Plan is a graph consisting of operators that can be used to perform a mapping. This plan has a Serialize operator as its root, with Source operators as leafs.
+Inner nodes of this graph can be different intermediate operators that perform operations on the mapping.
 
-## Getting started
+### Solution Mapping
+Mathematical definition: a partial function $\mu$ mapping from the set of variables (V) to the set of data values (D)
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+In its essence, a solution mapping boils down to a key-value pair containing the name of the variable and its value. 
+It's Java equivalent is Map.Entry. It is used to realize string templates, replacing variables placed in them with the values.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+### Fragment
+Mathematical definition: a grouping of a multiset of solution mappings.
 
-## Add your files
+In its essence, a fragment is a set of key-value pairs containing names of the variables in the dataset and their values. 
+The simplest way to model a fragment is a dictionary. 
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+### Mapping tuple
+Mathematical definition: a partial multivalued function that maps fragments to solution mappings. 
 
+As such, it is a filter for the key-value pairs contained in the fragment.
+
+## Operators
+Using the building blocks above, we can now define operators that work on these.
+### Source operator
+A Source operator generates mapping tuples from heterogenous data sources. 
+The inner working relies on configuration _C_, a root iterator _r_ and a set of subiterator _I_. 
+
+Configuration _C_ contains metadata required for the consumption of the data source (think of URL to a database, a file path...).
+Using iterators, data sources can further be queried to generate individual data records, on which the mappings will be performed.
+The use of a root iterator _r_ together with subiterators _I_ allows for nested querying. 
+
+Source operator produces a multiset of mapping tuples: a set of filters to be applied on the original fragments.
+In this set, the default fragment, f_0, is mapped onto a multiset of solution mappings.
+
+To sketch an example: suppose following JSON document
+```json
+{
+  "peoples": [
+    {
+      "name": "John Doe",
+      "age": 23,
+      "email": "john.doe@example.com",
+      "pet": {
+        "type": "dog",
+        "name": "Bax"
+      }
+    },
+    {
+      "name": "Susan Sue",
+      "age": 23,
+      "email": "susan.sue@example.com"
+    }
+  ]
+}
 ```
-cd existing_repo
-git remote add origin https://gitlab.ilabt.imec.be/rml/proc/algebraic-mapping-operators.git
-git branch -M be.ugent.idlab.knows.amo.main
-git push -uf origin be.ugent.idlab.knows.amo.main
-```
 
-## Integrate with your tools
+A Source operator's fields could look like following:
+- C: path to the JSON file
+- r: `$.peoples[*]`
+- I: `[$.pet.type, $.pet.name]`
 
-- [ ] [Set up project integrations](https://gitlab.ilabt.imec.be/rml/proc/algebraic-mapping-operators/-/settings/integrations)
+Applying this Source operator would produce results similar to ones found in Table 2 of the WIP paper.
 
-## Collaborate with your team
+### Project operator
+The Project operator will restrict the solution mappings to a set of attributes provided. This can be used to reduce the number of data that needs to be processed by later operators.
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+The operator will accept a set of variables P and will restrict the solution mappings to only contain variables in P.
 
-## Test and Deploy
+### Extend operator
+The Extend operator will derive new values from existing values in the data record.
 
-Use the built-in continuous integration in GitLab.
+When provided with a particular expression, the Extend operator will evaluate it and bind the results to a new variable.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+### Fragment operator
+The Fragment operator fragments a mapping tuple into a new fragment f_new, using a partial transformation function.
 
-***
+The function is applied on the mapping tuple and on all mapping tuples within a mapping tuple multiset.
 
-# Editing this README
+### Join operators
+Join operators can be used to combine different multisets together.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+#### Natural Join
+Natural join will produce mapping tuples that are combinations of mapping tuples coming from different multisets.
+Only the tuples that are equal on their fragments and all common variables in the underlying solution mappings will be combined.
+Only equality is checked, no further predicates such as "less than or equal to".
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+#### Theta Join
+A more general version of natural join that performs joining based on a predicate Theta.
 
-## Name
-Choose a self-explaining name for your project.
+Solution mappings s1, s2 will thus only be joined if the Theta(s1, s2) evaluates to true.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+Mapping tuples t1, t2 will only be joined if Theta(s1, s2) will evaluate to true for all solution mappings s1, s2 in all fragments in the mapping tuples. 
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
+### Further operators
+Further operators will be implemented as they're defined. The above is only a subset of the complete algebra.
 
 ## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This library is currently in alpha state and under active development.
