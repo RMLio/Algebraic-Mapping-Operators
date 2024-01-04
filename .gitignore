@@ -1,0 +1,15 @@
+# gitignore based on RMLMapper's gitignore
+
+.idea
+target/*
+*.iml
+.DS_Store
+.settings
+.vscode
+.attach_*
+ojdbc*.jar
+pom-oracle.xml
+dependency-reduced-pom.xml
+settings.xml
+.classpath
+.project

@@ -1,14 +1,8 @@
-package test;
+package be.ugent.idlab.knows.amo;
 
+import be.ugent.idlab.knows.amo.Operators.Operator;
 import org.junit.jupiter.api.Test;
-import src.Config.ConfigComponent;
-import src.Operators.Operator;
-import src.RDFValueMap;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExtendTests extends OperatorTester {
 

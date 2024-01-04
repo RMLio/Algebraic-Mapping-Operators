@@ -1,14 +1,14 @@
-package test;
+package be.ugent.idlab.knows.amo;
 
+import be.ugent.idlab.knows.amo.Config.Component;
+import be.ugent.idlab.knows.amo.Config.ConfigComponent;
+import be.ugent.idlab.knows.amo.Config.ListComponent;
+import be.ugent.idlab.knows.amo.Config.StringComponent;
+import be.ugent.idlab.knows.amo.Operators.Operator;
+import be.ugent.idlab.knows.amo.Operators.ProjectOperator;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.junit.jupiter.api.Test;
-import src.Config.Component;
-import src.Config.ConfigComponent;
-import src.Config.ListComponent;
-import src.Config.StringComponent;
-import src.Operators.Operator;
-import src.Operators.ProjectOperator;
-import src.RDFValueMap;
+
 
 import java.util.ArrayList;
 import java.util.Map;

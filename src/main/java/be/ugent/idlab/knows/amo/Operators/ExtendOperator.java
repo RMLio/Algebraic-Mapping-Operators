@@ -1,9 +1,8 @@
-package src.Operators;
+package be.ugent.idlab.knows.amo.Operators;
 
-import src.Config.Config;
-import src.Config.ConfigComponent;
-import src.Config.StringComponent;
-import src.RDFValueMap;
+import be.ugent.idlab.knows.amo.Config.ConfigComponent;
+import be.ugent.idlab.knows.amo.Config.StringComponent;
+import be.ugent.idlab.knows.amo.RDFValueMap;
 
 import java.util.ArrayList;
 import java.util.List;

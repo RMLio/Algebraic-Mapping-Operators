@@ -1,4 +1,4 @@
-package src.Config;
+package be.ugent.idlab.knows.amo.Config;
 
 public class StringComponent extends Component {
     private String value;

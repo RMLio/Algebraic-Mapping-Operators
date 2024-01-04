@@ -1,4 +1,4 @@
-package src.Config;
+package be.ugent.idlab.knows.amo.Config;
 
 import java.util.List;
 

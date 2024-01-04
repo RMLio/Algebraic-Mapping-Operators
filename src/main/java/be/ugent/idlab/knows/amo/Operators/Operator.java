@@ -1,10 +1,10 @@
-package src.Operators;
+package be.ugent.idlab.knows.amo.Operators;
 
-import src.Config.Config;
-import src.Config.Component;
-import src.Config.ConfigComponent;
-import src.Config.StringComponent;
-import src.RDFValueMap;
+import be.ugent.idlab.knows.amo.Config.Component;
+import be.ugent.idlab.knows.amo.Config.Config;
+import be.ugent.idlab.knows.amo.Config.ConfigComponent;
+import be.ugent.idlab.knows.amo.Config.StringComponent;
+import be.ugent.idlab.knows.amo.RDFValueMap;
 
 public abstract class Operator {
     public abstract RDFValueMap process(RDFValueMap model); // Edit a model.

@@ -1,16 +1,15 @@
-package test;
+package be.ugent.idlab.knows.amo;
 
-import org.junit.jupiter.api.Test;
-import src.Config.Config;
-import src.Operators.Operator;
-import src.RDFValueMap;
+
+import be.ugent.idlab.knows.amo.Config.Config;
+import be.ugent.idlab.knows.amo.Operators.Operator;
+import be.ugent.idlab.knows.amo.RDFValueMap;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class OperatorTester {
 

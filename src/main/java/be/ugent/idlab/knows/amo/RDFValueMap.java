@@ -1,4 +1,4 @@
-package src;
+package be.ugent.idlab.knows.amo;
 
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfValue;
 
