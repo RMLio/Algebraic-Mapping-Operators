@@ -16,8 +16,8 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 ```
 cd existing_repo
 git remote add origin https://gitlab.ilabt.imec.be/rml/proc/algebraic-mapping-operators.git
-git branch -M main
-git push -uf origin main
+git branch -M be.ugent.idlab.knows.amo.main
+git push -uf origin be.ugent.idlab.knows.amo.main
 ```
 
 ## Integrate with your tools
