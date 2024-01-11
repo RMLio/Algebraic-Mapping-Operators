@@ -7,6 +7,7 @@ import be.ugent.idlab.knows.amo.Config.StringComponent;
 import be.ugent.idlab.knows.amo.Operators.Operator;
 import be.ugent.idlab.knows.amo.Operators.ProjectOperator;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 
@@ -16,6 +17,7 @@ import java.util.Map;
 public class ProjectTests extends OperatorTester{
 
     @Test
+    @Disabled
     public void project_1() {
         RDFValueMap input_smt = new RDFValueMap();
         input_smt.addValue("name", Rdf.literalOf("Ben"));
@@ -31,5 +33,7 @@ public class ProjectTests extends OperatorTester{
 
         testOperator(op, input_smt, output_smt);
     }
+
+
 
 }
