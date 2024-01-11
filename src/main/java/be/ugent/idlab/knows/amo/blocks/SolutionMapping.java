@@ -2,17 +2,13 @@ package be.ugent.idlab.knows.amo.blocks;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Solution mapping is a collection of key-value pairs connecting variables to their data
  * These can be applied on a templated string
  */
 public class SolutionMapping extends HashMap<String, Object> {
-
-    public SolutionMapping() {
-
-    }
-
     public SolutionMapping(Map<String, Object> variables) {
         this.putAll(variables);
     }

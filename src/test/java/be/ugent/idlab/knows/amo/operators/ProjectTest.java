@@ -4,7 +4,9 @@ import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -18,11 +20,11 @@ public class ProjectTest {
                 }}
         );
 
-        ProjectOperator project = new ProjectOperator();
+        ProjectOperator project = new ProjectOperator(List.of("?age"));
 
         SolutionMapping expected = new SolutionMapping(
                 Map.of("?name", "John Doe"));
-        SolutionMapping actual = project.applySolMapping(mapping, List.of("?age"));
+        SolutionMapping actual = project.applySolMapping(mapping);
 
         assertEquals(expected, actual);
     }
@@ -39,8 +41,8 @@ public class ProjectTest {
         MappingTuple actual = new MappingTuple();
         actual.addSolutionMap("f_default", mapping);
 
-        ProjectOperator projectOperator = new ProjectOperator();
-        projectOperator.applyMapTuple(actual, List.of("?age"));
+        ProjectOperator projectOperator = new ProjectOperator(List.of("?age"));
+        projectOperator.applyMappingTuple(actual);
 
         MappingTuple expected = new MappingTuple();
         expected.addSolutionMap("f_default", new SolutionMapping(Map.of("?name", "John Doe")));

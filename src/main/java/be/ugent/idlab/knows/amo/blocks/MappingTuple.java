@@ -1,5 +1,6 @@
 package be.ugent.idlab.knows.amo.blocks;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -13,11 +14,15 @@ public class MappingTuple {
     Multimap<String, SolutionMapping> map;
 
     public MappingTuple() {
-        this.map = HashMultimap.create();
+        this.map = ArrayListMultimap.create();
     }
 
     public void addSolutionMap(String fragment, SolutionMapping mapping) {
         this.map.put(fragment, mapping);
+    }
+
+    public void setSolutionMap(String fragment, Collection<SolutionMapping> mapping) {
+        this.map.replaceValues(fragment, mapping);
     }
 
     public Collection<SolutionMapping> getSolutionMapping(String fragment) {
