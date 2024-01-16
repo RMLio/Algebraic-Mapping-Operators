@@ -1,4 +1,4 @@
-package be.ugent.idlab.knows.amo.operators;
+package be.ugent.idlab.knows.amo.operators.intermediate;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
@@ -20,7 +20,7 @@ public record ExtendOperator(String variableName, ExtendFunction function) imple
     @Override
     public MappingTuple applyMappingTuple(MappingTuple tuple) {
         for (String fragment : tuple.getFragments()) {
-            Collection<SolutionMapping> mappings = tuple.getSolutionMapping(fragment);
+            Collection<SolutionMapping> mappings = tuple.getSolutionMappings(fragment);
 
             List<SolutionMapping> processedMappings = new ArrayList<>();
             for (SolutionMapping mapping : mappings) {

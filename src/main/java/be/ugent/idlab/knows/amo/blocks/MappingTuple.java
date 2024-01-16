@@ -1,7 +1,6 @@
 package be.ugent.idlab.knows.amo.blocks;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
 import java.util.Collection;
@@ -18,19 +17,35 @@ public class MappingTuple {
     }
 
     public void addSolutionMap(String fragment, SolutionMapping mapping) {
-        this.map.put(fragment, mapping);
+        if (this.map.containsKey(fragment)) {
+            Collection<SolutionMapping> present = this.map.get(fragment);
+            present.add(mapping);
+        } else {
+            this.map.put(fragment, mapping);
+        }
     }
 
     public void setSolutionMap(String fragment, Collection<SolutionMapping> mapping) {
         this.map.replaceValues(fragment, mapping);
     }
 
-    public Collection<SolutionMapping> getSolutionMapping(String fragment) {
+    public Collection<SolutionMapping> getSolutionMappings(String fragment) {
         return this.map.get(fragment);
     }
 
     public Collection<String> getFragments() {
-        return this.map.keys();
+        return this.map.keySet();
+    }
+
+    /**
+     * Method to merge another MappingTuple with this MappingTuple.
+     */
+    public void union(MappingTuple that) {
+        for (String fragment : that.getFragments()) {
+            for (SolutionMapping m : that.getSolutionMappings(fragment)) {
+                this.addSolutionMap(fragment, m);
+            }
+        }
     }
 
     @Override

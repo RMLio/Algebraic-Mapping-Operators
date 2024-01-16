@@ -1,4 +1,4 @@
-package be.ugent.idlab.knows.amo.operators;
+package be.ugent.idlab.knows.amo.operators.intermediate;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
@@ -20,7 +20,7 @@ public record ProjectOperator(List<String> variables) implements IntermediateOpe
 
     public MappingTuple applyMappingTuple(MappingTuple tuple) {
         for (String fragment : tuple.getFragments()) {
-            applySolMapping(tuple.getSolutionMapping(fragment));
+            applySolMapping(tuple.getSolutionMappings(fragment));
         }
 
         return tuple;
