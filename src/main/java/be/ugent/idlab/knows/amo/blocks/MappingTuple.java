@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -93,6 +94,13 @@ public class MappingTuple {
         }
 
         return out;
+    }
+
+    public Set<String> commonFragments(MappingTuple that) {
+        Set<String> fragments = new HashSet<>(this.getFragments());
+        fragments.retainAll(that.getFragments());
+
+        return fragments;
     }
 
     @Override

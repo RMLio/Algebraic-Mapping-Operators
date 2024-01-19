@@ -13,6 +13,7 @@ public class SolutionMapping extends HashMap<String, Object> {
     public SolutionMapping() {
         super();
     }
+
     public SolutionMapping(Map<String, Object> variables) {
         super(variables);
     }
@@ -31,19 +32,8 @@ public class SolutionMapping extends HashMap<String, Object> {
      * @param that
      */
     public SolutionMapping union(SolutionMapping that) {
-        // return an empty solution map if not compatible
-        if (!this.isCompatibleWith(that)) {
-            return new SolutionMapping();
-        }
-
         SolutionMapping sol = new SolutionMapping(this);
-
-        for (String key : that.keySet()) {
-            if (!this.containsKey(key)) {
-                sol.put(key, that.get(key));
-            }
-        }
-
+        sol.putAll(that);
         return sol;
     }
 

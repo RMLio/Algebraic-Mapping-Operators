@@ -5,6 +5,7 @@ import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 /* TODO:
     consider rewriting using ThetaJoin
@@ -25,9 +26,7 @@ public record NaturalJoin() implements BinaryOperator {
     public MappingTuple applyMapTuple(MappingTuple tuple1, MappingTuple tuple2) {
         MappingTuple out = new MappingTuple();
 
-        Collection<String> commonFragments = tuple1.getFragments();
-        commonFragments.retainAll(tuple2.getFragments());
-
+        Set<String> commonFragments = tuple1.commonFragments(tuple2);
         for (String fragment : commonFragments) {
             Collection<SolutionMapping> sol1 = tuple1.getSolutionMappings(fragment);
             Collection<SolutionMapping> sol2 = tuple2.getSolutionMappings(fragment);
