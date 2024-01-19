@@ -1,4 +1,4 @@
-package be.ugent.idlab.knows.amo.operators.intermediate;
+package be.ugent.idlab.knows.amo.operators.unary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public record FragmenterOperator(FragmentFunction function) implements IntermediateOperator {
+public record FragmenterOperator(FragmentFunction function) implements UnaryOperators {
 
 
     @Override
@@ -31,11 +31,11 @@ public record FragmenterOperator(FragmentFunction function) implements Intermedi
             MappingTuple::union method is most performant if the argument is smaller than the callee.
             Consider sorting or a more intelligent algorithm to merge two mapping tuples.
          */
-        MappingTuple master = newTuples.get(0);
+        MappingTuple master = newTuples.getFirst();
         int i = 1;
         while (i < newTuples.size()) {
             MappingTuple t = newTuples.get(i);
-            master.union(t);
+            master = master.union(t);
             i++;
         }
 

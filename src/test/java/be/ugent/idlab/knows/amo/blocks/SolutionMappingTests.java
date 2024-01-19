@@ -23,4 +23,18 @@ public class SolutionMappingTests {
         String expected = "John Doe ; 25";
         assertEquals(expected, mapping.apply(s));
     }
+
+    @Test
+    public void unionTest() {
+        SolutionMapping m1 = new SolutionMapping(Map.of(
+           "foo", 1
+        ));
+
+        SolutionMapping m2 = new SolutionMapping(Map.of(
+                "bar", 2
+        ));
+
+        SolutionMapping merged = m1.union(m2);
+        assertEquals(2, merged.keySet().size());
+    }
 }

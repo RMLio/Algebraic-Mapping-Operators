@@ -1,4 +1,4 @@
-package be.ugent.idlab.knows.amo.operators.intermediate;
+package be.ugent.idlab.knows.amo.operators.unary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public record ExtendOperator(String variableName, ExtendFunction function) implements IntermediateOperator {
+public record ExtendOperator(String variableName, ExtendFunction function) implements UnaryOperators {
     @Override
     public SolutionMapping applySolMapping(SolutionMapping mapping) {
         Object value = function.apply(mapping);

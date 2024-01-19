@@ -1,4 +1,4 @@
-package be.ugent.idlab.knows.amo.operators.intermediate;
+package be.ugent.idlab.knows.amo.operators.unary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
@@ -7,10 +7,10 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Base interface for all intermediate operators
+ * Base interface for all operators that work on the SolutionMappings and MappingTuples individually
  */
 
-public interface IntermediateOperator {
+public interface UnaryOperators {
 
     /**
      * @param mapping

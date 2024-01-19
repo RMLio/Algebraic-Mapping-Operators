@@ -2,7 +2,7 @@ package be.ugent.idlab.knows.amo.operators;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.operators.intermediate.ExtendOperator;
+import be.ugent.idlab.knows.amo.operators.unary.ExtendOperator;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
