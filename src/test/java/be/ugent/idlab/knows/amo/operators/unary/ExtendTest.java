@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExtendTest {
 
-    // simple function to concatenate first and last names
+    // simple condition to concatenate first and last names
     ExtendOperator op = new ExtendOperator("?full_name", (m) -> {
         String first = (String) m.get("?first_name");
         String last = (String) m.get("?last_name");

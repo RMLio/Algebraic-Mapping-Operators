@@ -31,7 +31,7 @@ public record FragmenterOperator(FragmentFunction function) implements UnaryOper
             MappingTuple::union method is most performant if the argument is smaller than the callee.
             Consider sorting or a more intelligent algorithm to merge two mapping tuples.
          */
-        MappingTuple master = newTuples.getFirst();
+        MappingTuple master = newTuples.get(0);
         int i = 1;
         while (i < newTuples.size()) {
             MappingTuple t = newTuples.get(i);

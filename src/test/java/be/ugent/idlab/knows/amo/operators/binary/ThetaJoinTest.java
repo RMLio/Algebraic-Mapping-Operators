@@ -97,7 +97,7 @@ public class ThetaJoinTest {
         assertEquals("f_contacts", fragments.stream().findFirst().get());
 
         List<SolutionMapping> mappings = out.getSolutionMappings("f_contacts").stream().toList();
-        SolutionMapping m0 = mappings.getFirst();
+        SolutionMapping m0 = mappings.get(0);
         assertEquals(unionBax, m0);
 
         SolutionMapping m1 = mappings.get(1);

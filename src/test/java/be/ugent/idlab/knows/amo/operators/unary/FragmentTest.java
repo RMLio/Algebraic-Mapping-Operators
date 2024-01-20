@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class FragmentTest {
 
-    // operator with a simple function that renames the f_default fragment to f_contacts
+    // operator with a simple condition that renames the f_default fragment to f_contacts
     FragmenterOperator op = new FragmenterOperator((fragment, mapping) -> {
         MappingTuple tuple = new MappingTuple();
         if (fragment.equals("f_default")) {
