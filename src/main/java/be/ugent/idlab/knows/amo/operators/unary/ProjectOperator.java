@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Project operator responsible for restricting the solution mappings.
  */
-public record ProjectOperator(List<String> variables) implements UnaryOperators {
+public record ProjectOperator(List<String> variables) implements UnaryOperator {
     public SolutionMapping applySolMapping(SolutionMapping mapping) {
         for (String variable : this.variables) {
             ((Map<String, Object>) mapping).remove(variable);

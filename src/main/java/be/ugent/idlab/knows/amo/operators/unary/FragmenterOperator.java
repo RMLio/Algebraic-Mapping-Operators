@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public record FragmenterOperator(FragmentFunction function) implements UnaryOperators {
+public record FragmenterOperator(FragmentFunction function) implements UnaryOperator {
 
 
     @Override

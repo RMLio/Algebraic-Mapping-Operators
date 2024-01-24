@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
  * Base interface for all operators that work on the SolutionMappings and MappingTuples individually
  */
 
-public interface UnaryOperators {
+public interface UnaryOperator {
 
     /**
      * @param mapping

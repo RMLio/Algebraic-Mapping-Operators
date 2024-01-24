@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public record ExtendOperator(String variableName, ExtendFunction function) implements UnaryOperators {
+public record ExtendOperator(String variableName, ExtendFunction function) implements UnaryOperator {
     @Override
     public SolutionMapping applySolMapping(SolutionMapping mapping) {
         Object value = function.apply(mapping);
