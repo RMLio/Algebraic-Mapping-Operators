@@ -1,1 +1,4 @@
-{ "Name": "Bert", "Sport":  "Badminton"}
+{
+  "Name": "Bert",
+  "Sport": "Badminton"
+}

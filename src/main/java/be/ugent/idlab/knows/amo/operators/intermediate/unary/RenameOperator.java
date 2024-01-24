@@ -1,4 +1,4 @@
-package be.ugent.idlab.knows.amo.operators.unary;
+package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.Pair;

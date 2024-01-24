@@ -1,8 +1,8 @@
-package be.ugent.idlab.knows.amo.operators.binary;
+package be.ugent.idlab.knows.amo.operators.intermediate.binary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.operators.binary.NaturalJoin;
+import be.ugent.idlab.knows.amo.operators.intermediate.binary.NaturalJoin;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;

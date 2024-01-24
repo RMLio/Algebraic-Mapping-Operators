@@ -1,7 +1,8 @@
-package be.ugent.idlab.knows.amo.operators.binary;
+package be.ugent.idlab.knows.amo.operators.intermediate.binary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.operators.intermediate.binary.LeftJoin;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -10,14 +11,13 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class RightJoinTest {
-
+public class LeftJoinTest {
     @Test
     public void simpleSolutionMappingTest() {
-        RightJoin operator = new RightJoin(
-                (s1, s2) -> s1.containsKey("?pet.owner") &&
-                        s2.containsKey("?name") &&
-                        s1.get("?pet.owner").equals(s2.get("?name"))
+        LeftJoin operator = new LeftJoin(
+                (s1, s2) -> s1.containsKey("?name") &&
+                        s2.containsKey("?owner") &&
+                        s1.get("?name").equals(s2.get("?pet.owner"))
         );
 
         SolutionMapping owner = new SolutionMapping(Map.of(
@@ -31,7 +31,7 @@ public class RightJoinTest {
                 "?pet.owner", "John Doe"
         ));
 
-        SolutionMapping result = operator.applySolMapping(pet, owner);
+        SolutionMapping result = operator.applySolMapping(owner, pet);
 
         assertEquals(5, result.keySet().size());
         assertEquals("John Doe", result.get("?name"));
@@ -43,7 +43,7 @@ public class RightJoinTest {
 
     @Test
     public void simpleMappingTupleTest() {
-        RightJoin operator = new RightJoin(
+        LeftJoin operator = new LeftJoin(
                 (s1, s2) -> s1.containsKey("?name") &&
                         s2.containsKey("?pet.owner") &&
                         s1.get("?name").equals(s2.get("?pet.owner"))
@@ -70,7 +70,7 @@ public class RightJoinTest {
         MappingTuple owners = new MappingTuple();
         owners.setSolutionMap("default", List.of(johnDoe, janeDoe));
 
-        MappingTuple result = operator.applyMapTuple(pets, owners);
+        MappingTuple result = operator.applyMapTuple(owners, pets);
         assertEquals(1, result.getFragments().size());
 
         List<SolutionMapping> mappings = result.getSolutionMappings("default").stream().toList();
@@ -91,6 +91,4 @@ public class RightJoinTest {
         assertNull(jane.get("?pet.name"));
         assertNull(jane.get("?pet.owner"));
     }
-
-
 }
