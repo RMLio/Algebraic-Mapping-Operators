@@ -23,7 +23,7 @@ public class DataIOSourceOperatorTest {
 
             Collection<String> fragments = mappingTuple.getFragments();
             assertEquals(1, fragments.size());
-            String defaultFragment = fragments.stream().toList().getFirst();
+            String defaultFragment = fragments.stream().toList().get(0);
             assertEquals("f_default", defaultFragment);
 
             SolutionMapping solMapping = mappingTuple.getSolutionMappings("f_default").stream().findFirst().get();

@@ -24,7 +24,7 @@ public record DataIOSourceOperator(SourceIterator iterator, Collection<String> r
             SolutionMapping mapping = new SolutionMapping();
             Record s = this.iterator.next();
             for (String reference : references) {
-                Object value = s.get(reference).getFirst();
+                Object value = s.get(reference).get(0);
                 mapping.put(reference, value);
             }
 
