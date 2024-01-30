@@ -3,7 +3,6 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.operators.intermediate.unary.RenameOperator;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -13,7 +12,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RenameOperatorTest {
+public class RenameTest {
 
     @Test
     public void simpleTestSolutionMapping() {

@@ -21,11 +21,13 @@ public class TargetOperatorTest {
 
         TargetOperator operator = new TargetOperator("f_target", sink);
         operator.apply(tuple);
-
         assertEquals(sink.output, "bar");
     }
 }
 
+/**
+ * Dummy sink that reads out the value of key "?foo" and stores it in a String
+ */
 class TestSink implements TargetSink {
     String output;
 
