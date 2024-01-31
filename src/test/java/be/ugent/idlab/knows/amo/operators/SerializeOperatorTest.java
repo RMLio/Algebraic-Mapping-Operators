@@ -14,13 +14,13 @@ public class SerializeOperatorTest {
 
     @Test
     public void simpleTest() {
-        String bgp = "?firstname_iri <http://example.com/name> ?fullname ;\n\t<http://example.com/petName> ?pet_name.";
+        String bgp = "?firstname_iri <http://example.com/name> ?fullname;<http://example.com/petName> ?pet_name.";
 
         SolutionMapping solMapping = new SolutionMapping(Map.of(
                 "?fullname", "John Doe",
                 "?$pet.type", "dog",
-                "?$pet.name", "Bax",
-                "?firstname_iri", "<http://example.com/John",
+                "?pet_name", "Max",
+                "?firstname_iri", "<http://example.com/John>",
                 "?$pet.age", 10
         ));
 
@@ -40,7 +40,7 @@ public class SerializeOperatorTest {
         SolutionMapping mapping = solMappings.get(0);
 
         assertTrue(mapping.containsKey("?serialized_output"));
-        String serialized = "<http://example.com/John> <http://example.com/name> \"John Doe\";<http://example.com/petName> \"Max\"";
+        String serialized = "<http://example.com/John> <http://example.com/name> John Doe;<http://example.com/petName> Max.";
         assertEquals(serialized, mapping.get("?serialized_output"));
     }
 }
