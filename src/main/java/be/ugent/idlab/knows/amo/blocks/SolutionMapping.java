@@ -46,6 +46,10 @@ public class SolutionMapping extends HashMap<String, Object> {
      * @return true if the SolutionMappings are compatible, false otherwise
      */
     public boolean isCompatibleWith(SolutionMapping that) {
+        if (this.isEmpty() || that.isEmpty()) {
+            return true;
+        }
+
         // find all common keys
         Set<String> uniqueKeys = new HashSet<>(this.keySet());
         uniqueKeys.retainAll(that.keySet());
