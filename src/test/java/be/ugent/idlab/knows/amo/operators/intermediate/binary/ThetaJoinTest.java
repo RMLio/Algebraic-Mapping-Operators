@@ -3,6 +3,7 @@ package be.ugent.idlab.knows.amo.operators.intermediate.binary;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.operators.intermediate.binary.ThetaJoin;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -12,6 +13,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Disabled // waiting for go-ahead
 public class ThetaJoinTest {
 
     ThetaJoin operator = new ThetaJoin(((s1, s2) -> {

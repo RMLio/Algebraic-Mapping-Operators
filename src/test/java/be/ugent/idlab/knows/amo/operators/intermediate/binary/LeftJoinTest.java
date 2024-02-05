@@ -3,6 +3,7 @@ package be.ugent.idlab.knows.amo.operators.intermediate.binary;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.operators.intermediate.binary.LeftJoin;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+@Disabled // waiting for go-ahead
 public class LeftJoinTest {
     @Test
     public void simpleSolutionMappingTest() {

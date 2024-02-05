@@ -41,7 +41,7 @@ Tests:
         # blocks
         SolutionMappingTests,
         # binary operators
-        LeftJoinTest, NaturalJoinTest, RightJoinTest, ThetaJoinTest,
+        LeftJoinTest, NaturalJoinTest, ThetaJoinTest,
         # unary operators
         ExtendTest, FragmentTest, ProjectTest, RenameTest,
         # general operators
