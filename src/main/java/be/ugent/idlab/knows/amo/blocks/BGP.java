@@ -1,5 +1,7 @@
 package be.ugent.idlab.knows.amo.blocks;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Collection;
 import java.util.regex.Pattern;
 
@@ -18,9 +20,13 @@ public class BGP {
 
     public String apply(SolutionMapping m) {
         String out = pattern;
-        for (String variable : this.variables) {
+        for (String variable: this.variables) {
             if (m.containsKey(variable)) {
-                out = out.replaceAll(Pattern.quote(variable), m.get(variable).toString());
+                int index = StringUtils.indexOf(out, variable);
+                while (index != -1) {
+                    out = StringUtils.replace(out, variable, m.get(variable).toString());
+                    index = StringUtils.indexOf(out, variable);
+                }
             }
         }
 

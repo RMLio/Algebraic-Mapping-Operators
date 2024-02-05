@@ -46,7 +46,7 @@ public class BGP {
         return out;
     }
 
-    public String applyWithStringUtils(SolutionMapping m) {
+    public String applyWithStringUtilsEach(SolutionMapping m) {
         String[] search = new String[m.size()];
         String[] replacement = new String[m.size()];
 
@@ -59,5 +59,20 @@ public class BGP {
 
 
         return StringUtils.replaceEachRepeatedly(pattern, search, replacement);
+    }
+
+    public String applyWithStringUtilsReplace(SolutionMapping m) {
+        String out = pattern;
+        for (String variable: this.variables) {
+            if (m.containsKey(variable)) {
+                int index = StringUtils.indexOf(out, variable);
+                while (index != -1) {
+                    out = StringUtils.replace(out, variable, m.get(variable).toString());
+                    index = StringUtils.indexOf(out, variable);
+                }
+            }
+        }
+
+        return out;
     }
 }

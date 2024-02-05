@@ -46,20 +46,26 @@ public class BGPReplaceTest {
         after = System.nanoTime();
 
         assertEquals(expected, out);
-        System.out.printf("Time with RegEx: %dns\n", after - before);
+        System.out.printf("Time with RegEx: %d ns\n", after - before);
 
         before = System.nanoTime();
         out = bgp.applyWithIndex(solMapping);
         after = System.nanoTime();
 
         assertEquals(expected, out);
-        System.out.printf("Time with index: %dns\n", after - before);
+        System.out.printf("Time with index: %d ns\n", after - before);
 
         before = System.nanoTime();
-        out = bgp.applyWithStringUtils(solMapping);
+        out = bgp.applyWithStringUtilsEach(solMapping);
         after = System.nanoTime();
 
         assertEquals(expected, out);
-        System.out.printf("Time with StringUtils::replaceEach : %dns\n", after - before);
+        System.out.printf("Time with StringUtils::replaceEach : %d ns\n", after - before);
+
+        before = System.nanoTime();
+        out = bgp.applyWithStringUtilsReplace(solMapping);
+        after = System.nanoTime();
+        assertEquals(expected, out);
+        System.out.printf("Time with StringUtils::replace : %d ns\n", after - before);
     }
 }
