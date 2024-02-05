@@ -7,7 +7,7 @@ import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 public interface TargetSink {
 
     /**
-     * A function to do something with the data provided in the solution mapping
+     * A function to consume the data provided in the solution mapping into a sink (file, standard output...)
      */
     void sink(SolutionMapping mapping);
 }

@@ -7,6 +7,10 @@ import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ * Serialize operator will accept a Basic Graph Pattern and replace the variables with the values as provided in the mapping tuple.
+ * @param bgp
+ */
 public record SerializeOperator(BGP bgp) {
 
     public MappingTuple apply(MappingTuple m) {

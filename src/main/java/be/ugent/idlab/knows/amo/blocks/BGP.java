@@ -3,7 +3,6 @@ package be.ugent.idlab.knows.amo.blocks;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
-import java.util.regex.Pattern;
 
 /**
  * Basic Graph Pattern is a pattern to generate RDF triples by replacement of variables.
@@ -20,7 +19,7 @@ public class BGP {
 
     public String apply(SolutionMapping m) {
         String out = pattern;
-        for (String variable: this.variables) {
+        for (String variable : this.variables) {
             if (m.containsKey(variable)) {
                 int index = StringUtils.indexOf(out, variable);
                 while (index != -1) {

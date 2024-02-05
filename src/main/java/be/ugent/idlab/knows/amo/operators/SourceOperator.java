@@ -11,7 +11,7 @@ public interface SourceOperator {
 
     /**
      * Generate a collection of MappingTuples from a particular source
-     * @return
+     * @return a collection of MappingTuples
      */
     Collection<MappingTuple> getMappingTuples();
 }

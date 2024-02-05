@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * FragmenterOperator splits the fragment into multiple fragments, with potentially different name, as defined by the FragmentFunction
+ *
+ * @param function function to perform fragmenting with
+ */
 public record FragmenterOperator(FragmentFunction function) implements UnaryOperator {
 
 

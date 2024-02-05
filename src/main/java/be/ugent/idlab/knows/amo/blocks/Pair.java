@@ -1,9 +1,9 @@
 package be.ugent.idlab.knows.amo.blocks;
 
 /**
- * A record Pair containing the two variables
- * @param first
- * @param second
+ * A record Pair representing a tuple of two strings
+ * @param first first string
+ * @param second second string
  */
 public record Pair(String first, String second) {
 }

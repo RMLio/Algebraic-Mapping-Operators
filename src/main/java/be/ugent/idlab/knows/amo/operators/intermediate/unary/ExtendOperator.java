@@ -8,6 +8,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * ExtendOperator will generate new variables (potentially from existing variables) and add these to the SolutionMapping and / or MappingTuple.
+ * This is done using the ExtendFunction provided
+ *
+ * @param variableName name of the variable to replace
+ * @param function function to generate the new variable
+ */
 public record ExtendOperator(String variableName, ExtendFunction function) implements UnaryOperator {
     @Override
     public SolutionMapping applySolMapping(SolutionMapping mapping) {
