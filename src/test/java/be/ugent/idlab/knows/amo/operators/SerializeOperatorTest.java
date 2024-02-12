@@ -27,7 +27,7 @@ public class SerializeOperatorTest {
         MappingTuple tuple = new MappingTuple();
         tuple.setSolutionMap("f_contacts", Collections.singleton(solMapping));
 
-        SerializeOperator operator = new SerializeOperator(new BGP(bgp, Set.of("?firstname_iri", "?fullname", "?pet_name")));
+        SerializeOperator operator = null; //new SerializeOperator(new BGP(bgp, Set.of("?firstname_iri", "?fullname", "?pet_name")));
 
         MappingTuple out = operator.apply(tuple);
 

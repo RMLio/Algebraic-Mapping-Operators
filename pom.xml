@@ -13,9 +13,18 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.10.0</junit.version>
         <slf4j.version>2.0.7</slf4j.version>
+        <fuseki.version>4.10.0</fuseki.version>
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-arq</artifactId>
+            <version>${fuseki.version}</version>
+        </dependency>
+
+
         <!-- JUnit dependendies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -60,7 +69,6 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.14.0</version>
         </dependency>
-
     </dependencies>
 
     <build>
