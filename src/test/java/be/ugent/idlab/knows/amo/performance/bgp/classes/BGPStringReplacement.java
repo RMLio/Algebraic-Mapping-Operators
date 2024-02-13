@@ -10,12 +10,12 @@ import java.util.regex.Pattern;
  * Basic Graph Pattern is a pattern to generate RDF triples by replacement of variables.\
  * Baseline implementation
  */
-public class BGP {
+public class BGPStringReplacement {
 
     private final String pattern;
     private final Collection<String> variables;
 
-    public BGP(String pattern, Collection<String> variables) {
+    public BGPStringReplacement(String pattern, Collection<String> variables) {
         this.pattern = pattern;
         this.variables = variables;
     }
