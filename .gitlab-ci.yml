@@ -39,13 +39,14 @@ Tests:
     matrix:
       - TEST: [
         # blocks
-        SolutionMappingTests,
+        SolutionMappingTests, BGPTest,
         # binary operators
         LeftJoinTest, NaturalJoinTest, ThetaJoinTest,
         # unary operators
         ExtendTest, FragmentTest, ProjectTest, RenameTest,
         # general operators
         DataIOSourceOperatorTest, SerializeOperatorTest, TargetOperatorTest
+
       ]
   except:
     - main

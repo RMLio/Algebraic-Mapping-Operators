@@ -3,6 +3,7 @@ package be.ugent.idlab.knows.amo.operators;
 import be.ugent.idlab.knows.amo.blocks.BGP;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -27,7 +28,7 @@ public class SerializeOperatorTest {
         MappingTuple tuple = new MappingTuple();
         tuple.setSolutionMap("f_contacts", Collections.singleton(solMapping));
 
-        SerializeOperator operator = null; //new SerializeOperator(new BGP(bgp, Set.of("?firstname_iri", "?fullname", "?pet_name")));
+        SerializeOperator operator = new SerializeOperator(new BGP(bgp));
 
         MappingTuple out = operator.apply(tuple);
 
@@ -40,7 +41,11 @@ public class SerializeOperatorTest {
         SolutionMapping mapping = solMappings.get(0);
 
         assertTrue(mapping.containsKey("?serialized_output"));
-        String serialized = "<http://example.com/John> <http://example.com/name> John Doe;<http://example.com/petName> Max.";
+        String serialized = """
+                "<http://example.com/John>"
+                        <http://example.com/name>     "John Doe";
+                        <http://example.com/petName>  "Max" .
+                """;
         assertEquals(serialized, mapping.get("?serialized_output"));
     }
 }

@@ -5,6 +5,7 @@ import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.sparql.graph.GraphFactory;
 
@@ -64,7 +65,7 @@ public class BGP {
         }
     }
 
-    public Graph apply(SolutionMapping m) {
+    public Model apply(SolutionMapping m) {
         // replace all known variables
         for (int index : this.subjectVariables) {
             Triple t = this.triples.get(index);
@@ -94,6 +95,6 @@ public class BGP {
             graph.add(t);
         }
 
-        return graph;
+        return ModelFactory.createModelForGraph(graph);
     }
 }

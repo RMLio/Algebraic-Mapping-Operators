@@ -3,6 +3,7 @@ package be.ugent.idlab.knows.amo.blocks;
 import org.apache.jena.graph.Graph;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.sparql.graph.GraphFactory;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +29,9 @@ public class BGPTest {
 
         BGP bgp = new BGP(graph);
 
-        Graph out = bgp.apply(mapping);
+        Model outModel = bgp.apply(mapping);
+
+        Graph out = outModel.getGraph();
 
         assertEquals(1, out.size());
         Iterator<Triple> tripleIterator = out.find();
@@ -55,7 +58,8 @@ public class BGPTest {
 
         BGP bgp = new BGP(graph);
 
-        Graph out = bgp.apply(mapping);
+        Model modelOut = bgp.apply(mapping);
+        Graph out = modelOut.getGraph();
 
         assertEquals(2, out.size());
         Iterator<Triple> iterator = out.find();
