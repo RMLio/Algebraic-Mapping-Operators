@@ -24,11 +24,16 @@ public class BGPReplaceTest {
         String subjectObjectPattern = "?jimmy_iri <http://example.com/name> ?jimmy_name .";
         String subjectObjectSolution = "<http://example.com/Jimmy> <http://example.com/name> \"Jimmy\" .";
 
+        String predicatePattern = "<http://example.com/Susan> ?name_pred \"Susan\" .";
+        String predicateSolution = "<http://example.com/Susan> <http://example.com/name> \"Susan\" .";
+
+
         SolutionMapping solMapping = new SolutionMapping(Map.of(
-                "?john_iri", "<http://example.com/John>",
+                "?john_iri", "http://example.com/John",
                 "?susan_name", "\"Susan\"",
-                "?jimmy_iri", "<http://example.com/Jimmy>",
-                "?jimmy_name", "\"Jimmy\""
+                "?jimmy_iri", "http://example.com/Jimmy",
+                "?jimmy_name", "\"Jimmy\"",
+                "?name_pred", "http://example.com/name"
         ));
 
         StringBuilder patternBuilder = new StringBuilder();
@@ -40,12 +45,15 @@ public class BGPReplaceTest {
         for (int i = 0; i < limit; i++) {
             // randomly choose between ?a and ?b, place it in the array
             float nextRandom = random.nextFloat();
-            if (nextRandom < (1.0 / 3.0)) {
+            if (nextRandom < (1.0 / 4.0)) {
                 patternBuilder.append(subjectPattern);
                 solutionBuilder.append(subjectSolution);
-            } else if (nextRandom < (2.0 / 3.0)) {
+            } else if (nextRandom < (2.0 / 4.0)) {
                 patternBuilder.append(objectPattern);
                 solutionBuilder.append(objectSolution);
+            } else if (nextRandom < (3.0 / 4.0)) {
+                patternBuilder.append(predicatePattern);
+                solutionBuilder.append(predicateSolution);
             } else {
                 patternBuilder.append(subjectObjectPattern);
                 solutionBuilder.append(subjectObjectSolution);
@@ -114,11 +122,11 @@ public class BGPReplaceTest {
 
 
         SolutionMapping solMapping = new SolutionMapping(Map.of(
-                "?john_iri", "<http://example.com/John>",
+                "?john_iri", "http://example.com/John",
                 "?susan_name", "\"Susan\"",
-                "?jimmy_iri", "<http://example.com/Jimmy>",
+                "?jimmy_iri", "http://example.com/Jimmy",
                 "?jimmy_name", "\"Jimmy\"",
-                "?name_pred", "<http://example.com/name>"
+                "?name_pred", "http://example.com/name"
         ));
 
         StringBuilder patternBuilder = new StringBuilder();

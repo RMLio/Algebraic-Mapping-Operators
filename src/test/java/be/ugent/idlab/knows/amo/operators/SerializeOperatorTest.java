@@ -21,7 +21,7 @@ public class SerializeOperatorTest {
                 "?fullname", "John Doe",
                 "?$pet.type", "dog",
                 "?pet_name", "Max",
-                "?firstname_iri", "<http://example.com/John>",
+                "?firstname_iri", "http://example.com/John",
                 "?$pet.age", 10
         ));
 
@@ -42,7 +42,7 @@ public class SerializeOperatorTest {
 
         assertTrue(mapping.containsKey("?serialized_output"));
         String serialized = """
-                "<http://example.com/John>"
+                <http://example.com/John>
                         <http://example.com/name>     "John Doe";
                         <http://example.com/petName>  "Max" .
                 """;
