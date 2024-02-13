@@ -10,15 +10,15 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.sparql.graph.GraphFactory;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * Basic Graph Pattern is a pattern to generate RDF triples by replacement of variables.
  */
 public class BGP {
-    private final List<Triple> triples = new ArrayList<>();
+    private final List<Triple> triples;
     private final List<Integer> subjectVariables = new ArrayList<>();
+    private final List<Integer> predicateVariables = new ArrayList<>();
     private final List<Integer> objectVariables = new ArrayList<>();
 
     /**
@@ -31,37 +31,32 @@ public class BGP {
         // create a new Query object
         Query query = QueryFactory.create(pattern);
         // fetch triples
-        List<Triple> triples = query.getConstructTemplate().getTriples();
-        // feed the triples into the graph and bootstrap the class
-        Graph graph = ModelFactory.createDefaultModel().getGraph();
-        for (Triple t : triples) {
-            graph.add(t);
-        }
+        this.triples = query.getConstructTemplate().getTriples();
 
-        this.bootstrap(graph);
+        this.bootstrap();
     }
 
     public BGP(Graph bgpGraph) {
-        this.bootstrap(bgpGraph);
+        this.triples = bgpGraph.find().toList();
+        this.bootstrap();
     }
 
-    private void bootstrap(Graph bgpGraph) {
+    private void bootstrap() {
         // analyze the graph for variables
-        Iterator<Triple> tripleIterator = bgpGraph.stream().iterator();
-        int counter = 0;
-        while (tripleIterator.hasNext()) {
-            Triple t = tripleIterator.next();
-            this.triples.add(t);
-
+        for (int i = 0; i < triples.size(); i++) {
+            Triple t = this.triples.get(i);
             // variables can only show up in the subject or the object part of the triple
             if (t.getSubject().isVariable()) {
-                this.subjectVariables.add(counter);
+                this.subjectVariables.add(i);
+            }
+
+            if (t.getPredicate().isVariable()) {
+                this.predicateVariables.add(i);
             }
 
             if (t.getObject().isVariable()) {
-                this.objectVariables.add(counter);
+                this.objectVariables.add(i);
             }
-            counter++;
         }
     }
 
@@ -74,7 +69,19 @@ public class BGP {
 
             if (m.containsKey(variable)) {
                 String value = m.get(variable).toString();
-                Triple newT = Triple.create(NodeFactory.createLiteral(value), t.getPredicate(), t.getObject());
+                Triple newT = Triple.create(NodeFactory.createURI(value), t.getPredicate(), t.getObject());
+                this.triples.set(index, newT);
+            }
+        }
+
+        for (int index : this.predicateVariables) {
+            Triple t = this.triples.get(index);
+
+            String variable = "?" + t.getPredicate().getName();
+
+            if (m.containsKey(variable)) {
+                String value = m.get(variable).toString();
+                Triple newT = Triple.create(t.getSubject(), NodeFactory.createURI(value), t.getObject());
                 this.triples.set(index, newT);
             }
         }
