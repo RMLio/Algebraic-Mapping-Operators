@@ -1,6 +1,7 @@
 package be.ugent.idlab.knows.amo.blocks;
 
 import org.apache.jena.graph.Graph;
+import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.Model;
@@ -39,7 +40,7 @@ public class BGPTest {
         Triple foundTriple = tripleIterator.next();
         assertFalse(tripleIterator.hasNext());
 
-        assertEquals("ex:JohnDoe", foundTriple.getSubject().getLiteralValue().toString());
+        assertEquals("ex:JohnDoe", foundTriple.getSubject().getURI());
         assertEquals("John", foundTriple.getObject().getLiteralValue().toString());
     }
 
@@ -51,7 +52,7 @@ public class BGPTest {
 
         // SolutionMapping with values as described in Example 9
         SolutionMapping mapping = new SolutionMapping(Map.of(
-                "?firstname_iri", "<http://example.com/John>",
+                "?firstname_iri", "http://example.com/John",
                 "?fullname", "John Doe",
                 "?pet_name", "Max"
         ));
@@ -62,18 +63,27 @@ public class BGPTest {
         Graph out = modelOut.getGraph();
 
         assertEquals(2, out.size());
-        Iterator<Triple> iterator = out.find();
-        assertTrue(iterator.hasNext());
-        Triple t1 = iterator.next();
-        Triple t2 = iterator.next();
-        assertFalse(iterator.hasNext());
+        Triple t1 = out.find(Node.ANY, NodeFactory.createURI("http://example.com/name"), Node.ANY).next();
+        Triple t2 = out.find(Node.ANY, NodeFactory.createURI("http://example.com/petName"), Node.ANY).next();
 
         // check variable replacement in first triple
-        assertEquals("<http://example.com/John>", t1.getSubject().getLiteralValue().toString());
+        assertEquals("http://example.com/John", t1.getSubject().getURI());
         assertEquals("John Doe", t1.getObject().getLiteralValue());
 
         // check variable replacement in second triple
-        assertEquals("<http://example.com/John>", t2.getSubject().getLiteralValue().toString());
+        assertEquals("http://example.com/John", t2.getSubject().getURI());
         assertEquals("Max", t2.getObject().getLiteralValue().toString());
+    }
+
+    @Test
+    public void tripleVariableTest(){
+        Triple t = Triple.create(
+                NodeFactory.createVariable("foo"),
+                NodeFactory.createURI("foaf:name"),
+                NodeFactory.createLiteral("bar")
+        );
+
+        assertEquals("foo", t.getSubject().getName());
+        assertEquals("foo", t.getSubject().getName().toString());
     }
 }
