@@ -2,11 +2,9 @@ package be.ugent.idlab.knows.amo.operators.intermediate.binary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.operators.intermediate.binary.NaturalJoin;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -34,7 +32,7 @@ public class NaturalJoinTest {
         ));
 
         MappingTuple owners = new MappingTuple();
-        owners.setSolutionMap("f_contacts", List.of(john, susan));
+        owners.setSolutionMaps("f_contacts", john, susan);
 
         SolutionMapping bax = new SolutionMapping(Map.of(
                 "?$type", "dog",
@@ -55,7 +53,7 @@ public class NaturalJoinTest {
         ));
 
         MappingTuple pets = new MappingTuple();
-        pets.setSolutionMap("f_contacts", List.of(bax, coco, max));
+        pets.setSolutionMaps("f_contacts", bax, coco, max);
 
         // test
         MappingTuple result = operator.applyMapTuple(owners, pets);

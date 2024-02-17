@@ -2,95 +2,112 @@ package be.ugent.idlab.knows.amo.operators.intermediate.binary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.operators.intermediate.binary.LeftJoin;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Disabled // waiting for go-ahead
 public class LeftJoinTest {
     @Test
-    public void simpleSolutionMappingTest() {
-        LeftJoin operator = new LeftJoin(
-                (s1, s2) -> s1.containsKey("?name") &&
-                        s2.containsKey("?owner") &&
-                        s1.get("?name").equals(s2.get("?pet.owner"))
-        );
-
-        SolutionMapping owner = new SolutionMapping(Map.of(
-                "?name", "John Doe",
-                "?age", 50,
-                "?workplace", "Ghent"
+    public void paperTest() {
+        // table 6
+        SolutionMapping john = new SolutionMapping(Map.of(
+                "?fullname", "John Doe",
+                "?$pet.type", "dog",
+                "?$pet.name", "Bax",
+                "?firstname_iri", "http://example.com/John"
         ));
 
-        SolutionMapping pet = new SolutionMapping(Map.of(
-                "?pet.name", "Max",
-                "?pet.owner", "John Doe"
+        // different construction used due to null values present
+        SolutionMapping susan = new SolutionMapping(new HashMap<>() {{
+            put("?fullname", "Susan Sue");
+            put("?$pet.type", null);
+            put("?$pet.name", null);
+            put("?firstname_iri", "http://example.com/Susan");
+        }});
+
+
+        MappingTuple table6 = new MappingTuple();
+        table6.setSolutionMaps("f_contacts", john, susan);
+
+        // table 7
+        SolutionMapping bax = new SolutionMapping(Map.of(
+                "?type", "dog",
+                "?name", "Bax",
+                "?age", 10
+        ));
+        SolutionMapping coco = new SolutionMapping(Map.of(
+                "?type", "cat",
+                "?name", "Coco",
+                "?age", 3
+        ));
+        SolutionMapping max = new SolutionMapping(Map.of(
+                "?type", "dog",
+                "?name", "Max",
+                "?age", 5
         ));
 
-        SolutionMapping result = operator.applySolMapping(owner, pet);
+        MappingTuple table7 = new MappingTuple();
+        table7.setSolutionMaps("f_contacts", bax, coco, max);
 
-        assertEquals(5, result.keySet().size());
-        assertEquals("John Doe", result.get("?name"));
-        assertEquals(50, result.get("?age"));
-        assertEquals("Ghent", result.get("?workplace"));
-        assertEquals("Max", result.get("?pet.name"));
-        assertEquals("John Doe", result.get("?pet.owner"));
-    }
+        LeftJoin operator = new LeftJoin(((s1, s2) ->
+                s1.containsKey("?$pet.type") && s1.get("?$pet.type") != null &&
+                        s2.containsKey("?type") && s2.get("?type") != null &&
+                        s1.get("?$pet.type").equals(s2.get("?type"))));
 
-    @Test
-    public void simpleMappingTupleTest() {
-        LeftJoin operator = new LeftJoin(
-                (s1, s2) -> s1.containsKey("?name") &&
-                        s2.containsKey("?pet.owner") &&
-                        s1.get("?name").equals(s2.get("?pet.owner"))
-        );
+        MappingTuple out = operator.applyMapTuple(table6, table7);
 
-        SolutionMapping pet = new SolutionMapping(Map.of(
-                "?pet.name", "Max",
-                "?pet.owner", "John Doe"
-        ));
-        MappingTuple pets = new MappingTuple();
-        pets.setSolutionMap("default", List.of(pet));
+        assertEquals(5, out.getSolutionMappings("f_contacts").size());
 
-        SolutionMapping johnDoe = new SolutionMapping(Map.of(
-                "?name", "John Doe",
-                "?age", 50,
-                "?workplace", "Ghent"
-        ));
+        // for mappings satisfying the condition, must behave exactly as ThetaJoin
+        Collection<SolutionMapping> solMappings = out.getSolutionMappings("f_contacts");
+        SolutionMapping baxMapping = solMappings.stream().filter(s -> s.get("?name").equals("Bax")).toList().get(0);
+        SolutionMapping maxMapping = solMappings.stream().filter(s -> s.get("?name").equals("Max")).toList().get(0);
 
-        SolutionMapping janeDoe = new SolutionMapping(Map.of(
-                "?name", "Jane Doe",
-                "?age", 25,
-                "?workplace", "Antwerp"
-        ));
-        MappingTuple owners = new MappingTuple();
-        owners.setSolutionMap("default", List.of(johnDoe, janeDoe));
+        // verify all fields
+        assertEquals(7, baxMapping.size());
+        assertEquals("John Doe", baxMapping.get("?fullname"));
+        assertEquals("dog", baxMapping.get("?$pet.type"));
+        assertEquals(10, baxMapping.get("?age"));
+        assertEquals("dog", baxMapping.get("?type"));
+        assertEquals("Bax", baxMapping.get("?name"));
+        assertEquals("http://example.com/John", baxMapping.get("?firstname_iri"));
+        assertEquals("Bax", baxMapping.get("?$pet.name"));
 
-        MappingTuple result = operator.applyMapTuple(owners, pets);
-        assertEquals(1, result.getFragments().size());
+        assertEquals(7, maxMapping.size());
+        assertEquals("John Doe", maxMapping.get("?fullname"));
+        assertEquals("dog", maxMapping.get("?$pet.type"));
+        assertEquals(5, maxMapping.get("?age"));
+        assertEquals("dog", maxMapping.get("?type"));
+        assertEquals("Max", maxMapping.get("?name"));
+        assertEquals("Bax", maxMapping.get("?$pet.name"));
+        assertEquals("http://example.com/John", maxMapping.get("?firstname_iri"));
 
-        List<SolutionMapping> mappings = result.getSolutionMappings("default").stream().toList();
-        SolutionMapping john = mappings.get(0);
+        // for mapping failing the condition, all keys must be present, but foreign keys must be null
+        Collection<SolutionMapping> failingMappings = out.getSolutionMappings("f_contacts")
+                .stream().filter(s -> !s.get("?fullname").equals("John Doe")).toList();
+        assertEquals(3, failingMappings.size());
 
-        assertEquals(5, john.keySet().size());
-        assertEquals("John Doe", john.get("?name"));
-        assertEquals(50, john.get("?age"));
-        assertEquals("Ghent", john.get("?workplace"));
-        assertEquals("Max", john.get("?pet.name"));
-        assertEquals("John Doe", john.get("?pet.owner"));
+        assertTrue(failingMappings.stream().allMatch(s -> s.containsKey("?fullname") && s.get("?fullname").equals("Susan Sue")));
+        assertTrue(failingMappings.stream().allMatch(s -> s.containsKey("?firstname_iri") && s.get("?firstname_iri").equals("http://example.com/Susan")));
 
-        SolutionMapping jane = mappings.get(1);
-        assertEquals(5, jane.keySet().size());
-        assertEquals("Jane Doe", jane.get("?name"));
-        assertEquals(25, jane.get("?age"));
-        assertEquals("Antwerp", jane.get("?workplace"));
-        assertNull(jane.get("?pet.name"));
-        assertNull(jane.get("?pet.owner"));
+        assertTrue(failingMappings.stream().allMatch(s -> s.containsKey("?$pet.type") && s.get("?$pet.type") == null));
+        assertTrue(failingMappings.stream().allMatch(s -> s.containsKey("?$pet.name") && s.get("?$pet.name") == null));
+        assertTrue(failingMappings.stream().allMatch(s -> s.containsKey("?type") && s.get("?type") == null));
+        assertTrue(failingMappings.stream().allMatch(s -> s.containsKey("?name") && s.get("?name") == null));
+        assertTrue(failingMappings.stream().allMatch(s -> s.containsKey("?age") && s.get("?age") == null));
+
+
+
+
+
     }
 }
