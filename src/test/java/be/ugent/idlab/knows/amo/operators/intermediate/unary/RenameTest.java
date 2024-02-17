@@ -5,7 +5,6 @@ import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -35,7 +34,7 @@ public class RenameTest {
         ));
         MappingTuple tuple = new MappingTuple();
 
-        tuple.setSolutionMap("f_default", Collections.singleton(mapping1));
+        tuple.setSolutionMaps("f_default", mapping1);
 
         RenameOperator operator = new RenameOperator(Set.of(new Pair("?name", "?fullname")));
 

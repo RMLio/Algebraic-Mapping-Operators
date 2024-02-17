@@ -2,7 +2,6 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.operators.intermediate.unary.FragmenterOperator;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -17,9 +16,9 @@ public class FragmentTest {
     FragmenterOperator op = new FragmenterOperator((fragment, mapping) -> {
         MappingTuple tuple = new MappingTuple();
         if (fragment.equals("f_default")) {
-            tuple.setSolutionMap("f_contacts", mapping);
+            tuple.setSolutionMaps("f_contacts", mapping);
         } else {
-            tuple.setSolutionMap(fragment, mapping);
+            tuple.setSolutionMaps(fragment, mapping);
         }
 
         return tuple;
@@ -53,7 +52,7 @@ public class FragmentTest {
                     out.addSolutionMap(newName, mapping);
                 }
             } else {
-                out.setSolutionMap(fragment, mappings);
+                out.setSolutionMaps(fragment, mappings);
             }
 
             return out;

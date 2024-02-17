@@ -35,7 +35,7 @@ public record ExtendOperator(String variableName, ExtendFunction function) imple
                 processedMappings.add(mapping);
             }
 
-            tuple.setSolutionMap(fragment, processedMappings);
+            tuple.setSolutionMaps(fragment, processedMappings);
         }
         return tuple;
     }

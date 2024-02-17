@@ -3,7 +3,6 @@ package be.ugent.idlab.knows.amo.operators;
 import be.ugent.idlab.knows.amo.blocks.BGP;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -26,7 +25,7 @@ public class SerializeOperatorTest {
         ));
 
         MappingTuple tuple = new MappingTuple();
-        tuple.setSolutionMap("f_contacts", Collections.singleton(solMapping));
+        tuple.setSolutionMaps("f_contacts", solMapping);
 
         SerializeOperator operator = new SerializeOperator(new BGP(bgp));
 

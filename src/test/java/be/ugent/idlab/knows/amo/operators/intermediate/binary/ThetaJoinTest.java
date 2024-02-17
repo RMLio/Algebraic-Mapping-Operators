@@ -2,11 +2,11 @@ package be.ugent.idlab.knows.amo.operators.intermediate.binary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.operators.intermediate.binary.ThetaJoin;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,94 +15,77 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Disabled // waiting for go-ahead
 public class ThetaJoinTest {
-
-    ThetaJoin operator = new ThetaJoin(((s1, s2) -> {
-        if (s1.containsKey("?$pet.type") && s2.containsKey("?$type")) {
-            return s1.get("?$pet.type").equals(s2.get("?$type"));
-        }
-        return false;
-    }));
-
     @Test
-    public void simpleTest() {
-
-        // setup
+    public void paperTest() {
+        // table 6
         SolutionMapping john = new SolutionMapping(Map.of(
-                "?name", "John Doe",
+                "?fullname", "John Doe",
                 "?$pet.type", "dog",
                 "?$pet.name", "Bax",
-                "?firstname", "John",
-                "?lastname", "Doe"
+                "?firstname_iri", "http://example.com/John"
         ));
 
-        SolutionMapping susan = new SolutionMapping(Map.of(
-                "?name", "Susan Sue",
-                "?firstname", "Susan",
-                "?lastname", "Sue"
-        ));
+        // different construction used due to null values present
+        SolutionMapping susan = new SolutionMapping(new HashMap<>() {{
+            put("?fullname", "Susan Sue");
+            put("?$pet.type", null);
+            put("?$pet.name", null);
+            put("?firstname_iri", "http://example.com/Susan");
+        }});
 
-        MappingTuple owners = new MappingTuple();
-        owners.setSolutionMap("f_contacts", List.of(john, susan));
 
+        MappingTuple table6 = new MappingTuple();
+        table6.setSolutionMaps("f_contacts", john, susan);
+
+        // table 7
         SolutionMapping bax = new SolutionMapping(Map.of(
-                "?$type", "dog",
-                "?$pet.name", "Bax",
-                "?$pet.age", 10
+                "?type", "dog",
+                "?name", "Bax",
+                "?age", 10
         ));
-
         SolutionMapping coco = new SolutionMapping(Map.of(
-                "?$type", "cat",
-                "?$pet.name", "Coco",
-                "?$pet.age", 3
+                "?type", "cat",
+                "?name", "Coco",
+                "?age", 3
         ));
-
         SolutionMapping max = new SolutionMapping(Map.of(
-                "?$type", "dog",
-                "?$pet.name", "Max",
-                "?$pet.age", 5
+                "?type", "dog",
+                "?name", "Max",
+                "?age", 5
         ));
 
-        MappingTuple pets = new MappingTuple();
-        pets.setSolutionMap("f_contacts", List.of(bax, coco, max));
+        MappingTuple table7 = new MappingTuple();
+        table7.setSolutionMaps("f_contacts", bax, coco, max);
 
-
-        SolutionMapping unionBax = new SolutionMapping(Map.of(
-                "?name", "John Doe",
-                "?$pet.type", "dog",
-                "?$pet.name", "Bax",
-                "?firstname", "John",
-                "?lastname", "Doe",
-                "?$pet.age", 10,
-                "?$type", "dog"
+        ThetaJoin operator = new ThetaJoin(((s1, s2) ->
+                s1.containsKey("?$pet.type") && s1.get("?$pet.type") != null &&
+                        s2.containsKey("?type") && s2.get("?type") != null &&
+                        s1.get("?$pet.type").equals(s2.get("?type"))
         ));
 
-        SolutionMapping unionMax = new SolutionMapping(Map.of(
-                "?name", "John Doe",
-                "?$pet.type", "dog",
-                "?$pet.name", "Max",
-                "?firstname", "John",
-                "?lastname", "Doe",
-                "?$pet.age", 5,
-                "?$type", "dog"
-        ));
+        MappingTuple out = operator.applyMapTuple(table6, table7);
+        assertEquals(2, out.getSolutionMappings("f_contacts").size());
+        Collection<SolutionMapping> solMappings = out.getSolutionMappings("f_contacts");
+        SolutionMapping baxMapping = solMappings.stream().filter(s -> s.get("?name").equals("Bax")).toList().get(0);
+        SolutionMapping maxMapping = solMappings.stream().filter(s -> s.get("?name").equals("Max")).toList().get(0);
 
-        MappingTuple expected = new MappingTuple();
-        expected.setSolutionMap("f_contacts", List.of(unionBax, unionMax));
+        // verify all fields
+        assertEquals(7, baxMapping.size());
+        assertEquals("John Doe", baxMapping.get("?fullname"));
+        assertEquals("dog", baxMapping.get("?$pet.type"));
+        assertEquals(10, baxMapping.get("?age"));
+        assertEquals("dog", baxMapping.get("?type"));
+        assertEquals("Bax", baxMapping.get("?name"));
+        assertEquals("http://example.com/John", baxMapping.get("?firstname_iri"));
+        assertEquals("Bax", baxMapping.get("?$pet.name"));
 
-        // test
-        MappingTuple out = operator.applyMapTuple(owners, pets);
-
-        // validation
-        Collection<String> fragments = out.getFragments();
-        assertEquals(1, fragments.size());
-        assertTrue(fragments.stream().findFirst().isPresent());
-        assertEquals("f_contacts", fragments.stream().findFirst().get());
-
-        List<SolutionMapping> mappings = out.getSolutionMappings("f_contacts").stream().toList();
-        SolutionMapping m0 = mappings.get(0);
-        assertEquals(unionBax, m0);
-
-        SolutionMapping m1 = mappings.get(1);
-        assertEquals(unionMax, m1);
+        assertEquals(7, maxMapping.size());
+        assertEquals("John Doe", maxMapping.get("?fullname"));
+        assertEquals("dog", maxMapping.get("?$pet.type"));
+        assertEquals(5, maxMapping.get("?age"));
+        assertEquals("dog", maxMapping.get("?type"));
+        assertEquals("Max", maxMapping.get("?name"));
+        assertEquals("Bax", maxMapping.get("?$pet.name"));
+        assertEquals("http://example.com/John", maxMapping.get("?firstname_iri"));
     }
 }

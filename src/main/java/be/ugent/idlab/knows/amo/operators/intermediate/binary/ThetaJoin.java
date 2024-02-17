@@ -25,7 +25,7 @@ public class ThetaJoin implements BinaryOperator {
             return mapping1.union(mapping2);
         }
 
-        return new SolutionMapping();
+        return new SolutionMapping(); // in case the condition doesn't apply, empty solution map is returned
     }
 
     @Override
@@ -40,7 +40,9 @@ public class ThetaJoin implements BinaryOperator {
             for (SolutionMapping mapping1 : mappings1) {
                 for (SolutionMapping mapping2 : mappings2) {
                     SolutionMapping solOut = applySolMapping(mapping1, mapping2);
-                    out.addSolutionMap(fragment, solOut);
+                    if (!solOut.isEmpty()) {
+                        out.addSolutionMap(fragment, solOut);
+                    }
                 }
             }
         }

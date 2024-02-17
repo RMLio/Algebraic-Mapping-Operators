@@ -3,10 +3,7 @@ package be.ugent.idlab.knows.amo.blocks;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A partial map between fragments and solution mappings.
@@ -48,8 +45,12 @@ public class MappingTuple {
      * @param fragment fragment to overwrite
      * @param mapping  a collection of SolutionMappings the fragment should refer to
      */
-    public void setSolutionMap(String fragment, Collection<SolutionMapping> mapping) {
+    public void setSolutionMaps(String fragment, Collection<SolutionMapping> mapping) {
         this.map.replaceValues(fragment, mapping);
+    }
+
+    public void setSolutionMaps(String fragment, SolutionMapping... mapping) {
+        this.map.replaceValues(fragment, Arrays.asList(mapping));
     }
 
     public Collection<SolutionMapping> getSolutionMappings(String fragment) {
