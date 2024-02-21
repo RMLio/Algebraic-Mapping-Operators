@@ -104,10 +104,7 @@ public class LeftJoinTest {
         assertTrue(failingMappings.stream().allMatch(s -> s.containsKey("?type") && s.get("?type") == null));
         assertTrue(failingMappings.stream().allMatch(s -> s.containsKey("?name") && s.get("?name") == null));
         assertTrue(failingMappings.stream().allMatch(s -> s.containsKey("?age") && s.get("?age") == null));
-
-
-
-
-
     }
+
+
 }
