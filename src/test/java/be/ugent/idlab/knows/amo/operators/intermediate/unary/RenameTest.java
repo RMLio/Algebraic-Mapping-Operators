@@ -3,6 +3,7 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -14,35 +15,22 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RenameTest {
 
     @Test
-    public void simpleTestSolutionMapping() {
-        SolutionMapping mapping1 = new SolutionMapping(Map.of(
-                "?name", "John Doe"
-        ));
-
+    public void simpleRenameSolutionMappingTest() {
         RenameOperator operator = new RenameOperator(Set.of(new Pair("?name", "?fullname")));
-        SolutionMapping out = operator.applySolMapping(mapping1);
+        SolutionMapping input = BlocksIO.readSolutionMapping("operators/rename/simpleRenameSolMap/input.json");
+        SolutionMapping expected = BlocksIO.readSolutionMapping("operators/rename/simpleRenameSolMap/output.json");
+        SolutionMapping actual = operator.applySolMapping(input);
 
-        assertEquals(1, out.keySet().size());
-        assertEquals("John Doe", out.get("?fullname"));
-        assertNull(out.get("?name"));
+        assertEquals(expected, actual);
     }
 
     @Test
     public void simpleTestMappingTuple() {
-        SolutionMapping mapping1 = new SolutionMapping(Map.of(
-                "?name", "John Doe"
-        ));
-        MappingTuple tuple = new MappingTuple();
-
-        tuple.setSolutionMaps("f_default", mapping1);
-
         RenameOperator operator = new RenameOperator(Set.of(new Pair("?name", "?fullname")));
+        MappingTuple input = BlocksIO.readMappingTuple("operators/rename/simpleRenameMappingTuple/input.json");
+        MappingTuple expected = BlocksIO.readMappingTuple("operators/rename/simpleRenameMappingTuple/output.json");
+        MappingTuple actual = operator.applyMappingTuple(input);
 
-        MappingTuple actual = operator.applyMappingTuple(tuple);
-
-        assertEquals(1, actual.getSolutionMappings("f_default").size());
-        Optional<SolutionMapping> actualMapping = actual.getSolutionMappings("f_default").stream().findFirst();
-        assertTrue(actualMapping.isPresent());
-        assertEquals("John Doe", actualMapping.get().get("?fullname"));
+        assertEquals(expected, actual);
     }
 }

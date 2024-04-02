@@ -5,36 +5,63 @@ import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BlocksIOTest {
 
     @Nested
     class SolutionMapReadingTests {
+
         /**
          * A simple smoke test for reading a very simple solution map
          */
         @Test
-        public void testReadSimpleSolutionMap() {
-            String filepath = "src/test/resources/file_reading_tests/solution_map/simple_sol_map.json";
+        public void testReadSolMap() {
+            String filepath = "serialization/solution_map/solMap.json";
             SolutionMapping sm = BlocksIO.readSolutionMapping(filepath);
 
-            assertEquals(2, sm.keySet().size());
-            assertEquals("bar", sm.get("?foo"));
-            assertEquals(0, sm.get("?baz"));
+            assertEquals(4, sm.keySet().size());
+
+            assertTrue(sm.get("?literalString").isLiteral());
+            assertEquals("foo", sm.get("?literalString").getLiteralValue());
+
+            assertTrue(sm.get("?number").isLiteral());
+            assertEquals(0, sm.get("?number").getLiteralValue());
+
+            assertTrue(sm.get("?blank").isBlank());
+            assertEquals("blankLabel", sm.get("?blank").getBlankNodeLabel());
+
+            assertTrue(sm.get("?iri").isURI());
+            assertEquals("http://example.com", sm.get("?iri").getURI());
         }
 
-        /**
-         * Test verifying that nested objects are not allowed
-         */
-        @Test
-        public void testErrorNestedMap() {
-            String filepath = "src/test/resources/file_reading_tests/solution_map/nested_map.json";
-            assertThrows(IllegalArgumentException.class, () -> BlocksIO.readSolutionMapping(filepath));
+        @Nested
+        class Errors {
+            @Test
+            public void testMissingType() {
+                String filepath = "serialization/solution_map/errors/missingType.json";
+                assertThrows(IllegalArgumentException.class, () -> BlocksIO.readSolutionMapping(filepath));
+            }
+
+            @Test
+            public void testMissingValue() {
+                String filepath = "serialization/solution_map/errors/missingValue.json";
+                assertThrows(IllegalArgumentException.class, () -> BlocksIO.readSolutionMapping(filepath));
+            }
+
+            @Test
+            public void testBadType() {
+                String filepath = "serialization/solution_map/errors/badType.json";
+                assertThrows(IllegalArgumentException.class, () -> BlocksIO.readSolutionMapping(filepath));
+            }
+
+            @Test
+            public void testBadDataType() {
+                String filepath = "serialization/solution_map/errors/badDataType.json";
+                assertThrows(IllegalArgumentException.class, () -> BlocksIO.readSolutionMapping(filepath));
+            }
         }
     }
 
@@ -45,18 +72,18 @@ public class BlocksIOTest {
          */
         @Test
         public void testReadSimpleMappingTuple() {
-            String filepath = "src/test/resources/file_reading_tests/mapping_tuple/simple_mapping_tuple.json";
+            String filepath = "serialization/mapping_tuple/simple_mapping_tuple.json";
             MappingTuple mt = BlocksIO.readMappingTuple(filepath);
 
             assertEquals(1, mt.getFragments().size());
             assertEquals("f_default", mt.getFragments().stream().toList().get(0));
 
-            Collection<SolutionMapping> sms = mt.getSolutionMappings("f_default");
+            List<SolutionMapping> sms = mt.getSolutionMappings("f_default").stream().toList();
             assertEquals(1, sms.size());
-            SolutionMapping sm = sms.stream().toList().get(0);
+            SolutionMapping sm = sms.get(0);
             assertEquals(2, sm.size());
-            assertEquals("bar", sm.get("?foo"));
-            assertEquals(0, sm.get("?baz"));
+            assertEquals("bar", sm.get("?foo").getLiteralValue());
+            assertEquals(0, sm.get("?baz").getLiteralValue());
         }
 
         /**
@@ -64,13 +91,13 @@ public class BlocksIOTest {
          */
         @Test
         public void testEmpty() {
-            String filepath = "src/test/resources/file_reading_tests/mapping_tuple/empty.json";
+            String filepath = "serialization/mapping_tuple/empty.json";
             assertThrows(IllegalArgumentException.class, () -> BlocksIO.readMappingTuple(filepath));
         }
 
         @Test
         public void testEmptyMT() {
-            String filepath = "src/test/resources/file_reading_tests/mapping_tuple/emptyMT.json";
+            String filepath = "serialization/mapping_tuple/emptyMT.json";
             MappingTuple mt = BlocksIO.readMappingTuple(filepath);
             assertEquals(0, mt.getFragments().size());
         }
@@ -80,7 +107,7 @@ public class BlocksIOTest {
          */
         @Test
         public void testMultipleFragments() {
-            String filepath = "src/test/resources/file_reading_tests/mapping_tuple/mapping_tuple_multiple_fragments.json";
+            String filepath = "serialization/mapping_tuple/mapping_tuple_multiple_fragments.json";
             MappingTuple mt = BlocksIO.readMappingTuple(filepath);
 
             assertEquals(2, mt.getFragments().size());
@@ -92,14 +119,14 @@ public class BlocksIOTest {
             assertEquals(1, f_defaultSMs.size());
             SolutionMapping f_defaultSM = f_defaultSMs.get(0);
             assertEquals(2, f_defaultSM.size());
-            assertEquals("bar", f_defaultSM.get("?foo"));
-            assertEquals(0, f_defaultSM.get("?baz"));
+            assertEquals("bar", f_defaultSM.get("?foo").getLiteralValue());
+            assertEquals(0, f_defaultSM.get("?baz").getLiteralValue());
 
             List<SolutionMapping> f_contactsSMs = mt.getSolutionMappings("f_contacts").stream().toList();
             assertEquals(1, f_contactsSMs.size());
             SolutionMapping f_contactsSM = f_contactsSMs.get(0);
             assertEquals(1, f_contactsSM.size());
-            assertEquals("John", f_contactsSM.get("?name"));
+            assertEquals("John", f_contactsSM.get("?name").getLiteralValue());
         }
 
         /**
@@ -107,7 +134,7 @@ public class BlocksIOTest {
          */
         @Test
         public void testSMList() {
-            String filepath = "src/test/resources/file_reading_tests/mapping_tuple/mt_list.json";
+            String filepath = "serialization/mapping_tuple/mt_list.json";
             MappingTuple mt = BlocksIO.readMappingTuple(filepath);
 
             assertEquals(1, mt.getFragments().size());
@@ -116,11 +143,11 @@ public class BlocksIOTest {
             List<SolutionMapping> sms = mt.getSolutionMappings("f_default").stream().toList();
             SolutionMapping sm1 = sms.get(0);
             assertEquals(1, sm1.size());
-            assertEquals("bar", sm1.get("?foo"));
+            assertEquals("bar", sm1.get("?foo").getLiteralValue());
 
             SolutionMapping sm2 = sms.get(1);
             assertEquals(1, sm2.size());
-            assertEquals(0, sm2.get("?baz"));
+            assertEquals(0, sm2.get("?baz").getLiteralValue());
         }
 
         /**
@@ -128,7 +155,7 @@ public class BlocksIOTest {
          */
         @Test
         public void testRejectNestedSolMap() {
-            String filepath = "src/test/resources/file_reading_tests/mapping_tuple/mt_nested_solmap.json";
+            String filepath = "serialization/mapping_tuple/mt_nested_solmap.json";
             assertThrows(IllegalArgumentException.class, () -> BlocksIO.readMappingTuple(filepath));
         }
     }

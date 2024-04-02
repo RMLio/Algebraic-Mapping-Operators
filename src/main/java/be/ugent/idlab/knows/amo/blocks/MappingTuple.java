@@ -134,9 +134,5 @@ public class MappingTuple {
     public int hashCode() {
         return Objects.hash(map);
     }
-
-    private static String foo() {
-        return "Bar";
-    }
 }
 

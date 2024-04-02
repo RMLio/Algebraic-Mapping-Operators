@@ -1,0 +1,13 @@
+{
+  "?foo": {
+    "value": "bar"
+  },
+  "?baz": {
+    "value": {
+      "error": {
+        "value": "-1",
+        "datatype": "integer"
+      }
+    }
+  }
+}

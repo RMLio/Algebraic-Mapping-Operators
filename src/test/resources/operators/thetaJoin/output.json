@@ -1,0 +1,54 @@
+{
+  "f_contacts": [
+    {
+      "?fullname": {
+        "value": "John Doe"
+      },
+      "?$pet.type": {
+        "value": "dog"
+      },
+      "?age": {
+        "value": "10",
+        "datatype": "integer"
+      },
+      "?type": {
+        "value": "dog"
+      },
+      "?name": {
+        "value": "Bax"
+      },
+      "?firstname_iri": {
+        "value": "http://example.com/John",
+        "datatype": "iri"
+      },
+      "?$pet.name": {
+        "value": "Bax"
+      }
+    },
+    {
+      "?fullname": {
+        "value": "John Doe"
+      },
+      "?$pet.type": {
+        "value": "dog"
+      },
+      "?age": {
+        "value": "5",
+        "datatype": "integer"
+      },
+      "?type": {
+        "value": "dog"
+      },
+      "?name": {
+        "value": "Max"
+      },
+      "?firstname_iri": {
+        "value": "http://example.com/John",
+        "datatype": "iri"
+      },
+      "?$pet.name": {
+        "value": "Bax"
+      }
+    }
+  ]
+}

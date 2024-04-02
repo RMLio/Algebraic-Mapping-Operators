@@ -2,13 +2,11 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FragmentTest {
 
@@ -26,19 +24,11 @@ public class FragmentTest {
 
     @Test
     public void simpleRename() {
-        SolutionMapping mapping = new SolutionMapping(Map.of(
-                "?age", 25,
-                "?name", "John Smith"
-        ));
-        MappingTuple tuple = new MappingTuple();
-        tuple.addSolutionMap("f_default", mapping);
+        MappingTuple tuple = BlocksIO.readMappingTuple("operators/fragment/simpleRename/john.json");
+        MappingTuple expected = BlocksIO.readMappingTuple("operators/fragment/simpleRename/output.json");
+        MappingTuple actual = op.applyMappingTuple(tuple);
 
-        MappingTuple output = op.applyMappingTuple(tuple);
-
-        Optional<String> maybeFragmentName = output.getFragments().stream().findFirst();
-        assertTrue(maybeFragmentName.isPresent());
-
-        assertEquals(maybeFragmentName.get(), "f_contacts");
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -48,7 +38,7 @@ public class FragmentTest {
             MappingTuple out = new MappingTuple();
             if (fragment.equals("f_default")) {
                 for (SolutionMapping mapping : mappings) {
-                    String newName = String.format("f_%s", mapping.get("?name"));
+                    String newName = String.format("f_%s", mapping.get("?name").getLiteralValue());
                     out.addSolutionMap(newName, mapping);
                 }
             } else {
@@ -58,44 +48,18 @@ public class FragmentTest {
             return out;
         }));
 
-        SolutionMapping mappingF1 = new SolutionMapping(Map.of(
-                "?name", "John"
-        ));
-
-        SolutionMapping mappingF2 = new SolutionMapping(Map.of(
-                "?name", "Jane"
-        ));
-
-        // both mappings go to the same fragment
-        MappingTuple t = new MappingTuple();
-        t.addSolutionMap("f_default", mappingF1);
-        t.addSolutionMap("f_default", mappingF2);
+        MappingTuple input = BlocksIO.readMappingTuple("operators/fragment/fragmentMultiple/input.json");
 
         // apply operator
-        MappingTuple out = op.applyMappingTuple(t);
+        MappingTuple actual = op.applyMappingTuple(input);
 
-        assertEquals(2, out.getFragments().size());
-
-        List<String> fragments = out.getFragments().stream().toList();
-        assertEquals("f_John", fragments.get(0));
-        assertEquals("f_Jane", fragments.get(1));
-
-        // verify that the fragment do not share solution mappings
-        SolutionMapping solJohn = out.getSolutionMappings("f_John").stream().toList().get(0);
-        assertEquals(1, solJohn.size());
-        assertEquals("John", solJohn.get("?name"));
-
-        SolutionMapping solJane = out.getSolutionMappings("f_Jane").stream().toList().get(0);
-        assertEquals(1, solJane.size());
-        assertEquals("Jane", solJane.get("?name"));
+        MappingTuple expected = BlocksIO.readMappingTuple("operators/fragment/fragmentMultiple/output.json");
+        assertEquals(expected, actual);
     }
 
     @Test
     public void testSolMappingThrowsError() {
-        SolutionMapping mapping = new SolutionMapping(Map.of(
-                "?age", 25,
-                "?name", "John Smith"
-        ));
+        SolutionMapping mapping = new SolutionMapping();
 
         assertThrows(IllegalStateException.class, () -> {
             op.applySolMapping(mapping);

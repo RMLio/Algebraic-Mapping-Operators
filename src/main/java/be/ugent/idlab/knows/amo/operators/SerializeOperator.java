@@ -3,9 +3,11 @@ package be.ugent.idlab.knows.amo.operators;
 import be.ugent.idlab.knows.amo.blocks.BGP;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.rdf.model.Model;
 
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Map;
 
@@ -28,28 +30,18 @@ public record SerializeOperator(BGP bgp) {
             Collection<SolutionMapping> solMappings = m.getSolutionMappings(fragment);
             for (SolutionMapping solMapping : solMappings) {
                 Model model = this.bgp.apply(solMapping);
-                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-                model.write(outStream, language);
+                OutputStream outputStream = new ByteArrayOutputStream();
+                model.write(outputStream, language);
 
-                String outTriples = outStream.toString();
+                String serialized = outputStream.toString();
 
                 SolutionMapping solMapOut = new SolutionMapping(
-                        Map.of("?serialized_output", outTriples));
+                        Map.of("?serialized_output", NodeFactory.createLiteral(serialized)));
 
                 out.addSolutionMap(fragment, solMapOut);
             }
         }
 
         return out;
-    }
-
-    /**
-     * Convenience method for serializing into TTL.
-     * @see SerializeOperator#apply(MappingTuple, String)
-     * @param m mapping tuple to serialize
-     * @return
-     */
-    public MappingTuple apply(MappingTuple m) {
-        return apply(m, "TTL");
     }
 }

@@ -1,5 +1,6 @@
 package be.ugent.idlab.knows.amo.blocks;
 
+import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.apache.jena.graph.Graph;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
@@ -23,10 +24,7 @@ public class BGPTest {
         graph.add(t);
 
         // create a simple SolutionMapping
-        SolutionMapping mapping = new SolutionMapping(Map.of(
-                "?foo", "ex:JohnDoe",
-                "?bar", "John"
-        ));
+        SolutionMapping mapping = BlocksIO.readSolutionMapping("blockTests/bgp/simpleTest.json");
 
         BGP bgp = new BGP(graph);
 
@@ -40,8 +38,8 @@ public class BGPTest {
         Triple foundTriple = tripleIterator.next();
         assertFalse(tripleIterator.hasNext());
 
-        assertEquals("ex:JohnDoe", foundTriple.getSubject().getURI());
-        assertEquals("John", foundTriple.getObject().getLiteralValue().toString());
+        assertEquals("http://example.com/JohnDoe", foundTriple.getSubject().getURI());
+        assertEquals("\"John\"", foundTriple.getObject().getLiteralValue().toString());
     }
 
     @Test
@@ -51,11 +49,7 @@ public class BGPTest {
                 "<http://example.com/petName> ?pet_name.";
 
         // SolutionMapping with values as described in Example 9
-        SolutionMapping mapping = new SolutionMapping(Map.of(
-                "?firstname_iri", "http://example.com/John",
-                "?fullname", "John Doe",
-                "?pet_name", "Max"
-        ));
+        SolutionMapping mapping = BlocksIO.readSolutionMapping("blockTests/bgp/graphFromString.json");
 
         BGP bgp = new BGP(graph);
 
@@ -68,11 +62,11 @@ public class BGPTest {
 
         // check variable replacement in first triple
         assertEquals("http://example.com/John", t1.getSubject().getURI());
-        assertEquals("John Doe", t1.getObject().getLiteralValue());
+        assertEquals("\"John Doe\"", t1.getObject().getLiteralValue());
 
         // check variable replacement in second triple
         assertEquals("http://example.com/John", t2.getSubject().getURI());
-        assertEquals("Max", t2.getObject().getLiteralValue().toString());
+        assertEquals("\"Max\"", t2.getObject().getLiteralValue().toString());
     }
 
     @Test

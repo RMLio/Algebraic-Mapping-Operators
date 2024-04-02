@@ -2,7 +2,7 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.operators.intermediate.unary.ProjectOperator;
+import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -14,39 +14,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ProjectTest {
     @Test
     public void simpleTestSolutionMapping() {
-        SolutionMapping mapping = new SolutionMapping(
-                new HashMap<>() {{
-                    put("?name", "John Doe");
-                    put("?age", 25);
-                }}
-        );
+        ProjectOperator operator = new ProjectOperator(List.of("?age"));
 
-        ProjectOperator project = new ProjectOperator(List.of("?age"));
+        SolutionMapping input = BlocksIO.readSolutionMapping("operators/project/solutionMapping/input.json");
+        SolutionMapping expected = BlocksIO.readSolutionMapping("operators/project/solutionMapping/output.json");
 
-        SolutionMapping expected = new SolutionMapping(
-                Map.of("?name", "John Doe"));
-        SolutionMapping actual = project.applySolMapping(mapping);
+        SolutionMapping actual = operator.applySolMapping(input);
 
         assertEquals(expected, actual);
     }
 
     @Test
     public void simpleTestMappingTuple() {
-        SolutionMapping mapping = new SolutionMapping(
-                new HashMap<>() {{
-                    put("?name", "John Doe");
-                    put("?age", 25);
-                }}
-        );
+        ProjectOperator operator = new ProjectOperator(List.of("?age"));
 
-        MappingTuple actual = new MappingTuple();
-        actual.addSolutionMap("f_default", mapping);
-
-        ProjectOperator projectOperator = new ProjectOperator(List.of("?age"));
-        projectOperator.applyMappingTuple(actual);
-
-        MappingTuple expected = new MappingTuple();
-        expected.addSolutionMap("f_default", new SolutionMapping(Map.of("?name", "John Doe")));
+        MappingTuple input = BlocksIO.readMappingTuple("operators/project/mappingTuple/input.json");
+        MappingTuple expected = BlocksIO.readMappingTuple("operators/project/mappingTuple/output.json");
+        MappingTuple actual = operator.applyMappingTuple(input);
 
         assertEquals(expected, actual);
     }

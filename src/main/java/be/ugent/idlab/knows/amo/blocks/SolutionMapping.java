@@ -1,5 +1,7 @@
 package be.ugent.idlab.knows.amo.blocks;
 
+import org.apache.jena.graph.Node;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -9,23 +11,13 @@ import java.util.Set;
  * Solution mapping is a collection of key-value pairs connecting variables to their data
  * These can be applied on a templated string
  */
-public class SolutionMapping extends HashMap<String, Object> {
+public class SolutionMapping extends HashMap<String, Node> {
     public SolutionMapping() {
         super();
     }
 
-    public SolutionMapping(Map<String, Object> variables) {
+    public SolutionMapping(Map<String, Node> variables) {
         super(variables);
-    }
-
-    public String apply(String templateString) {
-        for (Map.Entry<String, Object> entry : this.entrySet()) {
-            if (templateString.contains(entry.getKey())) {
-                templateString = templateString.replace(entry.getKey(), entry.getValue().toString());
-            }
-        }
-
-        return templateString;
     }
 
     /**
@@ -65,5 +57,25 @@ public class SolutionMapping extends HashMap<String, Object> {
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o instanceof SolutionMapping that) {
+            for (Map.Entry<String, Node> e : this.entrySet()) {
+                if (! that.get(e.getKey()).getLiteralValue().equals(e.getValue().getLiteralValue())) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

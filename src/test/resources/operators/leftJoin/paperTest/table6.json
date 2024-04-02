@@ -1,0 +1,36 @@
+{
+  "f_contacts": [
+    {
+      "?fullname": {
+        "value": "John Doe"
+      },
+      "?$pet.type": {
+        "value": "dog"
+      },
+      "?$pet.name": {
+        "value": "Bax"
+      },
+      "?firstname_iri": {
+        "value": "http://example.com/John",
+        "datatype": "iri"
+      }
+    },
+    {
+      "?fullname": {
+        "value": "Susan Sue"
+      },
+      "?$pet.type": {
+        "value": "",
+        "datatype": "null"
+      },
+      "?$pet.name": {
+        "value": "",
+        "datatype": "null"
+      },
+      "?firstname_iri": {
+        "value": "http://example.com/Susan",
+        "datatype": "iri"
+      }
+    }
+  ]
+}

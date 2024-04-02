@@ -3,6 +3,7 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.ExtendFunction;
+import org.apache.jena.graph.Node;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +19,7 @@ import java.util.List;
 public record ExtendOperator(String variableName, ExtendFunction function) implements UnaryOperator {
     @Override
     public SolutionMapping applySolMapping(SolutionMapping mapping) {
-        Object value = function.apply(mapping);
+        Node value = function.apply(mapping);
         mapping.put(variableName, value);
 
         return mapping;

@@ -1,0 +1,33 @@
+{
+  "f_contacts": {
+    "?name": {
+      "value": "John Doe",
+      "type": "literal"
+    },
+    "?$pet.type": {
+      "value": "dog",
+      "type": "literal"
+    },
+    "?$pet.name": {
+      "value": "Bax",
+      "type": "literal"
+    },
+    "?firstname": {
+      "value": "John",
+      "type": "literal"
+    },
+    "?lastname": {
+      "value": "Doe",
+      "type": "literal"
+    },
+    "?$pet.age": {
+      "value": "10",
+      "datatype": "integer",
+      "type": "literal"
+    },
+    "?$type": {
+      "value": "dog",
+      "type": "literal"
+    }
+  }
+}

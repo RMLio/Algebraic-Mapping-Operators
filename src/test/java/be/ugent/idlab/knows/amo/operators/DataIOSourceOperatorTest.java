@@ -16,9 +16,9 @@ public class DataIOSourceOperatorTest {
 
     @Test
     public void simpleTest() {
-        Access access = new LocalFileAccess("input.json", "src/test/resources", "json");
-        try (JSONSourceIterator iterator = new JSONSourceIterator(access, "$")) {
-            DataIOSourceOperator operator = new DataIOSourceOperator(iterator, List.of("Name", "Sport"));
+        Access access = new LocalFileAccess("operators/source/input.json", "src/test/resources", "json");
+        try (JSONSourceIterator iterator = new JSONSourceIterator(access, "$.peoples[*]")) {
+            DataIOSourceOperator operator = new DataIOSourceOperator(iterator, List.of("name", "age", "email", "pet"));
             MappingTuple mappingTuple = operator.getMappingTuples().stream().findFirst().get();
 
             Collection<String> fragments = mappingTuple.getFragments();

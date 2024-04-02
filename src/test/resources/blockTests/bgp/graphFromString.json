@@ -1,0 +1,14 @@
+{
+  "?firstname_iri": {
+    "value": "http://example.com/John",
+    "type": "iri"
+  },
+  "?fullname": {
+    "value": "John Doe",
+    "type": "literal"
+  },
+  "?pet_name": {
+    "value": "Max",
+    "type": "literal"
+  }
+}

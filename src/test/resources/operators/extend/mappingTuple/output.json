@@ -1,8 +1,24 @@
 {
   "f_default": {
-    "?first_name": "John",
-    "?last_name": "Doe",
-    "?age": 25,
-    "?full_name": "John Doe"
+    "?first_name": {
+      "value": "John",
+      "type": "literal"
+
+    },
+    "?last_name": {
+      "value": "Doe",
+      "type": "literal"
+
+    },
+    "?age": {
+      "value": "25",
+      "datatype": "integer",
+      "type": "literal"
+
+    },
+    "?full_name": {
+      "value": "John Doe",
+      "type": "literal"
+    }
   }
 }

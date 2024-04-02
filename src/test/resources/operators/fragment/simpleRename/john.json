@@ -1,0 +1,15 @@
+{
+  "f_default": {
+    "?age": {
+      "value": "25",
+      "datatype": "integer",
+      "type": "literal"
+
+    },
+    "?name": {
+      "value": "John Smith",
+      "type": "literal"
+
+    }
+  }
+}

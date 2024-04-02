@@ -1,0 +1,17 @@
+{
+  "f_default": [
+    {
+      "?foo": {
+        "value": "bar",
+        "type": "literal"
+      }
+    },
+    {
+      "?baz": {
+        "value": "0",
+        "type": "literal",
+        "datatype": "integer"
+      }
+    }
+  ]
+}

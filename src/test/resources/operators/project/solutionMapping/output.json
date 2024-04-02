@@ -1,0 +1,7 @@
+{
+  "?age": {
+    "value": "10",
+    "type": "literal",
+    "datatype": "integer"
+  }
+}

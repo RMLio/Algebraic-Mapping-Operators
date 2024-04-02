@@ -3,6 +3,8 @@ package be.ugent.idlab.knows.amo.operators;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.TargetSink;
+import be.ugent.idlab.knows.amo.utilities.BlocksIO;
+import org.apache.jena.graph.NodeFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -15,13 +17,11 @@ public class TargetOperatorTest {
     public void simpleTest() {
         TestSink sink = new TestSink();
 
-        SolutionMapping solMapping = new SolutionMapping(Map.of("?foo", "bar"));
-        MappingTuple tuple = new MappingTuple();
-        tuple.addSolutionMap("f_target", solMapping);
+        MappingTuple input = BlocksIO.readMappingTuple("operators/target/input.json");
 
         TargetOperator operator = new TargetOperator("f_target", sink);
-        operator.apply(tuple);
-        assertEquals(sink.output, "bar");
+        operator.apply(input);
+        assertEquals("bar", sink.output);
     }
 }
 
@@ -33,6 +33,6 @@ class TestSink implements TargetSink {
 
     @Override
     public void sink(SolutionMapping mapping) {
-        this.output = mapping.get("?foo").toString();
+        this.output = mapping.get("?foo").getLiteralValue().toString();
     }
 }

@@ -2,6 +2,7 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import org.apache.jena.graph.Node;
 
 import java.util.Collection;
 import java.util.Map;
@@ -14,8 +15,11 @@ import java.util.Map;
  */
 public record ProjectOperator(Collection<String> variables) implements UnaryOperator {
     public SolutionMapping applySolMapping(SolutionMapping mapping) {
-        for (String variable : this.variables) {
-            ((Map<String, Object>) mapping).remove(variable);
+        SolutionMapping newMapping = new SolutionMapping(mapping);
+        for (Map.Entry<String, Node> entry : mapping.entrySet()) {
+            if (!this.variables.contains(entry.getKey())) {
+                newMapping.put(entry.getKey(), entry.getValue());
+            }
         }
 
         return mapping;

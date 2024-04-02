@@ -1,0 +1,40 @@
+{
+  "f_contacts": [
+    {
+      "?type": {
+        "value": "dog"
+      },
+      "?name": {
+        "value": "Bax"
+      },
+      "?age": {
+        "value": "10",
+        "datatype": "integer"
+      }
+    },
+    {
+      "?type": {
+        "value": "cat"
+      },
+      "?name": {
+        "value": "Coco"
+      },
+      "?age": {
+        "value": "3",
+        "datatype": "integer"
+      }
+    },
+    {
+      "?type": {
+        "value": "dog"
+      },
+      "?name": {
+        "value": "Max"
+      },
+      "?age": {
+        "value": "5",
+        "datatype": "integer"
+      }
+    }
+  ]
+}

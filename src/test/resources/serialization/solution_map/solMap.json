@@ -1,0 +1,20 @@
+{
+  "?literalString": {
+    "value": "foo",
+    "type": "literal",
+    "language": "en-us"
+  },
+  "?number": {
+    "value": "0",
+    "type": "literal",
+    "datatype": "integer"
+  },
+  "?blank": {
+    "value": "blankLabel",
+    "type": "blank"
+  },
+  "?iri": {
+    "value": "http://example.com",
+    "type": "iri"
+  }
+}

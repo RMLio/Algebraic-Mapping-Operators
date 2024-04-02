@@ -3,6 +3,7 @@ package be.ugent.idlab.knows.amo.operators;
 import be.ugent.idlab.knows.amo.blocks.BGP;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -16,35 +17,13 @@ public class SerializeOperatorTest {
     public void simpleTest() {
         String bgp = "?firstname_iri <http://example.com/name> ?fullname;<http://example.com/petName> ?pet_name.";
 
-        SolutionMapping solMapping = new SolutionMapping(Map.of(
-                "?fullname", "John Doe",
-                "?$pet.type", "dog",
-                "?pet_name", "Max",
-                "?firstname_iri", "http://example.com/John",
-                "?$pet.age", 10
-        ));
-
-        MappingTuple tuple = new MappingTuple();
-        tuple.setSolutionMaps("f_contacts", solMapping);
+        MappingTuple input = BlocksIO.readMappingTuple("operators/serialize/input.json");
 
         SerializeOperator operator = new SerializeOperator(new BGP(bgp));
 
-        MappingTuple out = operator.apply(tuple);
+        MappingTuple actual = operator.apply(input, "TTL");
+        MappingTuple expected = BlocksIO.readMappingTuple("operators/serialize/output.json");
 
-        List<String> fragments = out.getFragments().stream().toList();
-        assertEquals(1, fragments.size());
-        assertEquals("f_contacts", fragments.get(0));
-
-        List<SolutionMapping> solMappings = out.getSolutionMappings("f_contacts").stream().toList();
-        assertEquals(1, solMappings.size());
-        SolutionMapping mapping = solMappings.get(0);
-
-        assertTrue(mapping.containsKey("?serialized_output"));
-        String serialized = """
-                <http://example.com/John>
-                        <http://example.com/name>     "John Doe";
-                        <http://example.com/petName>  "Max" .
-                """;
-        assertEquals(serialized, mapping.get("?serialized_output"));
+        assertEquals(expected, actual);
     }
 }

@@ -13,6 +13,5 @@ import java.util.Collection;
  * Otherwise, the function must return a MappingTuple containing the original SolutionMappings.
  */
 public interface FragmentFunction {
-
     MappingTuple apply(String fragment, Collection<SolutionMapping> mapping);
 }

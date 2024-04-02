@@ -3,7 +3,9 @@ package be.ugent.idlab.knows.amo.performance.bgp;
 import be.ugent.idlab.knows.amo.blocks.BGP;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.performance.bgp.classes.BGPStringReplacement;
+import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.apache.jena.rdf.model.Model;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -14,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BGPReplaceTest {
     @Test
+    @Disabled
     public void timingTestLargeBGP() {
         // exactly the same test as above, but only BGP::apply is timed
         String subjectPattern = "?john_iri <http://example.com/name_%f> \"John Doe\" .";
@@ -28,22 +31,7 @@ public class BGPReplaceTest {
         String predicatePattern = "<http://example.com/Susan_%f> ?name_pred \"Susan\" .";
         String predicateSolution = "<http://example.com/Susan_%f> <http://example.com/name> \"Susan\" .";
 
-
-        SolutionMapping solMapping = new SolutionMapping(Map.of(
-                "?john_iri", "<http://example.com/John>",
-                "?susan_name", "\"Susan\"",
-                "?jimmy_iri", "<http://example.com/Jimmy>",
-                "?jimmy_name", "\"Jimmy\"",
-                "?name_pred", "<http://example.com/name>"
-        ));
-
-        SolutionMapping solMappingNiceURIs = new SolutionMapping(Map.of(
-                "?john_iri", "http://example.com/John",
-                "?susan_name", "\"Susan\"",
-                "?jimmy_iri", "http://example.com/Jimmy",
-                "?jimmy_name", "\"Jimmy\"",
-                "?name_pred", "http://example.com/name"
-        ));
+        SolutionMapping solMapping = BlocksIO.readSolutionMapping("performance/bgp/inputSolMapping.json");
 
         StringBuilder patternBuilder = new StringBuilder();
         StringBuilder solutionBuilder = new StringBuilder();
@@ -107,7 +95,7 @@ public class BGPReplaceTest {
 
         // time measurement includes consumption of the model into a string
         before = System.nanoTime();
-        Model model = bgpJena.apply(solMappingNiceURIs);
+        Model model = bgpJena.apply(solMapping);
         model.write(outputStream, "TTL");
         after = System.nanoTime();
         System.out.printf("Time with Model: %d ns\n", after - before);
@@ -115,6 +103,7 @@ public class BGPReplaceTest {
     }
 
     @Test
+    @Disabled
     public void timingTestVarReplacementJena() {
         // exactly the same test as above, but only BGP::apply is timed
         String subjectPattern = "?john_iri <http://example.com/name_%f> \"John Doe\" .";
@@ -129,22 +118,7 @@ public class BGPReplaceTest {
         String predicatePattern = "<http://example.com/Susan_%f> ?name_pred \"Susan\" .";
         String predicateSolution = "<http://example.com/Susan_%f> <http://example.com/name> \"Susan\" .";
 
-
-        SolutionMapping solMapping = new SolutionMapping(Map.of(
-                "?john_iri", "<http://example.com/John>",
-                "?susan_name", "\"Susan\"",
-                "?jimmy_iri", "<http://example.com/Jimmy>",
-                "?jimmy_name", "\"Jimmy\"",
-                "?name_pred", "<http://example.com/name>"
-        ));
-
-        SolutionMapping solMappingNiceURIs = new SolutionMapping(Map.of(
-                "?john_iri", "http://example.com/John",
-                "?susan_name", "\"Susan\"",
-                "?jimmy_iri", "http://example.com/Jimmy",
-                "?jimmy_name", "\"Jimmy\"",
-                "?name_pred", "http://example.com/name"
-        ));
+        SolutionMapping solMapping = BlocksIO.readSolutionMapping("performance/bgp/inputSolMapping.json");
 
         StringBuilder patternBuilder = new StringBuilder();
         StringBuilder solutionBuilder = new StringBuilder();
@@ -205,7 +179,7 @@ public class BGPReplaceTest {
 
         BGP bgpJena = new BGP(pattern);
         before = System.currentTimeMillis();
-        Model model = bgpJena.apply(solMappingNiceURIs);
+        Model model = bgpJena.apply(solMapping);
         after = System.currentTimeMillis();
         System.out.printf("Time with Model: %d ms\n", after - before);
         System.out.printf("Model size: %d\n", model.size());

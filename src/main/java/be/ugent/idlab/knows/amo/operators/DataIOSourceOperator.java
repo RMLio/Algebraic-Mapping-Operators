@@ -4,6 +4,7 @@ import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.dataio.iterators.SourceIterator;
 import be.ugent.idlab.knows.dataio.record.Record;
+import org.apache.jena.graph.NodeFactory;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -23,8 +24,8 @@ public record DataIOSourceOperator(SourceIterator iterator, Collection<String> r
             SolutionMapping mapping = new SolutionMapping();
             Record s = this.iterator.next();
             for (String reference : references) {
-                Object value = s.get(reference).get(0);
-                mapping.put(reference, value);
+                String value = s.get(reference).get(0).toString();
+                mapping.put(reference, NodeFactory.createLiteral(value));
             }
 
             tuple.addSolutionMap("f_default", mapping);
