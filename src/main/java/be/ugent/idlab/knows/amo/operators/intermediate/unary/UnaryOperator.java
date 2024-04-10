@@ -37,7 +37,18 @@ public interface UnaryOperator {
      * @param tuple tuple to apply the operator on.
      * @return the processed MappingTuple
      */
-    MappingTuple applyMappingTuple(MappingTuple tuple);
+    default MappingTuple applyMappingTuple(MappingTuple tuple) {
+        MappingTuple out = new MappingTuple();
+
+        for (String fragment : tuple.getFragments()) {
+            for (SolutionMapping map : tuple.getSolutionMappings(fragment)) {
+                SolutionMapping newMap = applySolMapping(map);
+                out.addSolutionMap(fragment, newMap);
+            }
+        }
+
+        return out;
+    }
 
     /**
      * Apply the operator on the entire collection of MappingTuples.

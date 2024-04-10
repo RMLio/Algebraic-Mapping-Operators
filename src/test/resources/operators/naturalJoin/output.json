@@ -4,11 +4,11 @@
       "value": "John Doe",
       "type": "literal"
     },
-    "?$pet.type": {
+    "?$.pet.type": {
       "value": "dog",
       "type": "literal"
     },
-    "?$pet.name": {
+    "?$.pet.name": {
       "value": "Bax",
       "type": "literal"
     },
@@ -20,12 +20,12 @@
       "value": "Doe",
       "type": "literal"
     },
-    "?$pet.age": {
+    "?$.pet.age": {
       "value": "10",
       "datatype": "integer",
       "type": "literal"
     },
-    "?$type": {
+    "?$.type": {
       "value": "dog",
       "type": "literal"
     }

@@ -15,7 +15,13 @@ import java.util.Map;
  * Serialize operator will accept a Basic Graph Pattern and replace the variables with the values as provided in the mapping tuple.
  * @param bgp
  */
-public record SerializeOperator(BGP bgp) {
+public class SerializeOperator {
+
+    private final BGP bgp;
+
+    public SerializeOperator(BGP bgp) {
+        this.bgp = bgp;
+    }
 
     /**
      * Serializes MappingTuple into a graph as described by the BGP, with variables replaced

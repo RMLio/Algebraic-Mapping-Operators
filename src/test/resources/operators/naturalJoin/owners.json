@@ -5,11 +5,11 @@
         "value": "John Doe",
         "type": "literal"
       },
-      "?$pet.type": {
+      "?$.pet.type": {
         "value": "dog",
         "type": "literal"
       },
-      "?$pet.name": {
+      "?$.pet.name": {
         "value": "Bax",
         "type": "literal"
       },
@@ -27,11 +27,11 @@
         "value": "Susan Sue",
         "type": "literal"
       },
-      "?$pet.type": {
+      "?$.pet.type": {
         "value": "",
-        "type": "literal",
+        "type": "literal"
       },
-      "?$pet.name": {
+      "?$.pet.name": {
         "value": "",
         "type": "literal"
       },

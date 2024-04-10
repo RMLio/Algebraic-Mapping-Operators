@@ -1,6 +1,7 @@
 package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
+import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.ExtendFunction;
 import org.apache.jena.graph.Node;
@@ -13,16 +14,29 @@ import java.util.List;
  * ExtendOperator will generate new variables (potentially from existing variables) and add these to the SolutionMapping and / or MappingTuple.
  * This is done using the ExtendFunction provided
  *
- * @param variableName name of the variable to replace
- * @param function function to generate the new variable
  */
-public record ExtendOperator(String variableName, ExtendFunction function) implements UnaryOperator {
+public class ExtendOperator implements UnaryOperator {
+
+    private final Collection<Pair<String, ExtendFunction>> replacements;
+
+    /**
+     * @param variableName name of the variable to replace
+     * @param function function to generate the new variable
+     */
+    public ExtendOperator(Collection<Pair<String, ExtendFunction>> replacements) {
+        this.replacements = replacements;
+    }
+
     @Override
     public SolutionMapping applySolMapping(SolutionMapping mapping) {
-        Node value = function.apply(mapping);
-        mapping.put(variableName, value);
+        SolutionMapping newValues = new SolutionMapping();
+        for (Pair<String, ExtendFunction> functionPair : this.replacements) {
+            if (!mapping.containsKey(functionPair.first())) {
+                newValues.put(functionPair.first(), functionPair.second().apply(mapping));
+            }
+        }
 
-        return mapping;
+        return mapping.union(newValues);
     }
 
     @Override
@@ -32,8 +46,8 @@ public record ExtendOperator(String variableName, ExtendFunction function) imple
 
             List<SolutionMapping> processedMappings = new ArrayList<>();
             for (SolutionMapping mapping : mappings) {
-                applySolMapping(mapping);
-                processedMappings.add(mapping);
+                SolutionMapping processed = applySolMapping(mapping);
+                processedMappings.add(processed);
             }
 
             tuple.setSolutionMaps(fragment, processedMappings);

@@ -5,5 +5,5 @@ package be.ugent.idlab.knows.amo.blocks;
  * @param first first string
  * @param second second string
  */
-public record Pair(String first, String second) {
+public record Pair<F, S>(F first, S second) {
 }

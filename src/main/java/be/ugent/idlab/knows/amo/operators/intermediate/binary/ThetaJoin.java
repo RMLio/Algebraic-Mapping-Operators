@@ -3,8 +3,10 @@ package be.ugent.idlab.knows.amo.operators.intermediate.binary;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.JoinCondition;
+import be.ugent.idlab.knows.amo.operators.intermediate.unary.RenameOperator;
 
 import java.util.Collection;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -13,16 +15,29 @@ import java.util.Set;
  */
 public class ThetaJoin implements BinaryOperator {
 
+
     protected final JoinCondition condition;
 
-    public ThetaJoin(JoinCondition condition) {
+    private final RenameOperator renameOperator;
+
+    public ThetaJoin(JoinCondition condition, String alias) {
         this.condition = condition;
+        this.renameOperator = new RenameOperator(alias);
     }
 
+    /**
+     * This code assumes that mapping2 is already aliased as per the definitions of the paper.
+     * No aliasing will be performed here.
+     * @param mapping1
+     * @param mapping2
+     * @return
+     */
     @Override
     public SolutionMapping applySolMapping(SolutionMapping mapping1, SolutionMapping mapping2) {
-        if (this.condition.apply(mapping1, mapping2)) {
-            return mapping1.union(mapping2);
+        SolutionMapping m2Aliased = renameOperator.applySolMapping(mapping2);
+
+        if (this.condition.apply(mapping1, m2Aliased)) {
+            return mapping1.union(m2Aliased);
         }
 
         return new SolutionMapping(); // in case the condition doesn't apply, empty solution map is returned

@@ -84,7 +84,7 @@ public class BlocksIO {
 
         String type = json.getString("type");
         if (!ALLOWED_TYPES.contains(type)) {
-            throw new IllegalArgumentException(String.format("Unexpected type '%s', expected one of %s", type, ALLOWED_TYPES));
+            throw new IllegalArgumentException(String.format("Unexpected type '%s' for object '%s', expected one of %s", type, json,  ALLOWED_TYPES));
         }
 
         return PARSING_FUNCTIONS.get(type).parse(json);

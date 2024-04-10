@@ -2,52 +2,64 @@
   "f_contacts": [
     {
       "?fullname": {
-        "value": "John Doe"
+        "value": "John Doe",
+        "type": "literal"
       },
       "?$pet.type": {
-        "value": "dog"
+        "value": "dog",
+        "type": "literal"
       },
-      "?age": {
+      "?animal_age": {
         "value": "10",
-        "datatype": "integer"
+        "datatype": "integer",
+        "type": "literal"
       },
-      "?type": {
-        "value": "dog"
+      "?animal_type": {
+        "value": "dog",
+        "type": "literal"
       },
-      "?name": {
-        "value": "Bax"
+      "?animal_name": {
+        "value": "Bax",
+        "type": "literal"
       },
       "?firstname_iri": {
         "value": "http://example.com/John",
-        "datatype": "iri"
+        "type": "iri"
       },
       "?$pet.name": {
-        "value": "Bax"
+        "value": "Bax",
+        "type": "literal"
       }
     },
     {
       "?fullname": {
-        "value": "John Doe"
+        "value": "John Doe",
+        "type": "literal"
       },
       "?$pet.type": {
-        "value": "dog"
+        "value": "dog",
+        "type": "literal"
       },
-      "?age": {
+      "?animal_age": {
         "value": "5",
-        "datatype": "integer"
+        "datatype": "integer",
+        "type": "literal"
       },
-      "?type": {
-        "value": "dog"
+      "?animal_type": {
+        "value": "dog",
+        "type": "literal"
       },
-      "?name": {
-        "value": "Max"
+      "?animal_name": {
+        "value": "Max",
+        "type": "literal"
       },
       "?firstname_iri": {
         "value": "http://example.com/John",
-        "datatype": "iri"
+        "type": "iri"
       },
       "?$pet.name": {
-        "value": "Bax"
+        "value": "Bax",
+        "type": "literal"
       }
     }
   ]

@@ -10,10 +10,15 @@ import java.util.Map;
 /**
  * Project operator responsible for restricting the solution mappings.
  * All variables that are not contained in the supplied collection will be removed from the SolutionMapping / MappingTuple.
- *
- * @param variables a collection of variables to be kept
  */
-public record ProjectOperator(Collection<String> variables) implements UnaryOperator {
+public class ProjectOperator implements UnaryOperator {
+
+    private final Collection<String> variables;
+
+    public ProjectOperator(Collection<String> variables) {
+        this.variables = variables;
+    }
+
     public SolutionMapping applySolMapping(SolutionMapping mapping) {
         SolutionMapping newMapping = new SolutionMapping(mapping);
         for (Map.Entry<String, Node> entry : mapping.entrySet()) {

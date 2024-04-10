@@ -1,6 +1,7 @@
 package be.ugent.idlab.knows.amo.operators.intermediate.binary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
+import be.ugent.idlab.knows.amo.functions.JoinCondition;
 import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -17,10 +18,12 @@ public class LeftJoinTest {
         MappingTuple table6 = BlocksIO.readMappingTuple("operators/leftJoin/paperTest/table6.json");
         MappingTuple table7 = BlocksIO.readMappingTuple("operators/leftJoin/paperTest/table7.json");
 
-        LeftJoin operator = new LeftJoin(((s1, s2) ->
+        JoinCondition condition = ((s1, s2) ->
                 s1.containsKey("?$pet.type") && s1.get("?$pet.type") != null &&
-                        s2.containsKey("?type") && s2.get("?type") != null &&
-                        s1.get("?$pet.type").equals(s2.get("?type"))));
+                        s2.containsKey("?type") && s2.get("?alias_type") != null &&
+                        s1.get("?$pet.type").equals(s2.get("?alias_type")));
+
+        LeftJoin operator = new LeftJoin(condition, "alias_");
 
         MappingTuple actual = operator.applyMapTuple(table6, table7);
 

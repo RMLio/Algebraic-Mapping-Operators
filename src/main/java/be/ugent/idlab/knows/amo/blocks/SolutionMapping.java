@@ -64,8 +64,24 @@ public class SolutionMapping extends HashMap<String, Node> {
         if (this == o) return true;
         if (o instanceof SolutionMapping that) {
             for (Map.Entry<String, Node> e : this.entrySet()) {
-                if (! that.get(e.getKey()).getLiteralValue().equals(e.getValue().getLiteralValue())) {
-                    return false;
+                Node n = that.get(e.getKey());
+                if (n.isLiteral()) {
+                    Object value = n.getLiteralValue();
+                    if (!value.equals(e.getValue().getLiteralValue())) {
+                        return false;
+                    }
+                } else if (n.isURI()) {
+                    Object value = n.getURI();
+                    if (!value.equals(e.getValue().getURI())) {
+                        return false;
+                    }
+                } else if (n.isBlank()) {
+                    Object value = n.getBlankNodeLabel();
+                    if (!value.equals(e.getValue().getBlankNodeLabel())) {
+                        return false;
+                    }
+                } else {
+                    throw new IllegalStateException("Unexpected node in comparison test for key " + e.getKey());
                 }
             }
             return true;

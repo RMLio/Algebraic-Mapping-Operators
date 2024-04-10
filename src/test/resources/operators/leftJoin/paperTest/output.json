@@ -2,52 +2,185 @@
   "f_contacts": [
     {
       "?fullname": {
-        "value": "John Doe"
+        "value": "John Doe",
+        "type": "literal"
       },
       "?$pet.type": {
-        "value": "dog"
+        "value": "dog",
+        "type": "literal"
       },
       "?$pet.name": {
-        "value": "Bax"
+        "value": "Bax",
+        "type": "literal"
       },
-      "?age": {
+      "?animal_age": {
         "value": "10",
+        "type": "literal",
         "datatype": "integer"
       },
-      "?type": {
+      "?animal_type": {
+        "type": "literal",
         "value": "dog"
       },
-      "?name": {
+      "?animal_name": {
+        "type": "literal",
         "value": "Bax"
       },
       "?firstname_iri": {
         "value": "http://example.com/John",
-        "datatype": "iri"
+        "type": "iri"
       }
     },
     {
       "?fullname": {
+        "value": "John Doe",
+        "type": "literal"
+      },
+      "?$pet.type": {
+        "value": "dog",
+        "type": "literal"
+      },
+      "?$pet.name": {
+        "value": "Bax",
+        "type": "literal"
+      },
+      "?animal_age": {
+        "value": "",
+        "type": "literal",
+        "datatype": "integer"
+      },
+      "?animal_type": {
+        "type": "literal",
+        "value": ""
+      },
+      "?animal_name": {
+        "type": "literal",
+        "value": ""
+      },
+      "?firstname_iri": {
+        "value": "http://example.com/John",
+        "type": "iri"
+      }
+    },
+    {
+      "?fullname": {
+        "type": "literal",
         "value": "John Doe"
       },
       "?$pet.type": {
+        "type": "literal",
         "value": "dog"
       },
       "?$pet.name": {
+        "type": "literal",
         "value": "Bax"
       },
-      "?age": {
+      "?animal_age": {
         "value": "5",
+        "type": "literal",
         "datatype": "integer"
       },
-      "?type": {
+      "?animal_type": {
+        "type": "literal",
         "value": "dog"
       },
-      "?name": {
+      "?animal_name": {
+        "type": "literal",
         "value": "Max"
       },
       "?firstname_iri": {
         "value": "http://example.com/John",
-        "datatype": "iri"
+        "type": "iri"
+      }
+    },
+    {
+      "?fullname": {
+        "value": "Susan Sue",
+        "type": "literal"
+      },
+      "?$pet.type": {
+        "value": "",
+        "type": "literal"
+      },
+      "?$pet.name": {
+        "value": "",
+        "type": "literal"
+      },
+      "?animal_age": {
+        "value": "",
+        "type": "literal"
+      },
+      "?animal_type": {
+        "type": "literal",
+        "value": ""
+      },
+      "?animal_name": {
+        "type": "literal",
+        "value": ""
+      },
+      "?firstname_iri": {
+        "value": "http://example.com/Susan",
+        "type": "iri"
+      }
+    },
+    {
+      "?fullname": {
+        "value": "Susan Sue",
+        "type": "literal"
+      },
+      "?$pet.type": {
+        "value": "",
+        "type": "literal"
+      },
+      "?$pet.name": {
+        "value": "",
+        "type": "literal"
+      },
+      "?animal_age": {
+        "value": "",
+        "type": "literal"
+      },
+      "?animal_type": {
+        "type": "literal",
+        "value": ""
+      },
+      "?animal_name": {
+        "type": "literal",
+        "value": ""
+      },
+      "?firstname_iri": {
+        "value": "http://example.com/Susan",
+        "type": "iri"
+      }
+    },
+    {
+      "?fullname": {
+        "value": "Susan Sue",
+        "type": "literal"
+      },
+      "?$pet.type": {
+        "value": "",
+        "type": "literal"
+      },
+      "?$pet.name": {
+        "value": "",
+        "type": "literal"
+      },
+      "?animal_age": {
+        "value": "",
+        "type": "literal"
+      },
+      "?animal_type": {
+        "type": "literal",
+        "value": ""
+      },
+      "?animal_name": {
+        "type": "literal",
+        "value": ""
+      },
+      "?firstname_iri": {
+        "value": "http://example.com/Susan",
+        "type": "iri"
       }
     }
   ]

@@ -5,8 +5,8 @@ import be.ugent.idlab.knows.amo.functions.JoinCondition;
 
 public class LeftJoin extends ThetaJoin {
 
-    public LeftJoin(JoinCondition condition) {
-        super(condition);
+    public LeftJoin(JoinCondition condition, String alias) {
+        super(condition, alias);
     }
 
     @Override

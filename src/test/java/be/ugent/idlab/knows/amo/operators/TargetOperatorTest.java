@@ -4,7 +4,9 @@ import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.TargetSink;
 import be.ugent.idlab.knows.amo.utilities.BlocksIO;
+import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Node_Literal;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -19,7 +21,7 @@ public class TargetOperatorTest {
 
         MappingTuple input = BlocksIO.readMappingTuple("operators/target/input.json");
 
-        TargetOperator operator = new TargetOperator("f_target", sink);
+        TargetOperator operator = new TargetOperator("f_target", "?foo", sink);
         operator.apply(input);
         assertEquals("bar", sink.output);
     }
@@ -28,11 +30,11 @@ public class TargetOperatorTest {
 /**
  * Dummy sink that reads out the value of key "?foo" and stores it in a String
  */
-class TestSink implements TargetSink {
+class TestSink implements TargetSink<Node_Literal> {
     String output;
 
     @Override
-    public void sink(SolutionMapping mapping) {
-        this.output = mapping.get("?foo").getLiteralValue().toString();
+    public void sink(Node_Literal data) {
+        this.output = (String) data.getLiteralValue();
     }
 }

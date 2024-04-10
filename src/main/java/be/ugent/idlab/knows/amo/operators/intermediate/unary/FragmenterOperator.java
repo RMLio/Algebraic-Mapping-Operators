@@ -13,7 +13,12 @@ import java.util.List;
  *
  * @param function function to perform fragmenting with
  */
-public record FragmenterOperator(FragmentFunction function) implements UnaryOperator {
+public class FragmenterOperator implements UnaryOperator {
+
+    private final FragmentFunction function;
+    public FragmenterOperator(FragmentFunction function) {
+        this.function = function;
+    }
 
 
     @Override
@@ -23,12 +28,11 @@ public record FragmenterOperator(FragmentFunction function) implements UnaryOper
 
     @Override
     public MappingTuple applyMappingTuple(MappingTuple tuple) {
-
         List<MappingTuple> newTuples = new ArrayList<>();
 
         for (String fragment : tuple.getFragments()) {
             Collection<SolutionMapping> solmaps = tuple.getSolutionMappings(fragment);
-            MappingTuple newFragments = function.apply(fragment, solmaps);
+            MappingTuple newFragments = this.function.apply(fragment, solmaps);
             newTuples.add(newFragments);
         }
 

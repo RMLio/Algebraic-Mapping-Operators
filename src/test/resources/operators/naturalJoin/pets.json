@@ -1,45 +1,45 @@
 {
   "f_contacts": [
     {
-      "?$type": {
+      "?$.type": {
         "value": "dog",
         "type": "literal"
       },
-      "?$pet.name": {
+      "?$.pet.name": {
         "value": "Bax",
         "type": "literal"
       },
-      "?$pet.age": {
+      "?$.pet.age": {
         "value": "10",
         "datatype": "integer",
         "type": "literal"
       }
     },
     {
-      "?$type": {
+      "?$.type": {
         "value": "cat",
         "type": "literal"
       },
-      "?$pet.name": {
+      "?$.pet.name": {
         "value": "coco",
         "type": "literal"
       },
-      "?$pet.age": {
+      "?$.pet.age": {
         "value": "3",
         "datatype": "integer",
         "type": "literal"
       }
     },
     {
-      "?$type": {
+      "?$.type": {
         "value": "dog",
         "type": "literal"
       },
-      "?$pet.name": {
+      "?$.pet.name": {
         "value": "Max",
         "type": "literal"
       },
-      "?$pet.age": {
+      "?$.pet.age": {
         "value": "5",
         "datatype": "integer",
         "type": "literal"
