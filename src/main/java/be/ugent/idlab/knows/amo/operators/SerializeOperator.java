@@ -9,18 +9,22 @@ import org.apache.jena.rdf.model.Model;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Serialize operator will accept a Basic Graph Pattern and replace the variables with the values as provided in the mapping tuple.
  * @param bgp
  */
-public class SerializeOperator {
+public class SerializeOperator implements Operator {
 
     private final BGP bgp;
+    private final String language;
 
-    public SerializeOperator(BGP bgp) {
+    public SerializeOperator(BGP bgp, String language) {
         this.bgp = bgp;
+        this.language = language;
     }
 
     /**
@@ -29,7 +33,7 @@ public class SerializeOperator {
      * @param language language to output the serialization in. Supported languages are "RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE", "TURTLE", (and "TTL") and "N3", as supported by Jena's Model::write
      * @return a MappingTuple with the serialization contained in the variable "?serialized_output"
      */
-    public MappingTuple apply(MappingTuple m, String language) {
+    public MappingTuple apply(MappingTuple m) {
         MappingTuple out = new MappingTuple();
 
         for (String fragment : m.getFragments()) {
@@ -37,7 +41,7 @@ public class SerializeOperator {
             for (SolutionMapping solMapping : solMappings) {
                 Model model = this.bgp.apply(solMapping);
                 OutputStream outputStream = new ByteArrayOutputStream();
-                model.write(outputStream, language);
+                model.write(outputStream, this.language);
 
                 String serialized = outputStream.toString();
 
@@ -49,5 +53,10 @@ public class SerializeOperator {
         }
 
         return out;
+    }
+
+    @Override
+    public Collection<MappingTuple> apply(Collection<MappingTuple> tuples) {
+        return tuples.stream().map(this::apply).collect(Collectors.toList());
     }
 }

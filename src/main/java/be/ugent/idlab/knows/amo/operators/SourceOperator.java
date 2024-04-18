@@ -7,7 +7,7 @@ import java.util.Collection;
 /**
  * Operator responsible for reading input into the plan.
  */
-public interface SourceOperator {
+public interface SourceOperator extends Operator {
 
     /**
      * Generate a collection of MappingTuples from a particular source

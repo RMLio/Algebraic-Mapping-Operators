@@ -6,12 +6,13 @@ import be.ugent.idlab.knows.amo.functions.TargetSink;
 import org.apache.jena.graph.Node_Literal;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * TargetOperator will perform side effects on the MappingTuple.
  * This is the output of the mapping plan, writing the results into a file or standard output or ... according to the TargetSink function
  */
-public class TargetOperator {
+public class TargetOperator implements Operator {
 
     private final String targetFragment;
     private final String targetVariable;
@@ -33,5 +34,17 @@ public class TargetOperator {
         for (SolutionMapping solMapping : solMappings) {
             sink.sink((Node_Literal) solMapping.get(targetVariable));
         }
+    }
+
+    /**
+     * @param tuples tuples to process
+     * @return empty list, because this is a terminator operator
+     */
+    @Override
+    public Collection<MappingTuple> apply(Collection<MappingTuple> tuples) {
+        for (MappingTuple tuple : tuples) {
+            apply(tuple);
+        }
+        return List.of();
     }
 }

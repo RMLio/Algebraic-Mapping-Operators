@@ -69,4 +69,9 @@ public class JSONSourceOperatorDataIO implements SourceOperator {
             map.put("?" + it, NodeFactory.createLiteralByValue(value, XSDDatatype.XSDstring));
         }
     }
+
+    @Override
+    public Collection<MappingTuple> apply(Collection<MappingTuple> tuples) {
+        throw new IllegalStateException("Can't call apply on the source operator, use getMappingTuples instead!");
+    }
 }

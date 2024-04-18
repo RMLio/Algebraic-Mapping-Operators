@@ -19,9 +19,9 @@ public class SerializeOperatorTest {
 
         MappingTuple input = BlocksIO.readMappingTuple("operators/serialize/input.json");
 
-        SerializeOperator operator = new SerializeOperator(new BGP(bgp));
+        SerializeOperator operator = new SerializeOperator(new BGP(bgp), "TTL");
 
-        MappingTuple actual = operator.apply(input, "TTL");
+        MappingTuple actual = operator.apply(input);
         MappingTuple expected = BlocksIO.readMappingTuple("operators/serialize/output.json");
 
         assertEquals(expected, actual);

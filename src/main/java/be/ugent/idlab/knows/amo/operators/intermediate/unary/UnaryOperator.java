@@ -2,14 +2,16 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.operators.Operator;
 
+import java.awt.desktop.OpenFilesHandler;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
  * Base interface for all operators that work on individual SolutionMappings and MappingTuples
  */
-public interface UnaryOperator {
+public interface UnaryOperator extends Operator {
 
     /**
      * Apply the operator on a SolutionMapping
@@ -58,5 +60,10 @@ public interface UnaryOperator {
      */
     default Collection<MappingTuple> applyMappingTuple(Collection<MappingTuple> tuples) {
         return tuples.stream().map(this::applyMappingTuple).collect(Collectors.toList());
+    }
+
+    @Override
+    default Collection<MappingTuple> apply(Collection<MappingTuple> tuples) {
+        return this.applyMappingTuple(tuples);
     }
 }
