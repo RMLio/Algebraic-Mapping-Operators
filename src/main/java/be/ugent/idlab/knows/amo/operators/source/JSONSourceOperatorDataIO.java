@@ -1,4 +1,4 @@
-package be.ugent.idlab.knows.amo.operators;
+package be.ugent.idlab.knows.amo.operators.source;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
@@ -17,16 +17,15 @@ import java.util.List;
  * DataIO is written with infinite sources in mind: it provides no way to inspect all variables present in the stream.
  * For this reason, this source must be provided with variables to be read and included in the MappingTuple
  */
-public class JSONSourceOperatorDataIO implements SourceOperator {
+public class JSONSourceOperatorDataIO extends SourceOperator {
 
-    private final Access access;
     private final Collection<String> rootVariables;
     private final String rootIterator;
     private final Collection<String> subIterators;
 
     public JSONSourceOperatorDataIO(Access access, Collection<String> rootVariables, String rootIterator,
                                     Collection<String> subIterators) {
-        this.access = access;
+        super(access);
         this.rootVariables = rootVariables;
         this.rootIterator = rootIterator;
         this.subIterators = subIterators;
@@ -70,8 +69,6 @@ public class JSONSourceOperatorDataIO implements SourceOperator {
         }
     }
 
-    @Override
-    public Collection<MappingTuple> apply(Collection<MappingTuple> tuples) {
-        throw new IllegalStateException("Can't call apply on the source operator, use getMappingTuples instead!");
-    }
+
+
 }
