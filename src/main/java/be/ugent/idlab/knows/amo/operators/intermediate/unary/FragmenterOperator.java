@@ -3,6 +3,7 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.FragmentFunction;
+import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,12 +23,17 @@ public class FragmenterOperator implements UnaryOperator {
 
 
     @Override
-    public SolutionMapping applySolMapping(SolutionMapping mapping) {
+    public <T> T accept(OperatorVisitor<T> visitor) {
+        return null;
+    }
+
+    @Override
+    public SolutionMapping apply(SolutionMapping mapping) {
         throw new IllegalStateException("This operator cannot be called on a Solution Mapping!");
     }
 
     @Override
-    public MappingTuple applyMappingTuple(MappingTuple tuple) {
+    public MappingTuple apply(MappingTuple tuple) {
         List<MappingTuple> newTuples = new ArrayList<>();
 
         for (String fragment : tuple.getFragments()) {

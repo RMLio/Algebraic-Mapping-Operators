@@ -3,6 +3,7 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
 
 import java.util.Collection;
 
@@ -24,19 +25,28 @@ public class RenameOperator implements UnaryOperator {
     }
 
     @Override
-    public SolutionMapping applySolMapping(SolutionMapping mapping) {
-        return this.implementation.applySolMapping(mapping);
+    public <T> T accept(OperatorVisitor<T> visitor) {
+        return null;
     }
 
     @Override
-    public MappingTuple applyMappingTuple(MappingTuple tuple) {
-        return this.implementation.applyMappingTuple(tuple);
+    public SolutionMapping apply(SolutionMapping mapping) {
+        return this.implementation.apply(mapping);
+    }
+
+    @Override
+    public MappingTuple apply(MappingTuple tuple) {
+        return this.implementation.apply(tuple);
     }
 
     /**
      * Marker interface for the private implementations
      */
     interface RenameOperatorImpl extends UnaryOperator {
+        @Override
+        default <T> T accept(OperatorVisitor<T> visitor) {
+            return null;
+        }
     }
 
     static class RenameOperatorPairs implements RenameOperatorImpl {
@@ -48,7 +58,7 @@ public class RenameOperator implements UnaryOperator {
         }
 
         @Override
-        public SolutionMapping applySolMapping(SolutionMapping mapping) {
+        public SolutionMapping apply(SolutionMapping mapping) {
             SolutionMapping out = new SolutionMapping();
             for (Pair<String, String> p : this.pairs) {
                 for (String key : mapping.keySet()) {
@@ -72,7 +82,7 @@ public class RenameOperator implements UnaryOperator {
         }
 
         @Override
-        public SolutionMapping applySolMapping(SolutionMapping mapping) {
+        public SolutionMapping apply(SolutionMapping mapping) {
             SolutionMapping out = new SolutionMapping();
             for (String key : mapping.keySet()) {
                 String aliased = "?" + alias + key.substring(1);

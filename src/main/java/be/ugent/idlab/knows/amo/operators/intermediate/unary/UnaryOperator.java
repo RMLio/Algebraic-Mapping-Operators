@@ -2,16 +2,18 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.operators.Operator;
+import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
+import be.ugent.idlab.knows.amo.operators.intermediate.IntermediateOperator;
 
-import java.awt.desktop.OpenFilesHandler;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
  * Base interface for all operators that work on individual SolutionMappings and MappingTuples
  */
-public interface UnaryOperator extends Operator {
+public interface UnaryOperator extends IntermediateOperator {
+
+    <T> T accept(OperatorVisitor<T> visitor);
 
     /**
      * Apply the operator on a SolutionMapping
@@ -19,7 +21,7 @@ public interface UnaryOperator extends Operator {
      * @param mapping
      * @return the processed SolutionMapping
      */
-    SolutionMapping applySolMapping(SolutionMapping mapping);
+    SolutionMapping apply(SolutionMapping mapping);
 
     /**
      * Apply the operator on the entire collection of SolutionMappings.
@@ -27,9 +29,9 @@ public interface UnaryOperator extends Operator {
      * @param mappings a Collection of SolutionMappings to apply the operator on
      * @return a collection of processed SolutionMappings (internally returned as a List)
      */
-    default Collection<SolutionMapping> applySolMapping(Collection<SolutionMapping> mappings) {
+    default Collection<SolutionMapping> applySolMapCollection(Collection<SolutionMapping> mappings) {
         return mappings.stream()
-                .map(this::applySolMapping)
+                .map(this::apply)
                 .collect(Collectors.toList());
     }
 
@@ -39,12 +41,12 @@ public interface UnaryOperator extends Operator {
      * @param tuple tuple to apply the operator on.
      * @return the processed MappingTuple
      */
-    default MappingTuple applyMappingTuple(MappingTuple tuple) {
+    default MappingTuple apply(MappingTuple tuple) {
         MappingTuple out = new MappingTuple();
 
         for (String fragment : tuple.getFragments()) {
             for (SolutionMapping map : tuple.getSolutionMappings(fragment)) {
-                SolutionMapping newMap = applySolMapping(map);
+                SolutionMapping newMap = apply(map);
                 out.addSolutionMap(fragment, newMap);
             }
         }
@@ -58,12 +60,7 @@ public interface UnaryOperator extends Operator {
      * @param tuples a Collection of MappingTuples to apply the operator on.
      * @return a Collection of processed MappingTuples (internally returned as a List).
      */
-    default Collection<MappingTuple> applyMappingTuple(Collection<MappingTuple> tuples) {
-        return tuples.stream().map(this::applyMappingTuple).collect(Collectors.toList());
-    }
-
-    @Override
-    default Collection<MappingTuple> apply(Collection<MappingTuple> tuples) {
-        return this.applyMappingTuple(tuples);
+    default Collection<MappingTuple> applyMapTupCollection(Collection<MappingTuple> tuples) {
+        return tuples.stream().map(this::apply).collect(Collectors.toList());
     }
 }

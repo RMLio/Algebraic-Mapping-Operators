@@ -15,7 +15,7 @@ public class NaturalJoinTest {
         MappingTuple owners = BlocksIO.readMappingTuple("operators/naturalJoin/owners.json");
         MappingTuple pets = BlocksIO.readMappingTuple("operators/naturalJoin/pets.json");
         MappingTuple expected = BlocksIO.readMappingTuple("operators/naturalJoin/output.json");
-        MappingTuple result = operator.applyMapTuple(owners, pets);
+        MappingTuple result = operator.apply(owners, pets);
         assertEquals(expected, result);
     }
 }

@@ -3,7 +3,6 @@ package be.ugent.idlab.knows.amo.operators.intermediate.binary;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.functions.JoinCondition;
 import be.ugent.idlab.knows.amo.utilities.BlocksIO;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,7 +22,7 @@ public class ThetaJoinTest {
 
         ThetaJoin operator = new ThetaJoin(condition, "animal_");
 
-        MappingTuple actual = operator.applyMapTuple(table6, table7);
+        MappingTuple actual = operator.apply(table6, table7);
         assertEquals(expected, actual);
     }
 }

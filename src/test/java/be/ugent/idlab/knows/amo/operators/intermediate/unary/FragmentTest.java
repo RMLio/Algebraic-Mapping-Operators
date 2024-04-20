@@ -26,7 +26,7 @@ public class FragmentTest {
     public void simpleRename() {
         MappingTuple tuple = BlocksIO.readMappingTuple("operators/fragment/simpleRename/john.json");
         MappingTuple expected = BlocksIO.readMappingTuple("operators/fragment/simpleRename/output.json");
-        MappingTuple actual = op.applyMappingTuple(tuple);
+        MappingTuple actual = op.apply(tuple);
 
         assertEquals(expected, actual);
     }
@@ -51,7 +51,7 @@ public class FragmentTest {
         MappingTuple input = BlocksIO.readMappingTuple("operators/fragment/fragmentMultiple/input.json");
 
         // apply operator
-        MappingTuple actual = op.applyMappingTuple(input);
+        MappingTuple actual = op.apply(input);
 
         MappingTuple expected = BlocksIO.readMappingTuple("operators/fragment/fragmentMultiple/output.json");
         assertEquals(expected, actual);
@@ -62,7 +62,7 @@ public class FragmentTest {
         SolutionMapping mapping = new SolutionMapping();
 
         assertThrows(IllegalStateException.class, () -> {
-            op.applySolMapping(mapping);
+            op.apply(mapping);
         });
     }
 }

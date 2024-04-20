@@ -5,9 +5,7 @@ import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -19,7 +17,7 @@ public class ProjectTest {
         SolutionMapping input = BlocksIO.readSolutionMapping("operators/project/solutionMapping/input.json");
         SolutionMapping expected = BlocksIO.readSolutionMapping("operators/project/solutionMapping/output.json");
 
-        SolutionMapping actual = operator.applySolMapping(input);
+        SolutionMapping actual = operator.apply(input);
 
         assertEquals(expected, actual);
     }
@@ -30,7 +28,7 @@ public class ProjectTest {
 
         MappingTuple input = BlocksIO.readMappingTuple("operators/project/mappingTuple/input.json");
         MappingTuple expected = BlocksIO.readMappingTuple("operators/project/mappingTuple/output.json");
-        MappingTuple actual = operator.applyMappingTuple(input);
+        MappingTuple actual = operator.apply(input);
 
         assertEquals(expected, actual);
     }

@@ -5,11 +5,9 @@ import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.ExtendFunction;
 import be.ugent.idlab.knows.amo.utilities.BlocksIO;
-import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.graph.NodeFactory;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,7 +25,7 @@ public class ExtendTest {
     public void simpleTestSolMapping() {
         SolutionMapping input = BlocksIO.readSolutionMapping("operators/extend/solutionMap/input.json");
         SolutionMapping expected = BlocksIO.readSolutionMapping("operators/extend/solutionMap/output.json");
-        SolutionMapping actual = this.op.applySolMapping(input);
+        SolutionMapping actual = this.op.apply(input);
 
         assertEquals(expected, actual);
     }
@@ -37,7 +35,7 @@ public class ExtendTest {
         MappingTuple input = BlocksIO.readMappingTuple("operators/extend/mappingTuple/input.json");
         MappingTuple expected = BlocksIO.readMappingTuple("operators/extend/mappingTuple/output.json");
 
-        MappingTuple actual = this.op.applyMappingTuple(input);
+        MappingTuple actual = this.op.apply(input);
         assertEquals(expected, actual);
     }
 }

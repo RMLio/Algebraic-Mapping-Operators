@@ -4,7 +4,7 @@ import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.ExtendFunction;
-import org.apache.jena.graph.Node;
+import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +28,12 @@ public class ExtendOperator implements UnaryOperator {
     }
 
     @Override
-    public SolutionMapping applySolMapping(SolutionMapping mapping) {
+    public <T> T accept(OperatorVisitor<T> visitor) {
+        return null;
+    }
+
+    @Override
+    public SolutionMapping apply(SolutionMapping mapping) {
         SolutionMapping newValues = new SolutionMapping();
         for (Pair<String, ExtendFunction> functionPair : this.replacements) {
             if (!mapping.containsKey(functionPair.first())) {
@@ -40,13 +45,13 @@ public class ExtendOperator implements UnaryOperator {
     }
 
     @Override
-    public MappingTuple applyMappingTuple(MappingTuple tuple) {
+    public MappingTuple apply(MappingTuple tuple) {
         for (String fragment : tuple.getFragments()) {
             Collection<SolutionMapping> mappings = tuple.getSolutionMappings(fragment);
 
             List<SolutionMapping> processedMappings = new ArrayList<>();
             for (SolutionMapping mapping : mappings) {
-                SolutionMapping processed = applySolMapping(mapping);
+                SolutionMapping processed = apply(mapping);
                 processedMappings.add(processed);
             }
 

@@ -9,7 +9,6 @@ import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.graph.NodeFactory;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -17,7 +16,7 @@ import java.util.List;
  * DataIO is written with infinite sources in mind: it provides no way to inspect all variables present in the stream.
  * For this reason, this source must be provided with variables to be read and included in the MappingTuple
  */
-public class JSONSourceOperatorDataIO extends SourceOperator {
+public class JSONSourceOperatorDataIO extends DataIOSourceOperator {
 
     private final Collection<String> rootVariables;
     private final String rootIterator;
@@ -32,7 +31,7 @@ public class JSONSourceOperatorDataIO extends SourceOperator {
     }
 
     @Override
-    public Collection<MappingTuple> getMappingTuples() {
+    public MappingTuple consumeSource() {
         MappingTuple tuple = new MappingTuple();
 
         // TODO consider caching the Access stream
@@ -53,7 +52,7 @@ public class JSONSourceOperatorDataIO extends SourceOperator {
         }
 
 
-        return Collections.singleton(tuple);
+        return tuple;
     }
 
     private void consumeRecord(Record r, Collection<String> iterators, SolutionMapping map) {

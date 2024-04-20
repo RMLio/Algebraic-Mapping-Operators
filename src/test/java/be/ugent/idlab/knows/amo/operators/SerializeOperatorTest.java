@@ -2,11 +2,9 @@ package be.ugent.idlab.knows.amo.operators;
 
 import be.ugent.idlab.knows.amo.blocks.BGP;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
-import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.operators.intermediate.unary.SerializeOperator;
 import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.junit.jupiter.api.Test;
-
-import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

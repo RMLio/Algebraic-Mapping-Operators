@@ -6,7 +6,6 @@ import be.ugent.idlab.knows.amo.functions.JoinCondition;
 import be.ugent.idlab.knows.amo.operators.intermediate.unary.RenameOperator;
 
 import java.util.Collection;
-import java.util.Random;
 import java.util.Set;
 
 /**
@@ -33,8 +32,8 @@ public class ThetaJoin implements BinaryOperator {
      * @return
      */
     @Override
-    public SolutionMapping applySolMapping(SolutionMapping mapping1, SolutionMapping mapping2) {
-        SolutionMapping m2Aliased = renameOperator.applySolMapping(mapping2);
+    public SolutionMapping apply(SolutionMapping mapping1, SolutionMapping mapping2) {
+        SolutionMapping m2Aliased = renameOperator.apply(mapping2);
 
         if (this.condition.apply(mapping1, m2Aliased)) {
             return mapping1.union(m2Aliased);
@@ -44,7 +43,7 @@ public class ThetaJoin implements BinaryOperator {
     }
 
     @Override
-    public MappingTuple applyMapTuple(MappingTuple tuple1, MappingTuple tuple2) {
+    public MappingTuple apply(MappingTuple tuple1, MappingTuple tuple2) {
         Set<String> commonFragments = tuple1.commonFragments(tuple2);
         MappingTuple out = new MappingTuple();
 
@@ -54,7 +53,7 @@ public class ThetaJoin implements BinaryOperator {
 
             for (SolutionMapping mapping1 : mappings1) {
                 for (SolutionMapping mapping2 : mappings2) {
-                    SolutionMapping solOut = applySolMapping(mapping1, mapping2);
+                    SolutionMapping solOut = apply(mapping1, mapping2);
                     if (!solOut.isEmpty()) {
                         out.addSolutionMap(fragment, solOut);
                     }

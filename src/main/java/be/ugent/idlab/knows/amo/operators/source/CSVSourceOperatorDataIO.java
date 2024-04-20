@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class CSVSourceOperatorDataIO extends SourceOperator {
+public class CSVSourceOperatorDataIO extends DataIOSourceOperator {
 
 
     public CSVSourceOperatorDataIO(Access access) {
@@ -20,7 +20,7 @@ public class CSVSourceOperatorDataIO extends SourceOperator {
     }
 
     @Override
-    public Collection<MappingTuple> getMappingTuples() {
+    public MappingTuple consumeSource() {
         MappingTuple tuple = new MappingTuple();
         try (CSVSourceIterator iterator = new CSVSourceIterator(this.access)) {
             while (iterator.hasNext()) {
@@ -33,7 +33,7 @@ public class CSVSourceOperatorDataIO extends SourceOperator {
             throw new RuntimeException(e);
         }
 
-        return List.of(tuple);
+        return tuple;
     }
 
     private SolutionMapping consumeRecord(CSVRecord r) {

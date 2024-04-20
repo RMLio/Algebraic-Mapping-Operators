@@ -1,15 +1,15 @@
-package be.ugent.idlab.knows.amo.operators;
+package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 
 import be.ugent.idlab.knows.amo.blocks.BGP;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.rdf.model.Model;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * Serialize operator will accept a Basic Graph Pattern and replace the variables with the values as provided in the mapping tuple.
  * @param bgp
  */
-public class SerializeOperator implements Operator {
+public class SerializeOperator implements UnaryOperator {
 
     private final BGP bgp;
     private final String language;
@@ -25,6 +25,16 @@ public class SerializeOperator implements Operator {
     public SerializeOperator(BGP bgp, String language) {
         this.bgp = bgp;
         this.language = language;
+    }
+
+    @Override
+    public <T> T accept(OperatorVisitor<T> visitor) {
+        return null;
+    }
+
+    @Override
+    public SolutionMapping apply(SolutionMapping mapping) {
+        throw new IllegalStateException("Serialize operator is undefined for SolutionMappings");
     }
 
     /**
@@ -53,10 +63,5 @@ public class SerializeOperator implements Operator {
         }
 
         return out;
-    }
-
-    @Override
-    public Collection<MappingTuple> apply(Collection<MappingTuple> tuples) {
-        return tuples.stream().map(this::apply).collect(Collectors.toList());
     }
 }

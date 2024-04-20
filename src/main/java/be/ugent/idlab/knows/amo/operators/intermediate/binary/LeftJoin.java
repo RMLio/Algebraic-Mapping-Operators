@@ -10,7 +10,7 @@ public class LeftJoin extends ThetaJoin {
     }
 
     @Override
-    public SolutionMapping applySolMapping(SolutionMapping mapping1, SolutionMapping mapping2) {
+    public SolutionMapping apply(SolutionMapping mapping1, SolutionMapping mapping2) {
         if (condition.apply(mapping1, mapping2)) {
             return mapping1.union(mapping2);
         }

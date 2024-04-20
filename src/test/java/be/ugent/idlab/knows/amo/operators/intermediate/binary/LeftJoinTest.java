@@ -25,7 +25,7 @@ public class LeftJoinTest {
 
         LeftJoin operator = new LeftJoin(condition, "alias_");
 
-        MappingTuple actual = operator.applyMapTuple(table6, table7);
+        MappingTuple actual = operator.apply(table6, table7);
 
         assertEquals(expected, actual);
     }

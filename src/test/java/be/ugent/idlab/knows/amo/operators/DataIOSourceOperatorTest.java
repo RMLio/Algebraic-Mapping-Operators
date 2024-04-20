@@ -20,7 +20,7 @@ public class DataIOSourceOperatorTest {
         Access access = new LocalFileAccess("operators/source/input.json", "src/test/resources", "json");
         JSONSourceOperatorDataIO operator = new JSONSourceOperatorDataIO(access, List.of("name"), "$.peoples[*]", List.of("$.pet.type", "$.pet.name"));
 
-        MappingTuple actual = operator.getMappingTuples().stream().toList().get(0);
+        MappingTuple actual = operator.consumeSource();
 
         MappingTuple expected = BlocksIO.readMappingTuple("operators/source/output.json");
 
@@ -32,7 +32,7 @@ public class DataIOSourceOperatorTest {
         Access access = new LocalFileAccess("operators/source/input.csv", "src/test/resources", "csv");
         CSVSourceOperatorDataIO operator = new CSVSourceOperatorDataIO(access);
 
-        MappingTuple actual = operator.getMappingTuples().stream().toList().get(0);
+        MappingTuple actual = operator.consumeSource();
         MappingTuple expected = BlocksIO.readMappingTuple("operators/source/output.json");
 
         assertEquals(expected, actual);

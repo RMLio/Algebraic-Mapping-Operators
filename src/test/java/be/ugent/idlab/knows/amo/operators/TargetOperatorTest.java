@@ -1,15 +1,11 @@
 package be.ugent.idlab.knows.amo.operators;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
-import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.TargetSink;
+import be.ugent.idlab.knows.amo.operators.target.TargetOperator;
 import be.ugent.idlab.knows.amo.utilities.BlocksIO;
-import org.apache.jena.graph.Node;
-import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Node_Literal;
 import org.junit.jupiter.api.Test;
-
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
