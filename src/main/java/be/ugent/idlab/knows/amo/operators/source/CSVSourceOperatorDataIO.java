@@ -2,18 +2,18 @@ package be.ugent.idlab.knows.amo.operators.source;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.CSVSourceIterator;
 import be.ugent.idlab.knows.dataio.record.CSVRecord;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.graph.NodeFactory;
 
-import java.util.Collection;
-import java.util.List;
+import java.io.ObjectInputStream;
+import java.io.Serial;
 import java.util.Map;
 
 public class CSVSourceOperatorDataIO extends DataIOSourceOperator {
-
 
     public CSVSourceOperatorDataIO(Access access) {
         super(access);
@@ -36,6 +36,17 @@ public class CSVSourceOperatorDataIO extends DataIOSourceOperator {
         return tuple;
     }
 
+    @Serial
+    private void readObject(ObjectInputStream inputStream) throws Exception {
+        inputStream.defaultReadObject();
+        this.bootstrap();
+    }
+
+    private void bootstrap() {
+
+    }
+
+
     private SolutionMapping consumeRecord(CSVRecord r) {
         SolutionMapping map = new SolutionMapping();
         Map<String, String> data = r.getData();
@@ -53,7 +64,7 @@ public class CSVSourceOperatorDataIO extends DataIOSourceOperator {
                 value = "";
             }
 
-            map.put("?" + key, NodeFactory.createLiteralByValue(value, datatype));
+            map.put("?" + key, new LiteralNode(value.toString(), datatype));
         }
 
         return map;

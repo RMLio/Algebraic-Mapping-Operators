@@ -3,8 +3,9 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.FragmentFunction;
-import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
 
+import java.io.ObjectInputStream;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,15 +17,10 @@ import java.util.List;
  */
 public class FragmenterOperator implements UnaryOperator {
 
-    private final FragmentFunction function;
+    private FragmentFunction function;
+
     public FragmenterOperator(FragmentFunction function) {
         this.function = function;
-    }
-
-
-    @Override
-    public <T> T accept(OperatorVisitor<T> visitor) {
-        return null;
     }
 
     @Override

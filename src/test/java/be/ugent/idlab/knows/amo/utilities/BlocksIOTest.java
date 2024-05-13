@@ -2,9 +2,11 @@ package be.ugent.idlab.knows.amo.utilities;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,16 +27,16 @@ public class BlocksIOTest {
             assertEquals(4, sm.keySet().size());
 
             assertTrue(sm.get("?literalString").isLiteral());
-            assertEquals("foo", sm.get("?literalString").getLiteralValue());
+            assertEquals("foo", sm.get("?literalString").getValue());
 
             assertTrue(sm.get("?number").isLiteral());
-            assertEquals(0, sm.get("?number").getLiteralValue());
+            assertEquals(0, sm.get("?number").getValue());
 
             assertTrue(sm.get("?blank").isBlank());
-            assertEquals("blankLabel", sm.get("?blank").getBlankNodeLabel());
+            assertEquals("blankLabel", sm.get("?blank").getValue());
 
-            assertTrue(sm.get("?iri").isURI());
-            assertEquals("http://example.com", sm.get("?iri").getURI());
+            assertTrue(sm.get("?iri").isIRI());
+            assertEquals("http://example.com", sm.get("?iri").getValue());
         }
 
         @Nested
@@ -82,8 +84,8 @@ public class BlocksIOTest {
             assertEquals(1, sms.size());
             SolutionMapping sm = sms.get(0);
             assertEquals(2, sm.size());
-            assertEquals("bar", sm.get("?foo").getLiteralValue());
-            assertEquals(0, sm.get("?baz").getLiteralValue());
+            assertEquals("bar", sm.get("?foo").getValue());
+            assertEquals(0, sm.get("?baz").getValue());
         }
 
         /**
@@ -112,21 +114,21 @@ public class BlocksIOTest {
 
             assertEquals(2, mt.getFragments().size());
             List<String> fragments = mt.getFragments().stream().toList();
-            assertEquals("f_default", fragments.get(0));
-            assertEquals("f_contacts", fragments.get(1));
+            assertTrue(fragments.contains("f_default"));
+            assertTrue(fragments.contains("f_contacts"));
 
             List<SolutionMapping> f_defaultSMs = mt.getSolutionMappings("f_default").stream().toList();
             assertEquals(1, f_defaultSMs.size());
             SolutionMapping f_defaultSM = f_defaultSMs.get(0);
             assertEquals(2, f_defaultSM.size());
-            assertEquals("bar", f_defaultSM.get("?foo").getLiteralValue());
-            assertEquals(0, f_defaultSM.get("?baz").getLiteralValue());
+            assertEquals("bar", f_defaultSM.get("?foo").getValue());
+            assertEquals(0, f_defaultSM.get("?baz").getValue());
 
             List<SolutionMapping> f_contactsSMs = mt.getSolutionMappings("f_contacts").stream().toList();
             assertEquals(1, f_contactsSMs.size());
             SolutionMapping f_contactsSM = f_contactsSMs.get(0);
             assertEquals(1, f_contactsSM.size());
-            assertEquals("John", f_contactsSM.get("?name").getLiteralValue());
+            assertEquals("John", f_contactsSM.get("?name").getValue());
         }
 
         /**
@@ -140,14 +142,16 @@ public class BlocksIOTest {
             assertEquals(1, mt.getFragments().size());
             assertEquals("f_default", mt.getFragments().stream().toList().get(0));
 
-            List<SolutionMapping> sms = mt.getSolutionMappings("f_default").stream().toList();
-            SolutionMapping sm1 = sms.get(0);
-            assertEquals(1, sm1.size());
-            assertEquals("bar", sm1.get("?foo").getLiteralValue());
+            Collection<SolutionMapping> sms = mt.getSolutionMappings("f_default");
+            SolutionMapping sm1 = sms.stream().filter(m -> m.containsKey("?foo")).findFirst().get();
+            SolutionMapping sm2 = sms.stream().filter(m -> m.containsKey("?baz")).findFirst().get();
 
-            SolutionMapping sm2 = sms.get(1);
+            // decide which one
+            assertEquals(1, sm1.size());
+            assertEquals("bar", sm1.get("?foo").getValue());
+
             assertEquals(1, sm2.size());
-            assertEquals(0, sm2.get("?baz").getLiteralValue());
+            assertEquals(0, sm2.get("?baz").getValue());
         }
 
         /**

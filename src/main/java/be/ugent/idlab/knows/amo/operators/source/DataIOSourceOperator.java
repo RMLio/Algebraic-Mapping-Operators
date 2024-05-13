@@ -7,7 +7,7 @@ import be.ugent.idlab.knows.dataio.access.Access;
  */
 public abstract class DataIOSourceOperator implements SourceOperator{
 
-    protected final Access access;
+    protected Access access;
 
     public DataIOSourceOperator(Access access) {
         this.access = access;

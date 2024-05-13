@@ -1,15 +1,17 @@
 package be.ugent.idlab.knows.amo.blocks;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * A partial map between fragments and solution mappings.
  */
-public class MappingTuple {
-    private final Multimap<String, SolutionMapping> map;
+public class MappingTuple implements Serializable {
+    private Multimap<String, SolutionMapping> map;
 
     public MappingTuple() {
         this.map = ArrayListMultimap.create();
@@ -24,19 +26,24 @@ public class MappingTuple {
         return map;
     }
 
+    public void setMap(Multimap<String, SolutionMapping> map) {
+        this.map = map;
+    }
+
     /**
-     * Add a SolutionMapping to a collection of SolutionMappingss the fragment refers to.
+     * Add a SolutionMapping to a collection of SolutionMappings the fragment refers to.
      *
      * @param fragment fragment in question
      * @param mapping  SolutionMapping to add
      */
     public void addSolutionMap(String fragment, SolutionMapping mapping) {
-        if (this.map.containsKey(fragment)) {
-            Collection<SolutionMapping> present = this.map.get(fragment);
-            present.add(mapping);
-        } else {
-            this.map.put(fragment, mapping);
-        }
+        this.map.put(fragment, mapping);
+//        if (this.map.containsKey(fragment)) {
+//            Collection<SolutionMapping> present = this.map.get(fragment);
+//            present.add(mapping);
+//        } else {
+//            this.map.put(fragment, mapping);
+//        }
     }
 
     /**
@@ -46,11 +53,21 @@ public class MappingTuple {
      * @param mapping  a collection of SolutionMappings the fragment should refer to
      */
     public void setSolutionMaps(String fragment, Collection<SolutionMapping> mapping) {
-        this.map.replaceValues(fragment, mapping);
+        while (this.map.containsKey(fragment)) {
+            Collection<SolutionMapping> present = this.map.get(fragment).stream().toList();
+            for (SolutionMapping sm : present) {
+                this.map.remove(fragment, sm);
+            }
+
+        }
+
+        for (SolutionMapping m : mapping) {
+            this.map.put(fragment, m);
+        }
     }
 
     public void setSolutionMaps(String fragment, SolutionMapping... mapping) {
-        this.map.replaceValues(fragment, Arrays.asList(mapping));
+        this.setSolutionMaps(fragment, Arrays.asList(mapping));
     }
 
     public Collection<SolutionMapping> getSolutionMappings(String fragment) {
@@ -127,7 +144,23 @@ public class MappingTuple {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MappingTuple that = (MappingTuple) o;
-        return Objects.equals(map, that.map);
+        for (Map.Entry<String, SolutionMapping> e : this.map.entries()) {
+            boolean found = false;
+            for (SolutionMapping map : that.map.get(e.getKey())) {
+                if (map.equals(e.getValue())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                return false;
+            }
+
+        }
+
+        return true;
+//        return this.map.asMap().equals(that.map.asMap());
+//        return Objects.equals(map, that.map);
     }
 
     @Override

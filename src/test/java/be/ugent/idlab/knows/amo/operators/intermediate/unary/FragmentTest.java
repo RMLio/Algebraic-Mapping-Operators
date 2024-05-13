@@ -38,7 +38,7 @@ public class FragmentTest {
             MappingTuple out = new MappingTuple();
             if (fragment.equals("f_default")) {
                 for (SolutionMapping mapping : mappings) {
-                    String newName = String.format("f_%s", mapping.get("?name").getLiteralValue());
+                    String newName = String.format("f_%s", mapping.get("?name").getValue());
                     out.addSolutionMap(newName, mapping);
                 }
             } else {
@@ -49,6 +49,7 @@ public class FragmentTest {
         }));
 
         MappingTuple input = BlocksIO.readMappingTuple("operators/fragment/fragmentMultiple/input.json");
+        assertEquals(2, input.getSolutionMappings("f_default").size());
 
         // apply operator
         MappingTuple actual = op.apply(input);

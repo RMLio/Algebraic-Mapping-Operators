@@ -2,12 +2,16 @@ package be.ugent.idlab.knows.amo.operators.source;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.JSONSourceIterator;
 import be.ugent.idlab.knows.dataio.record.Record;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.graph.NodeFactory;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 
@@ -18,9 +22,9 @@ import java.util.List;
  */
 public class JSONSourceOperatorDataIO extends DataIOSourceOperator {
 
-    private final Collection<String> rootVariables;
-    private final String rootIterator;
-    private final Collection<String> subIterators;
+    private  Collection<String> rootVariables;
+    private  String rootIterator;
+    private  Collection<String> subIterators;
 
     public JSONSourceOperatorDataIO(Access access, Collection<String> rootVariables, String rootIterator,
                                     Collection<String> subIterators) {
@@ -29,6 +33,17 @@ public class JSONSourceOperatorDataIO extends DataIOSourceOperator {
         this.rootIterator = rootIterator;
         this.subIterators = subIterators;
     }
+
+    @Serial
+    private void readObject(ObjectInputStream inputStream) throws Exception {
+        inputStream.defaultReadObject();
+        this.bootstrap();
+    }
+
+    private void bootstrap() {
+
+    }
+
 
     @Override
     public MappingTuple consumeSource() {
@@ -64,10 +79,9 @@ public class JSONSourceOperatorDataIO extends DataIOSourceOperator {
             } else {
                 value = "";
             }
-            map.put("?" + it, NodeFactory.createLiteralByValue(value, XSDDatatype.XSDstring));
+            map.put("?" + it, new LiteralNode(value, XSDDatatype.XSDstring));
         }
     }
-
 
 
 }

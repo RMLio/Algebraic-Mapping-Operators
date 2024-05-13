@@ -3,8 +3,9 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
 
+import java.io.ObjectInputStream;
+import java.io.Serial;
 import java.util.Collection;
 
 /**
@@ -14,7 +15,7 @@ import java.util.Collection;
  */
 public class RenameOperator implements UnaryOperator {
 
-    private final RenameOperatorImpl implementation;
+    private RenameOperatorImpl implementation;
 
     public RenameOperator(Collection<Pair<String, String>> pairs) {
         this.implementation = new RenameOperatorPairs(pairs);
@@ -24,9 +25,14 @@ public class RenameOperator implements UnaryOperator {
         this.implementation = new RenameOperatorAlias(alias);
     }
 
-    @Override
-    public <T> T accept(OperatorVisitor<T> visitor) {
-        return null;
+    @Serial
+    private void readObject(ObjectInputStream inputStream) throws Exception {
+        inputStream.defaultReadObject();
+        this.bootstrap();
+    }
+
+    private void bootstrap() {
+
     }
 
     @Override
@@ -43,10 +49,6 @@ public class RenameOperator implements UnaryOperator {
      * Marker interface for the private implementations
      */
     interface RenameOperatorImpl extends UnaryOperator {
-        @Override
-        default <T> T accept(OperatorVisitor<T> visitor) {
-            return null;
-        }
     }
 
     static class RenameOperatorPairs implements RenameOperatorImpl {

@@ -4,14 +4,12 @@
       "?name": {
         "value": "John",
         "type": "literal"
-
       }
     },
     {
       "?name": {
         "value": "Jane",
         "type": "literal"
-
       }
     }
   ]

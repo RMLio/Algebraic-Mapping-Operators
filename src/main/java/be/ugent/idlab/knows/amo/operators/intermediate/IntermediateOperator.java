@@ -1,10 +1,10 @@
 package be.ugent.idlab.knows.amo.operators.intermediate;
 
-import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
+import java.io.Serializable;
 
 /**
  * Marker interface for intermediate operators
  */
-public interface IntermediateOperator {
+public interface IntermediateOperator extends Serializable {
 
 }

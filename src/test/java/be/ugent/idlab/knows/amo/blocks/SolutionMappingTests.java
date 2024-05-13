@@ -1,7 +1,7 @@
 package be.ugent.idlab.knows.amo.blocks;
 
+import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
-import org.apache.jena.graph.NodeFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -13,11 +13,11 @@ public class SolutionMappingTests {
     @Test
     public void unionTest() {
         SolutionMapping m1 = new SolutionMapping(Map.of(
-                "foo", NodeFactory.createLiteral("1", XSDDatatype.XSDinteger)
+                "foo", new LiteralNode("1", XSDDatatype.XSDinteger)
         ));
 
         SolutionMapping m2 = new SolutionMapping(Map.of(
-                "bar", NodeFactory.createLiteral("2", XSDDatatype.XSDinteger)
+                "bar", new LiteralNode("2", XSDDatatype.XSDinteger)
         ));
 
         SolutionMapping merged = m1.union(m2);
@@ -30,10 +30,20 @@ public class SolutionMappingTests {
      */
     @Test
     public void compatibleSolutionMapping() {
-        SolutionMapping m1 = new SolutionMapping(Map.of("foo", NodeFactory.createLiteral("1", XSDDatatype.XSDinteger)));
+        SolutionMapping m1 = new SolutionMapping(Map.of("foo", new LiteralNode("1", XSDDatatype.XSDinteger)));
         SolutionMapping empty = new SolutionMapping(Map.of());
 
         assertTrue(m1.isCompatibleWith(empty));
         assertTrue(empty.isCompatibleWith(m1));
     }
 }
+//    @Test
+//    public void foo() {
+//        SolutionMapping mapping = new SolutionMapping();
+//        mapping.put("foo", new LiteralNode("bar"));
+//
+//        RDFNode out = mapping.get("foo");
+//
+//        assertEquals("bar", mapping.get("foo").getValue());
+//    }
+//}

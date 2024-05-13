@@ -4,8 +4,9 @@ import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.ExtendFunction;
-import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
 
+import java.io.ObjectInputStream;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -13,23 +14,37 @@ import java.util.List;
 /**
  * ExtendOperator will generate new variables (potentially from existing variables) and add these to the SolutionMapping and / or MappingTuple.
  * This is done using the ExtendFunction provided
- *
  */
 public class ExtendOperator implements UnaryOperator {
 
-    private final Collection<Pair<String, ExtendFunction>> replacements;
+    private List<Pair<String, ExtendFunction>> replacements;
 
-    /**
-     * @param variableName name of the variable to replace
-     * @param function function to generate the new variable
-     */
+    public ExtendOperator() {
+        this.replacements = new ArrayList<>();
+    }
+
+
     public ExtendOperator(Collection<Pair<String, ExtendFunction>> replacements) {
+        this.replacements = new ArrayList<>();
+        this.replacements.addAll(replacements);
+    }
+
+    public List<Pair<String, ExtendFunction>> getReplacements() {
+        return replacements;
+    }
+
+    public void setReplacements(List<Pair<String, ExtendFunction>> replacements) {
         this.replacements = replacements;
     }
 
-    @Override
-    public <T> T accept(OperatorVisitor<T> visitor) {
-        return null;
+    @Serial
+    private void readObject(ObjectInputStream inputStream) throws Exception {
+        inputStream.defaultReadObject();
+        this.bootstrap();
+    }
+
+    private void bootstrap() {
+
     }
 
     @Override
@@ -47,11 +62,11 @@ public class ExtendOperator implements UnaryOperator {
     @Override
     public MappingTuple apply(MappingTuple tuple) {
         for (String fragment : tuple.getFragments()) {
-            Collection<SolutionMapping> mappings = tuple.getSolutionMappings(fragment);
+            List<SolutionMapping> mappings = tuple.getSolutionMappings(fragment).stream().toList();
 
             List<SolutionMapping> processedMappings = new ArrayList<>();
-            for (SolutionMapping mapping : mappings) {
-                SolutionMapping processed = apply(mapping);
+            for (SolutionMapping m : mappings) {
+                SolutionMapping processed = apply(m);
                 processedMappings.add(processed);
             }
 

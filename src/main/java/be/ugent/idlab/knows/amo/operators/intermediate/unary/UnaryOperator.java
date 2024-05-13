@@ -2,7 +2,6 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
 import be.ugent.idlab.knows.amo.operators.intermediate.IntermediateOperator;
 
 import java.util.Collection;
@@ -12,9 +11,6 @@ import java.util.stream.Collectors;
  * Base interface for all operators that work on individual SolutionMappings and MappingTuples
  */
 public interface UnaryOperator extends IntermediateOperator {
-
-    <T> T accept(OperatorVisitor<T> visitor);
-
     /**
      * Apply the operator on a SolutionMapping
      *

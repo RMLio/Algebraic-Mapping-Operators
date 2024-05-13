@@ -1,6 +1,6 @@
 package be.ugent.idlab.knows.amo.blocks;
 
-import org.apache.jena.graph.Node;
+import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,13 +11,21 @@ import java.util.Set;
  * Solution mapping is a collection of key-value pairs connecting variables to their data
  * These can be applied on a templated string
  */
-public class SolutionMapping extends HashMap<String, Node> {
-    public SolutionMapping() {
-        super();
+public class SolutionMapping extends HashMap<String, RDFNode> {
+    /**
+     * A copy constructor
+     *
+     * @param mapping SolutionMapping to be copied
+     */
+    public SolutionMapping(SolutionMapping mapping) {
+        this.putAll(mapping);
     }
 
-    public SolutionMapping(Map<String, Node> variables) {
-        super(variables);
+    public SolutionMapping() {
+    }
+
+    public SolutionMapping(Map<String, RDFNode> variables) {
+        this.putAll(variables);
     }
 
     /**
@@ -63,25 +71,10 @@ public class SolutionMapping extends HashMap<String, Node> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o instanceof SolutionMapping that) {
-            for (Map.Entry<String, Node> e : this.entrySet()) {
-                Node n = that.get(e.getKey());
-                if (n.isLiteral()) {
-                    Object value = n.getLiteralValue();
-                    if (!value.equals(e.getValue().getLiteralValue())) {
-                        return false;
-                    }
-                } else if (n.isURI()) {
-                    Object value = n.getURI();
-                    if (!value.equals(e.getValue().getURI())) {
-                        return false;
-                    }
-                } else if (n.isBlank()) {
-                    Object value = n.getBlankNodeLabel();
-                    if (!value.equals(e.getValue().getBlankNodeLabel())) {
-                        return false;
-                    }
-                } else {
-                    throw new IllegalStateException("Unexpected node in comparison test for key " + e.getKey());
+            for (Map.Entry<String, RDFNode> e : this.entrySet()) {
+                RDFNode n = that.get(e.getKey());
+                if (!e.getValue().equals(n)) {
+                    return false;
                 }
             }
             return true;

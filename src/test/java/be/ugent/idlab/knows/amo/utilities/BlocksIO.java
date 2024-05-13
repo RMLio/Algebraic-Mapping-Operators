@@ -2,9 +2,11 @@ package be.ugent.idlab.knows.amo.utilities;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.blocks.nodes.BlankNode;
+import be.ugent.idlab.knows.amo.blocks.nodes.IRINode;
+import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
-import org.apache.jena.graph.Node;
-import org.apache.jena.graph.NodeFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -16,7 +18,7 @@ import java.util.Set;
 
 @FunctionalInterface
 interface ParsingFunction {
-    Node parse(JSONObject json);
+    RDFNode parse(JSONObject json);
 }
 
 /**
@@ -32,7 +34,6 @@ public class BlocksIO {
     private static final Set<String> ALLOWED_TYPES = Set.of("iri", "blank", "literal");
 
     /**
-     *
      * @param filepath filepath with respect to src/test/resources/
      * @return
      */
@@ -50,6 +51,7 @@ public class BlocksIO {
 
     /**
      * Method for reading
+     *
      * @param filepath
      * @return
      */
@@ -66,14 +68,14 @@ public class BlocksIO {
                 throw new IllegalArgumentException(String.format("Unexpected value %s for key %s in %s, expected a JSON object", value, key, jsonObject));
             }
 
-            Node term = parseTerm((JSONObject) value);
+            RDFNode term = parseTerm((JSONObject) value);
 
             map.put(key, term);
         }
         return map;
     }
 
-    private static Node parseTerm(JSONObject json) {
+    private static RDFNode parseTerm(JSONObject json) {
         if (!json.has("value")) {
             throw new IllegalArgumentException(String.format("%s is missing a required field 'value'!", json));
         }
@@ -84,7 +86,7 @@ public class BlocksIO {
 
         String type = json.getString("type");
         if (!ALLOWED_TYPES.contains(type)) {
-            throw new IllegalArgumentException(String.format("Unexpected type '%s' for object '%s', expected one of %s", type, json,  ALLOWED_TYPES));
+            throw new IllegalArgumentException(String.format("Unexpected type '%s' for object '%s', expected one of %s", type, json, ALLOWED_TYPES));
         }
 
         return PARSING_FUNCTIONS.get(type).parse(json);
@@ -110,28 +112,28 @@ public class BlocksIO {
         return mappingTuple;
     }
 
-    private static Node parseIRI(JSONObject json) {
-        return NodeFactory.createURI(json.getString("value"));
+    private static RDFNode parseIRI(JSONObject json) {
+        return new IRINode(json.getString("value"));
     }
 
-    private static Node parseLiteral(JSONObject json) {
+    private static RDFNode parseLiteral(JSONObject json) {
         if (!json.has("datatype") || json.getString("datatype").equals("string")) {
             if (json.has("language")) {
-                return NodeFactory.createLiteral(json.getString("value"), json.getString("language"));
+                return new LiteralNode(json.getString("value"), XSDDatatype.XSDstring, json.getString("language"));
             }
-            return NodeFactory.createLiteral(json.getString("value"), XSDDatatype.XSDstring);
+            return new LiteralNode(json.getString("value"), XSDDatatype.XSDstring);
         }
 
         String datatype = json.getString("datatype");
         try {
             XSDDatatype dt = new XSDDatatype(datatype);
-            return NodeFactory.createLiteral(json.getString("value"), dt);
+            return new LiteralNode(json.getString("value"), dt);
         } catch (NullPointerException npe) {
             throw new IllegalArgumentException(String.format("Unsupported datatype %s found in %s", datatype, json));
         }
     }
 
-    private static Node parseBlank(JSONObject json) {
-        return NodeFactory.createBlankNode(json.getString("value"));
+    private static RDFNode parseBlank(JSONObject json) {
+        return new BlankNode(json.getString("value"));
     }
 }

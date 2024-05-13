@@ -1,6 +1,7 @@
 package be.ugent.idlab.knows.amo.operators;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
+import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.functions.TargetSink;
 import be.ugent.idlab.knows.amo.operators.target.TargetOperator;
 import be.ugent.idlab.knows.amo.utilities.BlocksIO;
@@ -26,11 +27,11 @@ public class TargetOperatorTest {
 /**
  * Dummy sink that reads out the value of key "?foo" and stores it in a String
  */
-class TestSink implements TargetSink<Node_Literal> {
+class TestSink implements TargetSink<RDFNode> {
     String output;
 
     @Override
-    public void sink(Node_Literal data) {
-        this.output = (String) data.getLiteralValue();
+    public void sink(RDFNode data) {
+        this.output = (String) data.getValue();
     }
 }

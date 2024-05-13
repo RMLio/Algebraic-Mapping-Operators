@@ -1,9 +1,11 @@
 package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
+import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import org.apache.jena.graph.Node;
 
+import java.io.ObjectInputStream;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Map;
 
@@ -13,25 +15,30 @@ import java.util.Map;
  */
 public class ProjectOperator implements UnaryOperator {
 
-    private final Collection<String> variables;
+    private Collection<String> variables;
 
     public ProjectOperator(Collection<String> variables) {
         this.variables = variables;
     }
 
-    @Override
-    public <T> T accept(OperatorVisitor<T> visitor) {
-        return visitor.visitProject(this);
+    @Serial
+    private void readObject(ObjectInputStream inputStream) throws Exception {
+        inputStream.defaultReadObject();
+        this.bootstrap();
+    }
+
+    private void bootstrap() {
+
     }
 
     public SolutionMapping apply(SolutionMapping mapping) {
-        SolutionMapping newMapping = new SolutionMapping(mapping);
-        for (Map.Entry<String, Node> entry : mapping.entrySet()) {
-            if (!this.variables.contains(entry.getKey())) {
+        SolutionMapping newMapping = new SolutionMapping();
+        for (Map.Entry<String, RDFNode> entry : mapping.entrySet()) {
+            if (this.variables.contains(entry.getKey())) {
                 newMapping.put(entry.getKey(), entry.getValue());
             }
         }
 
-        return mapping;
+        return newMapping;
     }
 }
