@@ -1,4 +1,4 @@
-package be.ugent.idlab.knows.amo.operators.source;
+package be.ugent.idlab.knows.amo.operators.source.dataio;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
@@ -7,15 +7,14 @@ import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.CSVSourceIterator;
 import be.ugent.idlab.knows.dataio.record.CSVRecord;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
-import org.apache.jena.graph.NodeFactory;
 
 import java.io.ObjectInputStream;
 import java.io.Serial;
 import java.util.Map;
 
-public class CSVSourceOperatorDataIO extends DataIOSourceOperator {
+public class CSVSourceOperator extends DataIOSourceOperator {
 
-    public CSVSourceOperatorDataIO(Access access) {
+    public CSVSourceOperator(Access access) {
         super(access);
     }
 
@@ -35,17 +34,6 @@ public class CSVSourceOperatorDataIO extends DataIOSourceOperator {
 
         return tuple;
     }
-
-    @Serial
-    private void readObject(ObjectInputStream inputStream) throws Exception {
-        inputStream.defaultReadObject();
-        this.bootstrap();
-    }
-
-    private void bootstrap() {
-
-    }
-
 
     private SolutionMapping consumeRecord(CSVRecord r) {
         SolutionMapping map = new SolutionMapping();

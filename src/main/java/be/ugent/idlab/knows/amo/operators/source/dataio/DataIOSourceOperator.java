@@ -1,11 +1,12 @@
-package be.ugent.idlab.knows.amo.operators.source;
+package be.ugent.idlab.knows.amo.operators.source.dataio;
 
+import be.ugent.idlab.knows.amo.operators.source.SourceOperator;
 import be.ugent.idlab.knows.dataio.access.Access;
 
 /**
  * Operator responsible for reading input into the plan.
  */
-public abstract class DataIOSourceOperator implements SourceOperator{
+public abstract class DataIOSourceOperator implements SourceOperator {
 
     protected Access access;
 

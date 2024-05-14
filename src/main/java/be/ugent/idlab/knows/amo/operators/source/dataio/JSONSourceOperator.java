@@ -1,4 +1,4 @@
-package be.ugent.idlab.knows.amo.operators.source;
+package be.ugent.idlab.knows.amo.operators.source.dataio;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
@@ -7,9 +7,7 @@ import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.JSONSourceIterator;
 import be.ugent.idlab.knows.dataio.record.Record;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
-import org.apache.jena.graph.NodeFactory;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serial;
 import java.util.Collection;
@@ -20,30 +18,19 @@ import java.util.List;
  * DataIO is written with infinite sources in mind: it provides no way to inspect all variables present in the stream.
  * For this reason, this source must be provided with variables to be read and included in the MappingTuple
  */
-public class JSONSourceOperatorDataIO extends DataIOSourceOperator {
+public class JSONSourceOperator extends DataIOSourceOperator {
 
     private  Collection<String> rootVariables;
     private  String rootIterator;
     private  Collection<String> subIterators;
 
-    public JSONSourceOperatorDataIO(Access access, Collection<String> rootVariables, String rootIterator,
-                                    Collection<String> subIterators) {
+    public JSONSourceOperator(Access access, Collection<String> rootVariables, String rootIterator,
+                              Collection<String> subIterators) {
         super(access);
         this.rootVariables = rootVariables;
         this.rootIterator = rootIterator;
         this.subIterators = subIterators;
     }
-
-    @Serial
-    private void readObject(ObjectInputStream inputStream) throws Exception {
-        inputStream.defaultReadObject();
-        this.bootstrap();
-    }
-
-    private void bootstrap() {
-
-    }
-
 
     @Override
     public MappingTuple consumeSource() {

@@ -23,7 +23,6 @@ public class ExtendOperator implements UnaryOperator {
         this.replacements = new ArrayList<>();
     }
 
-
     public ExtendOperator(Collection<Pair<String, ExtendFunction>> replacements) {
         this.replacements = new ArrayList<>();
         this.replacements.addAll(replacements);
