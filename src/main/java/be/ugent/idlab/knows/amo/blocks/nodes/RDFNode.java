@@ -1,5 +1,7 @@
 package be.ugent.idlab.knows.amo.blocks.nodes;
 
+import org.apache.jena.graph.Node;
+
 import java.io.Serializable;
 
 public abstract class RDFNode implements Serializable {
@@ -28,6 +30,8 @@ public abstract class RDFNode implements Serializable {
         RDFNode rdfNode = (RDFNode) o;
         return value.equals(rdfNode.value);
     }
+
+    public abstract Node getJenaNode();
 
     @Override
     public int hashCode() {

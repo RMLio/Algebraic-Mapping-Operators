@@ -1,5 +1,8 @@
 package be.ugent.idlab.knows.amo.blocks.nodes;
 
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+
 public class IRINode extends RDFNode {
     public IRINode(String value) {
         super(value);
@@ -18,5 +21,10 @@ public class IRINode extends RDFNode {
     @Override
     public boolean isBlank() {
         return false;
+    }
+
+    @Override
+    public Node getJenaNode() {
+        return NodeFactory.createURI(this.value.toString());
     }
 }

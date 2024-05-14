@@ -2,11 +2,13 @@ package be.ugent.idlab.knows.amo.blocks.nodes;
 
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.ext.xerces.impl.dv.XSSimpleType;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
 
 public class LiteralNode extends RDFNode {
 
-    private String datatype;
-    private String language;
+    private final String datatype;
+    private final String language;
 
     public LiteralNode(Object value) {
         this(value, "string", "");
@@ -65,6 +67,11 @@ public class LiteralNode extends RDFNode {
 
         LiteralNode that = (LiteralNode) o;
         return this.datatype.equals(that.datatype) && language.equals(that.language);
+    }
+
+    @Override
+    public Node getJenaNode() {
+        return NodeFactory.createLiteral(this.value.toString(), this.language, new XSDDatatype(this.datatype));
     }
 
     @Override
