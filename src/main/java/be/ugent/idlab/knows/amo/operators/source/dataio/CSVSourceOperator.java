@@ -8,8 +8,6 @@ import be.ugent.idlab.knows.dataio.iterators.CSVSourceIterator;
 import be.ugent.idlab.knows.dataio.record.CSVRecord;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 
-import java.io.ObjectInputStream;
-import java.io.Serial;
 import java.util.Map;
 
 public class CSVSourceOperator extends DataIOSourceOperator {

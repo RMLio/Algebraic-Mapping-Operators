@@ -9,18 +9,8 @@ public class IRINode extends RDFNode {
     }
 
     @Override
-    public boolean isLiteral() {
-        return false;
-    }
-
-    @Override
     public boolean isIRI() {
         return true;
-    }
-
-    @Override
-    public boolean isBlank() {
-        return false;
     }
 
     @Override

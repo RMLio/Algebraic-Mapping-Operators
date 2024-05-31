@@ -39,11 +39,6 @@ public class ExtendOperator implements UnaryOperator {
     @Serial
     private void readObject(ObjectInputStream inputStream) throws Exception {
         inputStream.defaultReadObject();
-        this.bootstrap();
-    }
-
-    private void bootstrap() {
-
     }
 
     @Override

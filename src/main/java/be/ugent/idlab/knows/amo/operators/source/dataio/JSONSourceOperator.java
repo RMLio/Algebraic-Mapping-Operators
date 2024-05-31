@@ -8,8 +8,6 @@ import be.ugent.idlab.knows.dataio.iterators.JSONSourceIterator;
 import be.ugent.idlab.knows.dataio.record.Record;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 
-import java.io.ObjectInputStream;
-import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 
@@ -20,9 +18,9 @@ import java.util.List;
  */
 public class JSONSourceOperator extends DataIOSourceOperator {
 
-    private  Collection<String> rootVariables;
-    private  String rootIterator;
-    private  Collection<String> subIterators;
+    private final Collection<String> rootVariables;
+    private final String rootIterator;
+    private final Collection<String> subIterators;
 
     public JSONSourceOperator(Access access, Collection<String> rootVariables, String rootIterator,
                               Collection<String> subIterators) {
@@ -69,6 +67,4 @@ public class JSONSourceOperator extends DataIOSourceOperator {
             map.put("?" + it, new LiteralNode(value, XSDDatatype.XSDstring));
         }
     }
-
-
 }

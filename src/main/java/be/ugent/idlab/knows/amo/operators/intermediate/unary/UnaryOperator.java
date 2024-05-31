@@ -2,6 +2,7 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
 import be.ugent.idlab.knows.amo.operators.intermediate.IntermediateOperator;
 
 import java.util.Collection;
@@ -58,5 +59,10 @@ public interface UnaryOperator extends IntermediateOperator {
      */
     default Collection<MappingTuple> applyMapTupCollection(Collection<MappingTuple> tuples) {
         return tuples.stream().map(this::apply).collect(Collectors.toList());
+    }
+
+    @Override
+    default <T> T visit(OperatorVisitor<T> visitor) {
+        return visitor.visitUnary(this);
     }
 }

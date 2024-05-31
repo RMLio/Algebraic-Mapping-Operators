@@ -5,6 +5,8 @@ import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.JoinCondition;
 import be.ugent.idlab.knows.amo.operators.intermediate.unary.RenameOperator;
 
+import java.io.ObjectInputStream;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Set;
 
@@ -13,8 +15,6 @@ import java.util.Set;
  * This class also immediately serves as a base class for all conditional joins.
  */
 public class ThetaJoin implements BinaryOperator {
-
-
     protected final JoinCondition condition;
 
     private final RenameOperator renameOperator;
@@ -22,6 +22,11 @@ public class ThetaJoin implements BinaryOperator {
     public ThetaJoin(JoinCondition condition, String alias) {
         this.condition = condition;
         this.renameOperator = new RenameOperator(alias);
+    }
+
+    @Serial
+    private void readObject(ObjectInputStream inputStream) throws Exception {
+        inputStream.defaultReadObject();
     }
 
     /**

@@ -4,10 +4,9 @@ import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.functions.TargetSink;
-import org.apache.jena.graph.Node_Literal;
+import be.ugent.idlab.knows.amo.operators.Operator;
+import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
 
-import java.io.ObjectInputStream;
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 
@@ -15,11 +14,11 @@ import java.util.Collection;
  * TargetOperator will perform side effects on the MappingTuple.
  * This is the output of the mapping plan, writing the results into a file or standard output or ... according to the TargetSink function
  */
-public class TargetOperator implements Serializable {
+public class TargetOperator implements Operator, Serializable {
 
-    private  String targetFragment;
-    private  String targetVariable;
-    private  TargetSink<RDFNode> sink;
+    private final String targetFragment;
+    private final String targetVariable;
+    private final TargetSink<RDFNode> sink;
 
     /**
      * @param targetFragment fragment to write
@@ -38,13 +37,8 @@ public class TargetOperator implements Serializable {
         }
     }
 
-    @Serial
-    private void readObject(ObjectInputStream inputStream) throws Exception {
-        inputStream.defaultReadObject();
-        this.bootstrap();
-    }
-
-    private void bootstrap() {
-
+    @Override
+    public <T> T visit(OperatorVisitor<T> visitor) {
+        return visitor.visitTarget(this);
     }
 }

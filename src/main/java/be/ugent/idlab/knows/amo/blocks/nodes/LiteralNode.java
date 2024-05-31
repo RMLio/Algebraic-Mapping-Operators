@@ -29,7 +29,14 @@ public class LiteralNode extends RDFNode {
     }
 
     public LiteralNode(Object value, XSDDatatype datatype, String language) {
-        this(value, datatype.getURI(), language);
+        /*
+         XSDDatatype is not serializable. Instead of writing a wrapper to enable serializability,
+         this library stores the information about the type as a string, with the XSDDatatype reconstructed from it as needed.
+
+         However, XSDDatatype constructor is unable to recognize the URI and instead, this hack needs to be performed:
+         Grab the index of the '#' after which the type follows and store that, as datatype.getURI() returns a string pointing to the type in XMLSchema.
+         */
+        this(value, datatype.getURI().substring(datatype.getURI().indexOf('#') + 1), language);
     }
 
     public XSDDatatype getDatatype() {
@@ -48,16 +55,6 @@ public class LiteralNode extends RDFNode {
     @Override
     public boolean isLiteral() {
         return true;
-    }
-
-    @Override
-    public boolean isIRI() {
-        return false;
-    }
-
-    @Override
-    public boolean isBlank() {
-        return false;
     }
 
     @Override

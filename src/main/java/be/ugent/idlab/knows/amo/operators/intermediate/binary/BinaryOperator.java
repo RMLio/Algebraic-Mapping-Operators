@@ -2,6 +2,7 @@ package be.ugent.idlab.knows.amo.operators.intermediate.binary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
 import be.ugent.idlab.knows.amo.operators.intermediate.IntermediateOperator;
 
 /**
@@ -14,4 +15,9 @@ public interface BinaryOperator extends IntermediateOperator {
     SolutionMapping apply(SolutionMapping mapping1, SolutionMapping mapping2);
 
     MappingTuple apply(MappingTuple tuple1, MappingTuple tuple2);
+
+    @Override
+    default <T> T visit(OperatorVisitor<T> visitor) {
+        return visitor.visitBinary(this);
+    }
 }

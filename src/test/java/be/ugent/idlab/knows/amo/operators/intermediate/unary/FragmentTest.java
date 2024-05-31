@@ -5,21 +5,20 @@ import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class FragmentTest {
 
     // operator with a simple condition that renames the f_default fragment to f_contacts
-    FragmenterOperator op = new FragmenterOperator((fragment, mapping) -> {
-        MappingTuple tuple = new MappingTuple();
-        if (fragment.equals("f_default")) {
-            tuple.setSolutionMaps("f_contacts", mapping);
-        } else {
-            tuple.setSolutionMaps(fragment, mapping);
-        }
+    FragmenterOperator op = new FragmenterOperator((mappingTuple) -> {
+        MappingTuple out = new MappingTuple();
+        Collection<SolutionMapping> solMappings = mappingTuple.getMap().get("f_default");
+        out.setSolutionMaps("f_contacts", solMappings);
 
-        return tuple;
+        return out;
     });
 
     @Test
@@ -34,17 +33,18 @@ public class FragmentTest {
     @Test
     public void fragmentIntoMultiple() {
         // operator that will fragment f_default into two different fragments based on name
-        FragmenterOperator op = new FragmenterOperator(((fragment, mappings) -> {
+        FragmenterOperator op = new FragmenterOperator(((mappingTuple) -> {
             MappingTuple out = new MappingTuple();
-            if (fragment.equals("f_default")) {
-                for (SolutionMapping mapping : mappings) {
-                    String newName = String.format("f_%s", mapping.get("?name").getValue());
-                    out.addSolutionMap(newName, mapping);
+            for (String fragment : mappingTuple.getFragments()) {
+                if (fragment.equals("f_default")) {
+                    for (SolutionMapping mapping : mappingTuple.getSolutionMappings(fragment)) {
+                        String newName = String.format("f_%s", mapping.get("?name").getValue());
+                        out.addSolutionMap(newName, mapping);
+                    }
+                } else {
+                    out.setSolutionMaps(fragment, mappingTuple.getSolutionMappings(fragment));
                 }
-            } else {
-                out.setSolutionMaps(fragment, mappings);
             }
-
             return out;
         }));
 

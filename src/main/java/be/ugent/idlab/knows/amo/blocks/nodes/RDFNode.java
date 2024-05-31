@@ -16,11 +16,17 @@ public abstract class RDFNode implements Serializable {
         return value;
     }
 
-    public abstract boolean isLiteral();
+    public boolean isLiteral() {
+        return false;
+    }
 
-    public abstract boolean isIRI();
+    public boolean isIRI() {
+        return false;
+    }
 
-    public abstract boolean isBlank();
+    public boolean isBlank() {
+        return false;
+    }
 
     @Override
     public boolean equals(Object o) {

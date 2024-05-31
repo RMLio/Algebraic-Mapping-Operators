@@ -9,16 +9,6 @@ public class BlankNode extends RDFNode {
     }
 
     @Override
-    public boolean isLiteral() {
-        return false;
-    }
-
-    @Override
-    public boolean isIRI() {
-        return false;
-    }
-
-    @Override
     public boolean isBlank() {
         return true;
     }
