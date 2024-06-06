@@ -62,7 +62,7 @@ public interface UnaryOperator extends IntermediateOperator {
     }
 
     @Override
-    default <T> T visit(OperatorVisitor<T> visitor) {
+    default <T> T accept(OperatorVisitor<T> visitor) {
         return visitor.visitUnary(this);
     }
 }

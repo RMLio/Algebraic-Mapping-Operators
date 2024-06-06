@@ -32,11 +32,6 @@ public class SerializeOperator implements UnaryOperator {
     @Serial
     private void readObject(ObjectInputStream inputStream) throws Exception {
         inputStream.defaultReadObject();
-        this.bootstrap();
-    }
-
-    private void bootstrap() {
-
     }
 
     @Override
@@ -52,6 +47,10 @@ public class SerializeOperator implements UnaryOperator {
      * @return a MappingTuple with the serialization contained in the variable "?serialized_output"
      */
     public MappingTuple apply(MappingTuple m) {
+        if (m.getMap().keys().isEmpty()) {
+            return m;
+        }
+
         MappingTuple out = new MappingTuple();
 
         for (String fragment : m.getFragments()) {

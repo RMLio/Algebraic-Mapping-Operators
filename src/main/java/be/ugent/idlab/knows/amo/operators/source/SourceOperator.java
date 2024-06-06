@@ -16,7 +16,7 @@ public interface SourceOperator extends Operator, Serializable {
     MappingTuple consumeSource();
 
     @Override
-    default <T> T visit(OperatorVisitor<T> visitor) {
+    default <T> T accept(OperatorVisitor<T> visitor) {
         return visitor.visitSource(this);
     }
 }

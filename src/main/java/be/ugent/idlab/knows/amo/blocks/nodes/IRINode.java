@@ -17,4 +17,9 @@ public class IRINode extends RDFNode {
     public Node getJenaNode() {
         return NodeFactory.createURI(this.value.toString());
     }
+
+    @Override
+    public String toString() {
+        return this.value.toString();
+    }
 }

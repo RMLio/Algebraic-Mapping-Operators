@@ -9,13 +9,14 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.sparql.graph.GraphFactory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Basic Graph Pattern is a pattern to generate RDF triples by replacement of variables.
  */
-public class BGP {
+public class BGP implements Serializable {
     private final List<Triple> triples;
     private final List<Integer> subjectVariables = new ArrayList<>();
     private final List<Integer> predicateVariables = new ArrayList<>();
@@ -23,6 +24,7 @@ public class BGP {
 
     /**
      * Constructor for reading a BGP in from a String.
+     *
      * @param pattern the BGP pattern
      */
     public BGP(String pattern) {

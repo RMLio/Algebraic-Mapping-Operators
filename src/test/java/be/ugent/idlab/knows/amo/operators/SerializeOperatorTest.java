@@ -24,4 +24,16 @@ public class SerializeOperatorTest {
 
         assertEquals(expected, actual);
     }
+
+    @Test
+    public void emptyMap() {
+        String bgp = "?firstname_iri <http://example.com/name> ?fullname;";
+        MappingTuple input = new MappingTuple();
+
+        SerializeOperator op = new SerializeOperator(new BGP(bgp), "TTL");
+        MappingTuple actual = op.apply(input);
+
+        assertTrue(actual.getFragments().isEmpty());
+        assertTrue(actual.getMap().isEmpty());
+    }
 }

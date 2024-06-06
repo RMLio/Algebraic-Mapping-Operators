@@ -17,7 +17,7 @@ public interface BinaryOperator extends IntermediateOperator {
     MappingTuple apply(MappingTuple tuple1, MappingTuple tuple2);
 
     @Override
-    default <T> T visit(OperatorVisitor<T> visitor) {
+    default <T> T accept(OperatorVisitor<T> visitor) {
         return visitor.visitBinary(this);
     }
 }

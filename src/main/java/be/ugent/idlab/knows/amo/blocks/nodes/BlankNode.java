@@ -17,4 +17,9 @@ public class BlankNode extends RDFNode {
     public Node getJenaNode() {
         return NodeFactory.createBlankNode(this.value.toString());
     }
+
+    @Override
+    public String toString() {
+        return "_:" + this.value.toString();
+    }
 }
