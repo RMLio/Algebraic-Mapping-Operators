@@ -13,16 +13,18 @@ import java.util.Collection;
  *
  * @param pairs a collection of Pairs to rename the variables. The pairs are supplied as instances of Pair(var_to_rename, new_var_name).
  */
-public class RenameOperator implements UnaryOperator {
+public class RenameOperator extends UnaryOperator {
 
-    private RenameOperatorImpl implementation;
+    private final RenameOperatorImpl implementation;
 
-    public RenameOperator(Collection<Pair<String, String>> pairs) {
-        this.implementation = new RenameOperatorPairs(pairs);
+    public RenameOperator(String operatorName, String fragment, Collection<Pair<String, String>> pairs) {
+        super(operatorName, fragment);
+        this.implementation = new RenameOperatorPairs(operatorName, fragment, pairs);
     }
 
-    public RenameOperator(String alias) {
-        this.implementation = new RenameOperatorAlias(alias);
+    public RenameOperator(String operatorName, String fragment, String alias) {
+        super(operatorName, fragment);
+        this.implementation = new RenameOperatorAlias(operatorName, fragment, alias);
     }
 
     @Serial
@@ -48,14 +50,21 @@ public class RenameOperator implements UnaryOperator {
     /**
      * Marker interface for the private implementations
      */
-    interface RenameOperatorImpl extends UnaryOperator {
+    abstract static class RenameOperatorImpl extends UnaryOperator {
+        /**
+         * @param fragment fragment the operator should operate on
+         */
+        public RenameOperatorImpl(String operatorName, String fragment) {
+            super(operatorName, fragment);
+        }
     }
 
-    static class RenameOperatorPairs implements RenameOperatorImpl {
+    static class RenameOperatorPairs extends RenameOperatorImpl {
 
         private final Collection<Pair<String, String>> pairs;
 
-        public RenameOperatorPairs(Collection<Pair<String, String>> pairs) {
+        public RenameOperatorPairs(String operatorName, String fragment, Collection<Pair<String, String>> pairs) {
+            super(operatorName, fragment);
             this.pairs = pairs;
         }
 
@@ -76,10 +85,11 @@ public class RenameOperator implements UnaryOperator {
         }
     }
 
-    static class RenameOperatorAlias implements RenameOperatorImpl {
+    static class RenameOperatorAlias extends RenameOperatorImpl {
         private final String alias;
 
-        public RenameOperatorAlias(String alias) {
+        public RenameOperatorAlias(String operatorName, String fragment, String alias) {
+            super(operatorName, fragment);
             this.alias = alias;
         }
 
@@ -87,7 +97,7 @@ public class RenameOperator implements UnaryOperator {
         public SolutionMapping apply(SolutionMapping mapping) {
             SolutionMapping out = new SolutionMapping();
             for (String key : mapping.keySet()) {
-                String aliased = "?" + alias + key.substring(1);
+                String aliased = "?" + alias + key; // TODO: here stood key.substring(1), this might mess with the tests
                 out.put(aliased, mapping.get(key));
             }
 

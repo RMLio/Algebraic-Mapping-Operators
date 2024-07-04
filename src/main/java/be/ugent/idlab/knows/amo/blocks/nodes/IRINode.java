@@ -15,7 +15,22 @@ public class IRINode extends RDFNode {
 
     @Override
     public Node getJenaNode() {
-        return NodeFactory.createURI(this.value.toString());
+//        String encoded = URLEncoder.encode(this.value.toString(), StandardCharsets.UTF_8);
+
+        StringBuilder sb = new StringBuilder();
+        this.value.toString().chars().forEach(c -> {
+            if (c == ' ') {
+                sb.append("%20");
+            } else if (c == '+') {
+                sb.append("%20");
+            } else if (c == '*') {
+                sb.append("%2A");
+            } else {
+                sb.append((char) c);
+            }
+        });
+
+        return NodeFactory.createURI(sb.toString());
     }
 
     @Override

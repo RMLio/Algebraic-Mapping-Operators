@@ -11,14 +11,22 @@ import java.util.stream.Collectors;
 /**
  * Base interface for all operators that work on individual SolutionMappings and MappingTuples
  */
-public interface UnaryOperator extends IntermediateOperator {
+public abstract class UnaryOperator extends IntermediateOperator {
+
+    /**
+     * @param fragment fragment the operator should operate on
+     */
+    public UnaryOperator(String operatorName, String fragment) {
+        super(operatorName, fragment);
+    }
+
     /**
      * Apply the operator on a SolutionMapping
      *
      * @param mapping
      * @return the processed SolutionMapping
      */
-    SolutionMapping apply(SolutionMapping mapping);
+    abstract SolutionMapping apply(SolutionMapping mapping);
 
     /**
      * Apply the operator on the entire collection of SolutionMappings.
@@ -26,7 +34,7 @@ public interface UnaryOperator extends IntermediateOperator {
      * @param mappings a Collection of SolutionMappings to apply the operator on
      * @return a collection of processed SolutionMappings (internally returned as a List)
      */
-    default Collection<SolutionMapping> applySolMapCollection(Collection<SolutionMapping> mappings) {
+    public Collection<SolutionMapping> applySolMapCollection(Collection<SolutionMapping> mappings) {
         return mappings.stream()
                 .map(this::apply)
                 .collect(Collectors.toList());
@@ -38,14 +46,12 @@ public interface UnaryOperator extends IntermediateOperator {
      * @param tuple tuple to apply the operator on.
      * @return the processed MappingTuple
      */
-    default MappingTuple apply(MappingTuple tuple) {
+    public MappingTuple apply(MappingTuple tuple) {
         MappingTuple out = new MappingTuple();
 
-        for (String fragment : tuple.getFragments()) {
-            for (SolutionMapping map : tuple.getSolutionMappings(fragment)) {
-                SolutionMapping newMap = apply(map);
-                out.addSolutionMap(fragment, newMap);
-            }
+        for (SolutionMapping map : tuple.getSolutionMappings(this.fragment)) {
+            SolutionMapping newMap = this.apply(map);
+            out.addSolutionMap(this.fragment, newMap);
         }
 
         return out;
@@ -57,12 +63,12 @@ public interface UnaryOperator extends IntermediateOperator {
      * @param tuples a Collection of MappingTuples to apply the operator on.
      * @return a Collection of processed MappingTuples (internally returned as a List).
      */
-    default Collection<MappingTuple> applyMapTupCollection(Collection<MappingTuple> tuples) {
+    public Collection<MappingTuple> applyMapTupCollection(Collection<MappingTuple> tuples) {
         return tuples.stream().map(this::apply).collect(Collectors.toList());
     }
 
     @Override
-    default <T> T accept(OperatorVisitor<T> visitor) {
+    public <T> T accept(OperatorVisitor<T> visitor) {
         return visitor.visitUnary(this);
     }
 }

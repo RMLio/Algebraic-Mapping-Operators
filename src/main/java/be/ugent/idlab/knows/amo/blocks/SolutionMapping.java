@@ -54,8 +54,8 @@ public class SolutionMapping extends HashMap<String, RDFNode> {
         Set<String> uniqueKeys = new HashSet<>(this.keySet());
         uniqueKeys.retainAll(that.keySet());
 
-        if (uniqueKeys.isEmpty()) {
-            return false;
+        if (uniqueKeys.isEmpty()) { // if there are no unique keys, mappings are compatible
+            return true;
         }
 
         // verify the values of all common keys

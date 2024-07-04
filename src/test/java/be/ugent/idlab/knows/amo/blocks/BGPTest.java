@@ -1,85 +1,91 @@
 package be.ugent.idlab.knows.amo.blocks;
 
-import be.ugent.idlab.knows.amo.utilities.BlocksIO;
-import org.apache.jena.graph.Graph;
-import org.apache.jena.graph.Node;
+import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import org.apache.jena.graph.NodeFactory;
-import org.apache.jena.graph.Triple;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.sparql.graph.GraphFactory;
-import org.junit.jupiter.api.Disabled;
+import org.apache.jena.sparql.core.DatasetGraph;
+import org.apache.jena.sparql.core.DatasetGraphFactory;
+import org.apache.jena.sparql.core.Quad;
 import org.junit.jupiter.api.Test;
 
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Disabled
 public class BGPTest {
 
     @Test
-    public void simpleTest() {
-        // create a simple input graph consisting of a single triple
-        Triple t = Triple.create(NodeFactory.createVariable("foo"), NodeFactory.createLiteral("foaf:name"), NodeFactory.createVariable("bar"));
-        Graph graph = GraphFactory.createDefaultGraph();
-        graph.add(t);
+    public void fillTriple() {
+        String pattern = "?sub ?pred ?obj .";
+        BGP bgp = new BGP(pattern);
 
-        // create a simple SolutionMapping
-        SolutionMapping mapping = BlocksIO.readSolutionMapping("blockTests/bgp/simpleTest.json");
+        SolutionMapping mapping = new SolutionMapping(Map.of(
+                "?sub", new LiteralNode("subject"),
+                "?pred", new LiteralNode("predicate"),
+                "?obj", new LiteralNode("object")
+        ));
 
-        BGP bgp = new BGP(graph);
-
-        Model outModel = bgp.apply(mapping);
-
-        Graph out = outModel.getGraph();
-
-        assertEquals(1, out.size());
-        Iterator<Triple> tripleIterator = out.find();
-        assertTrue(tripleIterator.hasNext());
-        Triple foundTriple = tripleIterator.next();
-        assertFalse(tripleIterator.hasNext());
-
-        assertEquals("http://example.com/JohnDoe", foundTriple.getSubject().getURI());
-        assertEquals("\"John\"", foundTriple.getObject().getLiteralValue().toString());
-    }
-
-    @Test
-    public void readGraphFromString() {
-        // graph as described in the paper Listing 2
-        String graph = "?firstname_iri <http://example.com/name> ?fullname;\n" +
-                "<http://example.com/petName> ?pet_name.";
-
-        // SolutionMapping with values as described in Example 9
-        SolutionMapping mapping = BlocksIO.readSolutionMapping("blockTests/bgp/graphFromString.json");
-
-        BGP bgp = new BGP(graph);
-
-        Model modelOut = bgp.apply(mapping);
-        Graph out = modelOut.getGraph();
-
-        assertEquals(2, out.size());
-        Triple t1 = out.find(Node.ANY, NodeFactory.createURI("http://example.com/name"), Node.ANY).next();
-        Triple t2 = out.find(Node.ANY, NodeFactory.createURI("http://example.com/petName"), Node.ANY).next();
-
-        // check variable replacement in first triple
-        assertEquals("http://example.com/John", t1.getSubject().getURI());
-        assertEquals("\"John Doe\"", t1.getObject().getLiteralValue());
-
-        // check variable replacement in second triple
-        assertEquals("http://example.com/John", t2.getSubject().getURI());
-        assertEquals("\"Max\"", t2.getObject().getLiteralValue().toString());
-    }
-
-    @Test
-    public void tripleVariableTest(){
-        Triple t = Triple.create(
-                NodeFactory.createVariable("foo"),
-                NodeFactory.createURI("foaf:name"),
-                NodeFactory.createLiteral("bar")
+        DatasetGraph actual = bgp.apply(mapping);
+        DatasetGraph expected = DatasetGraphFactory.create();
+        expected.getDefaultGraph().add(
+                NodeFactory.createLiteral("subject"),
+                NodeFactory.createLiteral("predicate"),
+                NodeFactory.createLiteral("object")
         );
 
-        assertEquals("foo", t.getSubject().getName());
-        assertEquals("foo", t.getSubject().getName().toString());
+        List<Quad> actualQuads = actual.stream().toList();
+        List<Quad> expectedQuads = expected.stream().toList();
+        assertEquals(expectedQuads, actualQuads);
+    }
+
+    @Test
+    public void fillQuad() {
+        String pattern = "?sub ?pred ?obj ?graph .";
+        BGP bgp = new BGP(pattern);
+
+        SolutionMapping mapping = new SolutionMapping(Map.of(
+                "?sub", new LiteralNode("subject"),
+                "?pred", new LiteralNode("predicate"),
+                "?obj", new LiteralNode("object"),
+                "?graph", new LiteralNode("graph")
+        ));
+
+        DatasetGraph expected = DatasetGraphFactory.create();
+        expected.add(NodeFactory.createLiteral("graph"),
+                NodeFactory.createLiteral("subject"),
+                NodeFactory.createLiteral("predicate"),
+                NodeFactory.createLiteral("object")
+        );
+
+        DatasetGraph actual = bgp.apply(mapping);
+        List<Quad> actualQuads = actual.stream().toList();
+        List<Quad> expectedQuads = expected.stream().toList();
+
+        assertEquals(expectedQuads, actualQuads);
+    }
+
+    @Test
+    public void subjectVariableWithLanguageTag() {
+        String pattern = "?sub@en ?pred ?obj .";
+        BGP bgp = new BGP(pattern);
+
+        SolutionMapping mapping = new SolutionMapping(Map.of(
+                "?sub", new LiteralNode("subject"),
+                "?pred", new LiteralNode("predicate"),
+                "?obj", new LiteralNode("object")
+        ));
+
+        DatasetGraph expected = DatasetGraphFactory.create();
+        expected.getDefaultGraph().add(
+                NodeFactory.createLiteral("subject", "en"),
+                NodeFactory.createLiteral("predicate"),
+                NodeFactory.createLiteral("object")
+        );
+
+        DatasetGraph actual = bgp.apply(mapping);
+        List<Quad> actualQuads = actual.stream().toList();
+        List<Quad> expectedQuads = expected.stream().toList();
+
+        assertEquals(expectedQuads, actualQuads);
     }
 }

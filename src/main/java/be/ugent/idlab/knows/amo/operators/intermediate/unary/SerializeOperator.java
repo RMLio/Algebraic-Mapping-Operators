@@ -4,8 +4,18 @@ import be.ugent.idlab.knows.amo.blocks.BGP;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
-import org.apache.jena.graph.NodeFactory;
-import org.apache.jena.rdf.model.Model;
+import org.apache.jena.query.ARQ;
+import org.apache.jena.query.Syntax;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.riot.*;
+import org.apache.jena.riot.out.NodeToLabel;
+import org.apache.jena.riot.system.StreamRDF;
+import org.apache.jena.riot.writer.WriterGraphRIOTBase;
+import org.apache.jena.riot.writer.WriterStreamRDFFlat;
+import org.apache.jena.sparql.core.DatasetGraph;
+import org.apache.jena.sparql.core.DatasetGraphWrapper;
+import org.apache.jena.sparql.util.Context;
+import org.apache.jena.sparql.util.Symbol;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -19,12 +29,13 @@ import java.util.Map;
  *
  * @param bgp
  */
-public class SerializeOperator implements UnaryOperator {
+public class SerializeOperator extends UnaryOperator {
 
-    private BGP bgp;
-    private String language;
+    private final BGP bgp;
+    private final String language;
 
-    public SerializeOperator(BGP bgp, String language) {
+    public SerializeOperator(String operatorName, String fragment, BGP bgp, String language) {
+        super(operatorName, fragment);
         this.bgp = bgp;
         this.language = language;
     }
@@ -53,20 +64,23 @@ public class SerializeOperator implements UnaryOperator {
 
         MappingTuple out = new MappingTuple();
 
-        for (String fragment : m.getFragments()) {
-            Collection<SolutionMapping> solMappings = m.getSolutionMappings(fragment);
-            for (SolutionMapping solMapping : solMappings) {
-                Model model = this.bgp.apply(solMapping);
-                OutputStream outputStream = new ByteArrayOutputStream();
-                model.write(outputStream, this.language);
+        Collection<SolutionMapping> solMappings = m.getSolutionMappings(this.fragment);
+        for (SolutionMapping solMapping : solMappings) {
+            DatasetGraph graph = this.bgp.apply(solMapping);
 
-                String serialized = outputStream.toString();
+            OutputStream outputStream = new ByteArrayOutputStream();
+            Lang lang = RDFLanguages.nameToLang(this.language);
 
-                SolutionMapping solMapOut = new SolutionMapping(
-                        Map.of("?serialized_output", new LiteralNode(serialized)));
+            RDFWriter.source(graph)
+                    .lang(lang)
+                    .output(outputStream);
 
-                out.addSolutionMap(fragment, solMapOut);
-            }
+            // Jena will prepend labels of Blank nodes with a 'B', which is not what we want
+            String serialized = outputStream.toString().replaceAll("_:B", "_:");
+            SolutionMapping solMapOut = new SolutionMapping(
+                    Map.of("?serialized_output", new LiteralNode(serialized)));
+
+            out.addSolutionMap(this.fragment, solMapOut);
         }
 
         return out;

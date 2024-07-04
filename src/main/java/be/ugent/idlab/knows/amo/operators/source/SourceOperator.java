@@ -6,17 +6,21 @@ import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
 
 import java.io.Serializable;
 
-public interface SourceOperator extends Operator, Serializable {
+public abstract class SourceOperator extends Operator implements Serializable {
+
+    public SourceOperator(String operatorName) {
+        super(operatorName);
+    }
 
     /**
      * Generates a mapping tuple out of the source
      *
      * @return a MappingTuple
      */
-    MappingTuple consumeSource();
+    public abstract MappingTuple consumeSource();
 
     @Override
-    default <T> T accept(OperatorVisitor<T> visitor) {
+    public <T> T accept(OperatorVisitor<T> visitor) {
         return visitor.visitSource(this);
     }
 }

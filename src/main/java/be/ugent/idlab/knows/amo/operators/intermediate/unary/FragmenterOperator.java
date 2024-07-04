@@ -7,11 +7,12 @@ import be.ugent.idlab.knows.amo.functions.FragmentFunction;
 /**
  * FragmenterOperator splits the fragment into multiple fragments, with potentially different name, as defined by the FragmentFunction
  */
-public class FragmenterOperator implements UnaryOperator {
+public class FragmenterOperator extends UnaryOperator {
 
     private final FragmentFunction function;
 
-    public FragmenterOperator(FragmentFunction function) {
+    public FragmenterOperator(String operatorName, String fragment, FragmentFunction function) {
+        super(operatorName, fragment);
         this.function = function;
     }
 

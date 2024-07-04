@@ -15,15 +15,17 @@ import java.util.List;
  * ExtendOperator will generate new variables (potentially from existing variables) and add these to the SolutionMapping and / or MappingTuple.
  * This is done using the ExtendFunction provided
  */
-public class ExtendOperator implements UnaryOperator {
+public class ExtendOperator extends UnaryOperator {
 
     private List<Pair<String, ExtendFunction>> replacements;
 
-    public ExtendOperator() {
+    public ExtendOperator(String operatorName, String fragment) {
+        super(operatorName, fragment);
         this.replacements = new ArrayList<>();
     }
 
-    public ExtendOperator(Collection<Pair<String, ExtendFunction>> replacements) {
+    public ExtendOperator(String operatorName, String fragment, Collection<Pair<String, ExtendFunction>> replacements) {
+        super(operatorName, fragment);
         this.replacements = new ArrayList<>();
         this.replacements.addAll(replacements);
     }
@@ -55,17 +57,17 @@ public class ExtendOperator implements UnaryOperator {
 
     @Override
     public MappingTuple apply(MappingTuple tuple) {
-        for (String fragment : tuple.getFragments()) {
-            List<SolutionMapping> mappings = tuple.getSolutionMappings(fragment).stream().toList();
+        MappingTuple out = new MappingTuple();
 
-            List<SolutionMapping> processedMappings = new ArrayList<>();
-            for (SolutionMapping m : mappings) {
-                SolutionMapping processed = apply(m);
-                processedMappings.add(processed);
-            }
+        Collection<SolutionMapping> mappings = tuple.getSolutionMappings(this.fragment);
 
-            tuple.setSolutionMaps(fragment, processedMappings);
+        List<SolutionMapping> processedMappings = new ArrayList<>();
+        for (SolutionMapping m : mappings) {
+            SolutionMapping processed = apply(m);
+            processedMappings.add(processed);
         }
-        return tuple;
+
+        out.setSolutionMaps(this.fragment, processedMappings);
+        return out;
     }
 }

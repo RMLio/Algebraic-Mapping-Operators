@@ -16,8 +16,12 @@ public class XMLSourceOperator extends DataIOSourceOperator {
     private final String rootIterator;
     private final Collection<String> subIterators;
 
-    public XMLSourceOperator(Access access, Collection<String> rootVariables, String rootIterator, Collection<String> subIterators) {
-        super(access);
+    public XMLSourceOperator(String operatorName, Access access, Collection<String> rootVariables, String rootIterator, Collection<String> subIterators) {
+        this(operatorName, access, "default", rootVariables, rootIterator, subIterators);
+    }
+
+    public XMLSourceOperator(String operatorName, Access access, String defaultOperator, Collection<String> rootVariables, String rootIterator, Collection<String> subIterators) {
+        super(operatorName, access, defaultOperator);
         this.rootVariables = rootVariables;
         this.rootIterator = rootIterator;
         this.subIterators = subIterators;
@@ -35,7 +39,7 @@ public class XMLSourceOperator extends DataIOSourceOperator {
                 // consume any and all subiterators with respect to the root iterator
                 consumeRecord(r, this.subIterators, m);
 
-                mappingTuple.addSolutionMap("f_default", m);
+                mappingTuple.addSolutionMap("default", m);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -48,11 +52,11 @@ public class XMLSourceOperator extends DataIOSourceOperator {
             List<Object> values = r.get(it);
             String value;
             if (!values.isEmpty()) {
-                value = values.get(0).toString();
+                value = values.getFirst().toString();
             } else {
                 value = "";
             }
-            mapping.put("?" + it, new LiteralNode(value, XSDDatatype.XSDstring));
+            mapping.put(it, new LiteralNode(value, XSDDatatype.XSDstring));
         }
     }
 }

@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExtendTest {
     // simple condition to concatenate first and last names
-    ExtendOperator op = new ExtendOperator(List.of(new Pair<String, ExtendFunction>("?full_name", (mapping -> {
+    ExtendOperator op = new ExtendOperator("ExtendOp", "f_default", List.of(new Pair<String, ExtendFunction>("?full_name", (mapping -> {
         String first = mapping.get("?first_name").getValue().toString();
         String last = mapping.get("?last_name").getValue().toString();
 

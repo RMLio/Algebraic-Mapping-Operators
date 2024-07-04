@@ -1,29 +1,29 @@
 {
-  "f_default": [
+  "default": [
     {
-      "?name": {
+      "name": {
         "value": "John Doe",
         "type": "literal"
       },
-      "?pet/type": {
+      "pet/type": {
         "value": "dog",
         "type": "literal"
       },
-      "?pet/name": {
+      "pet/name": {
         "value": "Bax",
         "type": "literal"
       }
     },
     {
-      "?name": {
+      "name": {
         "value": "Susan Sue",
         "type": "literal"
       },
-      "?pet/type": {
+      "pet/type": {
         "value": "",
         "type": "literal"
       },
-      "?pet/name": {
+      "pet/name": {
         "value": "",
         "type": "literal"
       }

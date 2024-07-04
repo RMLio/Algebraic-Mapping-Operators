@@ -53,13 +53,16 @@ public class MappingTuple implements Serializable {
      * @param mapping  a collection of SolutionMappings the fragment should refer to
      */
     public void setSolutionMaps(String fragment, Collection<SolutionMapping> mapping) {
-        while (this.map.containsKey(fragment)) {
-            Collection<SolutionMapping> present = this.map.get(fragment).stream().toList();
-            for (SolutionMapping sm : present) {
-                this.map.remove(fragment, sm);
-            }
 
-        }
+        this.map.removeAll(fragment);
+//
+//        while (this.map.containsKey(fragment)) {
+//            Collection<SolutionMapping> present = this.map.get(fragment);
+//            for (SolutionMapping sm : present) {
+//                this.map.remove(fragment, sm);
+//            }
+//
+//        }
 
         for (SolutionMapping m : mapping) {
             this.map.put(fragment, m);
@@ -147,7 +150,7 @@ public class MappingTuple implements Serializable {
         for (Map.Entry<String, SolutionMapping> e : this.map.entries()) {
             boolean found = false;
             for (SolutionMapping map : that.map.get(e.getKey())) {
-                if (map.equals(e.getValue())) {
+                if (e.getValue().equals(map)) {
                     found = true;
                     break;
                 }

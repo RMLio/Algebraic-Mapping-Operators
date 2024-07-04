@@ -19,7 +19,7 @@ public class DataIOSourceOperatorTest {
     @Test
     public void JSONTest() {
         Access access = new LocalFileAccess("operators/source/input.json", "src/test/resources", "json");
-        JSONSourceOperator operator = new JSONSourceOperator(access, List.of("name"), "$.peoples[*]", List.of("$.pet.type", "$.pet.name"));
+        JSONSourceOperator operator = new JSONSourceOperator("JSONSourceOp", access, List.of("name"), "$.peoples[*]", List.of("$.pet.type", "$.pet.name"));
 
         MappingTuple actual = operator.consumeSource();
 
@@ -31,7 +31,7 @@ public class DataIOSourceOperatorTest {
     @Test
     public void CSVTest() {
         Access access = new LocalFileAccess("operators/source/input.csv", "src/test/resources", "csv");
-        CSVSourceOperator operator = new CSVSourceOperator(access);
+        CSVSourceOperator operator = new CSVSourceOperator("CSVSourceOp", access);
 
         MappingTuple actual = operator.consumeSource();
         MappingTuple expected = BlocksIO.readMappingTuple("operators/source/output.json");
@@ -42,7 +42,7 @@ public class DataIOSourceOperatorTest {
     @Test
     public void XMLTest() {
         Access access = new LocalFileAccess("operators/source/input.xml", "src/test/resources", "xml");
-        XMLSourceOperator operator = new XMLSourceOperator(access, List.of("name"), "/people/person", List.of("pet/type", "pet/name"));
+        XMLSourceOperator operator = new XMLSourceOperator("XMLSourceOp", access, List.of("name"), "/people/person", List.of("pet/type", "pet/name"));
 
         MappingTuple actual = operator.consumeSource();
         MappingTuple expected = BlocksIO.readMappingTuple("operators/source/output_xml.json");

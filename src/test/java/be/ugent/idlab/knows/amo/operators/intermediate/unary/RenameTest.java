@@ -9,13 +9,13 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RenameTest {
 
     @Nested
     class PairRenameTests {
-        RenameOperator operator = new RenameOperator(Set.of(new Pair("?name", "?fullname")));
+        RenameOperator operator = new RenameOperator("RenameOp", "f_default", Set.of(new Pair<>("?name", "?fullname")));
 
         @Test
         public void simpleRenameSolutionMappingTest() {
@@ -40,7 +40,7 @@ public class RenameTest {
     class AliasTests {
         @Test
         public void aliasSolutionMappingTest() {
-            RenameOperator operator = new RenameOperator("aliased_");
+            RenameOperator operator = new RenameOperator("RenameOp", "f_default", "aliased_");
             SolutionMapping input = BlocksIO.readSolutionMapping("operators/rename/aliasSolutionMapping/input.json");
             SolutionMapping expected = BlocksIO.readSolutionMapping("operators/rename/aliasSolutionMapping/output.json");
             SolutionMapping actual = operator.apply(input);
@@ -50,7 +50,7 @@ public class RenameTest {
 
         @Test
         public void aliasMappingTupleTest() {
-            RenameOperator operator = new RenameOperator("aliased_");
+            RenameOperator operator = new RenameOperator("RenameOp", "f_default", "aliased_");
             MappingTuple input = BlocksIO.readMappingTuple("operators/rename/aliasMappingTuple/input.json");
             MappingTuple expected = BlocksIO.readMappingTuple("operators/rename/aliasMappingTuple/output.json");
             MappingTuple actual = operator.apply(input);

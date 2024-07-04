@@ -63,11 +63,14 @@ public class LiteralNode extends RDFNode {
         if (o == null || getClass() != o.getClass()) return false;
 
         LiteralNode that = (LiteralNode) o;
-        return this.datatype.equals(that.datatype) && language.equals(that.language);
+        return this.datatype.equals(that.datatype) && language.equals(that.language) && this.value.equals(that.value);
     }
 
     @Override
     public Node getJenaNode() {
+        if (this.datatype.equals("string")) {
+            return NodeFactory.createLiteral(this.value.toString(), this.language);
+        }
         return NodeFactory.createLiteral(this.value.toString(), this.language, new XSDDatatype(this.datatype));
     }
 

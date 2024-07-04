@@ -20,7 +20,7 @@ public class ThetaJoinTest {
                         s1.get("?$pet.type").equals(s2.get("?animal_type"))
         );
 
-        ThetaJoin operator = new ThetaJoin(condition, "animal_");
+        ThetaJoin operator = new ThetaJoin("ThetaJoin", "f_default", "f_default", condition, "animal_");
 
         MappingTuple actual = operator.apply(table6, table7);
         assertEquals(expected, actual);

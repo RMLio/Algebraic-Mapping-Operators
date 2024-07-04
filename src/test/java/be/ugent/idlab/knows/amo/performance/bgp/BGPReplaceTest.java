@@ -94,11 +94,11 @@ public class BGPReplaceTest {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         // time measurement includes consumption of the model into a string
-        before = System.nanoTime();
-        Model model = bgpJena.apply(solMapping);
-        model.write(outputStream, "TTL");
-        after = System.nanoTime();
-        System.out.printf("Time with Model: %d ns\n", after - before);
+//        before = System.nanoTime();
+//        Model model = bgpJena.apply(solMapping);
+//        model.write(outputStream, "TTL");
+//        after = System.nanoTime();
+//        System.out.printf("Time with Model: %d ns\n", after - before);
 //        System.out.println(outputStream);
     }
 
@@ -177,12 +177,12 @@ public class BGPReplaceTest {
         assertEquals(expected, out);
         System.out.printf("Time with StringUtils::replace : %d ms\n", after - before);
 
-        BGP bgpJena = new BGP(pattern);
-        before = System.currentTimeMillis();
-        Model model = bgpJena.apply(solMapping);
-        after = System.currentTimeMillis();
-        System.out.printf("Time with Model: %d ms\n", after - before);
-        System.out.printf("Model size: %d\n", model.size());
+//        BGP bgpJena = new BGP(pattern);
+//        before = System.currentTimeMillis();
+//        Model model = bgpJena.apply(solMapping);
+//        after = System.currentTimeMillis();
+//        System.out.printf("Time with Model: %d ms\n", after - before);
+//        System.out.printf("Model size: %d\n", model.size());
 //        System.out.println(model);
     }
 }

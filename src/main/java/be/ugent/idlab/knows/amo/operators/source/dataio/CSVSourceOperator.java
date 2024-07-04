@@ -12,8 +12,14 @@ import java.util.Map;
 
 public class CSVSourceOperator extends DataIOSourceOperator {
 
-    public CSVSourceOperator(Access access) {
-        super(access);
+
+    public CSVSourceOperator(String operatorName, Access access) {
+        this(operatorName, access, "default");
+    }
+
+    public CSVSourceOperator(String operatorName, Access access, String defaultFragment) {
+        super(operatorName, access, defaultFragment);
+
     }
 
     @Override
@@ -24,7 +30,7 @@ public class CSVSourceOperator extends DataIOSourceOperator {
                 CSVRecord r = (CSVRecord) iterator.next();
                 SolutionMapping map = consumeRecord(r);
 
-                tuple.addSolutionMap("f_default", map);
+                tuple.addSolutionMap(this.defaultFragment, map);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -50,7 +56,7 @@ public class CSVSourceOperator extends DataIOSourceOperator {
                 value = "";
             }
 
-            map.put("?" + key, new LiteralNode(value.toString(), datatype));
+            map.put(key, new LiteralNode(value.toString(), datatype));
         }
 
         return map;

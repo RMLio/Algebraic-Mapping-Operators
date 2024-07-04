@@ -18,7 +18,7 @@ public class TargetOperatorTest {
 
         MappingTuple input = BlocksIO.readMappingTuple("operators/target/input.json");
 
-        TargetOperator operator = new TargetOperator("f_target", "?foo", sink);
+        TargetOperator operator = new TargetOperator("targetOp","f_target", "?foo", sink);
         operator.apply(input);
         assertEquals("bar", sink.output);
     }

@@ -22,9 +22,14 @@ public class JSONSourceOperator extends DataIOSourceOperator {
     private final String rootIterator;
     private final Collection<String> subIterators;
 
-    public JSONSourceOperator(Access access, Collection<String> rootVariables, String rootIterator,
+    public JSONSourceOperator(String operatorName, Access access, Collection<String> rootVariables, String rootIterator,
                               Collection<String> subIterators) {
-        super(access);
+        this(operatorName, access, "default", rootVariables, rootIterator, subIterators);
+    }
+
+    public JSONSourceOperator(String operatorName, Access access, String defaultFragment, Collection<String> rootVariables, String rootIterator,
+                              Collection<String> subIterators) {
+        super(operatorName, access, defaultFragment);
         this.rootVariables = rootVariables;
         this.rootIterator = rootIterator;
         this.subIterators = subIterators;
@@ -45,7 +50,7 @@ public class JSONSourceOperator extends DataIOSourceOperator {
                 // consume any and all subiterators with respect to the root iterator
                 consumeRecord(r, this.subIterators, map);
 
-                tuple.addSolutionMap("f_default", map);
+                tuple.addSolutionMap(this.defaultFragment, map);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -64,7 +69,7 @@ public class JSONSourceOperator extends DataIOSourceOperator {
             } else {
                 value = "";
             }
-            map.put("?" + it, new LiteralNode(value, XSDDatatype.XSDstring));
+            map.put(it, new LiteralNode(value, XSDDatatype.XSDstring));
         }
     }
 }
