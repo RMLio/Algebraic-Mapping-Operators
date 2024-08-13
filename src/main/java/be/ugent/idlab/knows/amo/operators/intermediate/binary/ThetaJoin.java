@@ -13,26 +13,17 @@ import java.util.Collection;
  * ThetaJoin implementing a join based on a condition.
  * This class also immediately serves as a base class for all conditional joins.
  */
-public class ThetaJoin extends BinaryOperator {
-    protected final JoinCondition condition;
+public class ThetaJoin extends Join {
 
-    private final RenameOperator renameOperator;
-    private final String outputFragment;
-
-    public ThetaJoin(String operatorName, String inputFragment, String outputFragment, JoinCondition condition, String alias) {
-        super(operatorName, inputFragment);
-        this.condition = condition;
-        this.outputFragment = outputFragment;
-        this.renameOperator = new RenameOperator(operatorName + ":Rename", inputFragment, alias);
+    public ThetaJoin(String operatorName, String inputFragment, String outputFragment, JoinCondition condition,
+            String alias) {
+        super(operatorName, inputFragment, outputFragment, condition, alias);
     }
 
-    @Serial
-    private void readObject(ObjectInputStream inputStream) throws Exception {
-        inputStream.defaultReadObject();
-    }
 
     /**
-     * This code assumes that mapping2 is already aliased as per the definitions of the paper.
+     * This code assumes that mapping2 is already aliased as per the definitions of
+     * the paper.
      * No aliasing will be performed here.
      *
      * @param mapping1

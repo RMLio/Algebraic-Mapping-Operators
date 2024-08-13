@@ -1,10 +1,10 @@
 package be.ugent.idlab.knows.amo.operators.intermediate.binary;
 
+import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.JoinCondition;
 
-public class LeftJoin extends ThetaJoin {
-
+public class LeftJoin extends Join{
     /**
      * A convenience constructor with the output fragment being the same as input fragment
      * @param operatorname
@@ -31,5 +31,11 @@ public class LeftJoin extends ThetaJoin {
             empty.put(key, null);
         }
         return mapping1.union(empty);
+    }
+
+    @Override
+    public MappingTuple apply(MappingTuple tuple1, MappingTuple tuple2) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'apply'");
     }
 }
