@@ -30,6 +30,11 @@ public class MappingTuple implements Serializable {
         this.map = map;
     }
 
+
+    public void removeFragment(String fragment){
+        this.map.removeAll(fragment); 
+    }
+
     /**
      * Add a SolutionMapping to a collection of SolutionMappings the fragment refers
      * to.
