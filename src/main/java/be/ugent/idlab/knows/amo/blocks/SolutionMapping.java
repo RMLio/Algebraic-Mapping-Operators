@@ -22,6 +22,7 @@ public class SolutionMapping extends HashMap<String, RDFNode> {
     }
 
     public SolutionMapping() {
+        super();
     }
 
     public SolutionMapping(Map<String, RDFNode> variables) {
