@@ -5,8 +5,6 @@ import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.JoinCondition;
 import be.ugent.idlab.knows.amo.operators.intermediate.unary.RenameOperator;
 
-import java.io.ObjectInputStream;
-import java.io.Serial;
 import java.util.Collection;
 
 /**
@@ -20,6 +18,17 @@ public class ThetaJoin extends Join {
         super(operatorName, inputFragment, outputFragment, condition, alias);
     }
 
+    public static SolutionMapping thetaJoinSolMap(SolutionMapping mapping1, SolutionMapping mapping2,
+            RenameOperator renameOperator, JoinCondition condition) {
+        SolutionMapping m2Aliased = renameOperator.apply(mapping2);
+
+        if (condition.apply(mapping1, m2Aliased)) {
+            return mapping1.union(m2Aliased);
+        }
+
+        return new SolutionMapping(); // in case the condition doesn't apply, empty solution map is returned
+
+    }
 
     /**
      * This code assumes that mapping2 is already aliased as per the definitions of
@@ -32,13 +41,7 @@ public class ThetaJoin extends Join {
      */
     @Override
     public SolutionMapping apply(SolutionMapping mapping1, SolutionMapping mapping2) {
-        SolutionMapping m2Aliased = this.renameOperator.apply(mapping2);
-
-        if (this.condition.apply(mapping1, m2Aliased)) {
-            return mapping1.union(m2Aliased);
-        }
-
-        return new SolutionMapping(); // in case the condition doesn't apply, empty solution map is returned
+        return ThetaJoin.thetaJoinSolMap(mapping1, mapping2, this.renameOperator, this.condition);
     }
 
     @Override
@@ -50,7 +53,7 @@ public class ThetaJoin extends Join {
 
         for (SolutionMapping mapping1 : mappings1) {
             for (SolutionMapping mapping2 : mappings2) {
-                SolutionMapping solOut = apply(mapping1, mapping2);
+                SolutionMapping solOut = this.apply(mapping1, mapping2);
                 if (!solOut.isEmpty()) {
                     out.addSolutionMap(this.outputFragment, solOut);
                 }

@@ -1,12 +1,17 @@
 package be.ugent.idlab.knows.amo.operators.intermediate.binary;
 
+import java.util.Collection;
+import java.util.Set;
+
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.JoinCondition;
 
-public class LeftJoin extends Join{
+public class LeftJoin extends Join {
     /**
-     * A convenience constructor with the output fragment being the same as input fragment
+     * A convenience constructor with the output fragment being the same as input
+     * fragment
+     * 
      * @param operatorname
      * @param inputFragment
      * @param condition
@@ -16,8 +21,30 @@ public class LeftJoin extends Join{
         this(operatorname, inputFragment, inputFragment, condition, alias);
     }
 
-    public LeftJoin(String operatorName,String inputFragment, String outputFragment, JoinCondition condition, String alias) {
+    public LeftJoin(String operatorName, String inputFragment, String outputFragment, JoinCondition condition,
+            String alias) {
         super(operatorName, inputFragment, outputFragment, condition, alias);
+    }
+
+    @Override
+    public MappingTuple apply(MappingTuple tuple1, MappingTuple tuple2) {
+        MappingTuple result = tuple1;
+
+        // θ-join and differences on target fragment
+        Collection<SolutionMapping> leftSolMaps = tuple1.getSolutionMappings(this.fragment);
+        Collection<SolutionMapping> rightSolMaps = tuple2.getSolutionMappings(this.fragment);
+        tuple1.removeFragment(this.fragment);
+        for (SolutionMapping leftSolMap : leftSolMaps) {
+            for (SolutionMapping rightSolMap : rightSolMaps) {
+                SolutionMapping joined = ThetaJoin.thetaJoinSolMap(leftSolMap, rightSolMap, this.renameOperator,
+                        this.condition);
+
+            }
+
+        }
+
+        // TODO Auto-generated method stub
+        return result;
     }
 
     @Override
@@ -33,9 +60,4 @@ public class LeftJoin extends Join{
         return mapping1.union(empty);
     }
 
-    @Override
-    public MappingTuple apply(MappingTuple tuple1, MappingTuple tuple2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'apply'");
-    }
 }
