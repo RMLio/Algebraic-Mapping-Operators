@@ -9,16 +9,16 @@
         "value": "dog",
         "type": "literal"
       },
-      "?animal_age": {
+      "?animal_?age": {
         "value": "10",
         "datatype": "integer",
         "type": "literal"
       },
-      "?animal_type": {
+      "?animal_?type": {
         "value": "dog",
         "type": "literal"
       },
-      "?animal_name": {
+      "?animal_?name": {
         "value": "Bax",
         "type": "literal"
       },
@@ -40,16 +40,16 @@
         "value": "dog",
         "type": "literal"
       },
-      "?animal_age": {
+      "?animal_?age": {
         "value": "5",
         "datatype": "integer",
         "type": "literal"
       },
-      "?animal_type": {
+      "?animal_?type": {
         "value": "dog",
         "type": "literal"
       },
-      "?animal_name": {
+      "?animal_?name": {
         "value": "Max",
         "type": "literal"
       },
