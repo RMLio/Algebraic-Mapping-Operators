@@ -3,6 +3,8 @@ package be.ugent.idlab.knows.amo.blocks;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.Serializable;
 import java.util.*;
@@ -30,9 +32,8 @@ public class MappingTuple implements Serializable {
         this.map = map;
     }
 
-
-    public void removeFragment(String fragment){
-        this.map.removeAll(fragment); 
+    public void removeFragment(String fragment) {
+        this.map.removeAll(fragment);
     }
 
     /**
@@ -86,7 +87,7 @@ public class MappingTuple implements Serializable {
      * @return true if the MappingTuples are compatible, false otherwise
      */
     public boolean isCompatibleWith(MappingTuple that) {
-        Set<String> commonFragments = this.commonFragments(that); 
+        Set<String> commonFragments = this.commonFragments(that);
 
         for (String fragment : commonFragments) {
             Collection<SolutionMapping> mappings = this.map.get(fragment);
@@ -163,5 +164,14 @@ public class MappingTuple implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(map);
+    }
+
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        
+        return gson.toJson(this.map.asMap());
     }
 }

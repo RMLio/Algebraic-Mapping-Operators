@@ -7,8 +7,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
- * Solution mapping is a collection of key-value pairs connecting variables to their data
+ * Solution mapping is a collection of key-value pairs connecting variables to
+ * their data
  * These can be applied on a templated string
  */
 public class SolutionMapping extends HashMap<String, RDFNode> {
@@ -41,7 +45,8 @@ public class SolutionMapping extends HashMap<String, RDFNode> {
     /**
      * Checks compatibility with another SolutionMapping
      * <p>
-     * Two SolutionMappings are compatible if values of all common variables are the same
+     * Two SolutionMappings are compatible if values of all common variables are the
+     * same
      *
      * @param that SolutionMapping to check compatibility with
      * @return true if the SolutionMappings are compatible, false otherwise
@@ -70,7 +75,8 @@ public class SolutionMapping extends HashMap<String, RDFNode> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
+        if (this == o)
+            return true;
         if (o instanceof SolutionMapping that) {
             for (Map.Entry<String, RDFNode> e : this.entrySet()) {
                 RDFNode n = that.get(e.getKey());
@@ -87,5 +93,12 @@ public class SolutionMapping extends HashMap<String, RDFNode> {
     @Override
     public int hashCode() {
         return super.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        return gson.toJson(this);
     }
 }
