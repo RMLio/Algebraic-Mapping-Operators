@@ -29,7 +29,7 @@ default:
 
 Tests:
   stage: unittests
-  image: maven:3-eclipse-temurin-17
+  image: maven:3-eclipse-temurin-21
   retry: 2
   before_script:
     - 'mvn clean'
