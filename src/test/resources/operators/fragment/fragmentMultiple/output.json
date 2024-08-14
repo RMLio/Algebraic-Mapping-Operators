@@ -1,0 +1,16 @@
+{
+  "f_John": {
+    "?name": {
+      "value": "John",
+      "type": "literal"
+
+    }
+  },
+  "f_Jane": {
+    "?name": {
+      "value": "Jane",
+      "type": "literal"
+
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "f_default": {
+    "?foo": {
+      "value": "bar",
+      "type": "literal"
+    },
+    "?baz": {
+      "value": "0",
+      "type": "literal",
+      "datatype": "integer"
+    }
+  },
+  "f_contacts": {
+    "?name": {
+      "value": "John",
+      "type": "literal"
+    }
+  }
+}

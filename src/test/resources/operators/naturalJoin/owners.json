@@ -1,0 +1,48 @@
+{
+  "f_contacts": [
+    {
+      "?name": {
+        "value": "John Doe",
+        "type": "literal"
+      },
+      "?$.pet.type": {
+        "value": "dog",
+        "type": "literal"
+      },
+      "?$.pet.name": {
+        "value": "Bax",
+        "type": "literal"
+      },
+      "?firstname": {
+        "value": "John",
+        "type": "literal"
+      },
+      "?lastname": {
+        "value": "Doe",
+        "type": "literal"
+      }
+    },
+    {
+      "?name": {
+        "value": "Susan Sue",
+        "type": "literal"
+      },
+      "?$.pet.type": {
+        "value": "",
+        "type": "literal"
+      },
+      "?$.pet.name": {
+        "value": "",
+        "type": "literal"
+      },
+      "?firstname": {
+        "value": "Susan",
+        "type": "literal"
+      },
+      "?lastname": {
+        "value": "Sue",
+        "type": "literal"
+      }
+    }
+  ]
+}

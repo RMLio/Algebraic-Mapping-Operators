@@ -1,0 +1,16 @@
+{
+  "f_default": [
+    {
+      "?name": {
+        "value": "John",
+        "type": "literal"
+      }
+    },
+    {
+      "?name": {
+        "value": "Jane",
+        "type": "literal"
+      }
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "?foo": {
+    "value": "http://example.com/JohnDoe",
+    "type": "iri"
+  },
+  "?bar": {
+    "value": "John",
+    "type": "literal"
+  }
+}

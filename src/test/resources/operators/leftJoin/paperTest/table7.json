@@ -1,0 +1,49 @@
+{
+  "f_contacts": [
+    {
+      "?type": {
+        "value": "dog",
+        "type": "literal"
+      },
+      "?name": {
+        "value": "Bax",
+        "type": "literal"
+      },
+      "?age": {
+        "value": "10",
+        "datatype": "integer",
+        "type": "literal"
+      }
+    },
+    {
+      "?type": {
+        "value": "cat",
+        "type": "literal"
+      },
+      "?name": {
+        "value": "Coco",
+        "type": "literal"
+      },
+      "?age": {
+        "value": "3",
+        "datatype": "integer",
+        "type": "literal"
+      }
+    },
+    {
+      "?type": {
+        "value": "dog",
+        "type": "literal"
+      },
+      "?name": {
+        "value": "Max",
+        "type": "literal"
+      },
+      "?age": {
+        "value": "5",
+        "datatype": "integer",
+        "type": "literal"
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "f_default": {
+    "?foo": "bar",
+    "?baz": {
+      "error": -1
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "?john_iri": {
+    "value": "http://example.com/John",
+    "type": "iri"
+  },
+  "?susan_name": {
+    "value": "Susan",
+    "type": "literal"
+  },
+  "?jimmy_iri": {
+    "value": "http://example.com/Jimmy",
+    "type": "iri"
+  },
+  "?jimmy_name": {
+    "value": "Jimmy",
+    "type": "literal"
+  },
+  "?name_pred": {
+    "value": "http://example.com/name",
+    "type": "iri"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "f_contacts": {
+    "?serialized_output": {
+      "value": "<http://example.com/John> <http://example.com/name> \"John Doe\" .\n",
+      "type": "literal"
+    }
+  }
+}

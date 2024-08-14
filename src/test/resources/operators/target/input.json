@@ -1,0 +1,8 @@
+{
+  "f_target": {
+    "?foo": {
+      "value": "bar",
+      "type": "literal"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "?foo": {
+    "value": "0",
+    "type": "literal",
+    "datatype": "MyType"
+  }
+}
