@@ -14,13 +14,11 @@ public class ThetaJoinTest {
         MappingTuple table7 = BlocksIO.readMappingTuple("operators/leftJoin/paperTest/table7.json");
         MappingTuple expected = BlocksIO.readMappingTuple("operators/thetaJoin/output.json");
 
-        JoinCondition condition = ((s1, s2) ->
-                s1.containsKey("?$pet.type") && s1.get("?$pet.type") != null &&
-                        s2.containsKey("?animal_type") && s2.get("?animal_type") != null &&
-                        s1.get("?$pet.type").equals(s2.get("?animal_type"))
-        );
+        JoinCondition condition = ((s1, s2) -> s1.containsKey("?$pet.type") && s1.get("?$pet.type") != null &&
+                s2.containsKey("?animal_?type") && s2.get("?animal_?type") != null &&
+                s1.get("?$pet.type").equals(s2.get("?animal_?type")));
 
-        ThetaJoin operator = new ThetaJoin("ThetaJoin", "f_default", "f_default", condition, "animal_");
+        ThetaJoin operator = new ThetaJoin("ThetaJoin", "f_contacts", "f_contacts", condition, "animal_");
 
         MappingTuple actual = operator.apply(table6, table7);
         assertEquals(expected, actual);
