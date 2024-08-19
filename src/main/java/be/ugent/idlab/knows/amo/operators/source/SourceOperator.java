@@ -19,6 +19,8 @@ public abstract class SourceOperator extends Operator implements Serializable {
      */
     public abstract MappingTuple consumeSource();
 
+    public abstract String getDefaultFragment(); 
+
     @Override
     public <T> T accept(OperatorVisitor<T> visitor) {
         return visitor.visitSource(this);
