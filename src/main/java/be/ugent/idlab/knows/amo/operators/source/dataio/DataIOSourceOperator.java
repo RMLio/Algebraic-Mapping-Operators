@@ -21,4 +21,8 @@ public abstract class DataIOSourceOperator extends SourceOperator {
     public Access getAccess() {
         return access;
     }
+
+    public String getDefaultFragment() {
+        return this.defaultFragment;
+    }
 }
