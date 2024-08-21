@@ -9,9 +9,11 @@ import be.ugent.idlab.knows.dataio.record.CSVRecord;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class CSVSourceOperator extends DataIOSourceOperator {
 
+    private Optional<CSVSourceIterator> iterator;
 
     public CSVSourceOperator(String operatorName, Access access) {
         this(operatorName, access, "default");
@@ -19,15 +21,17 @@ public class CSVSourceOperator extends DataIOSourceOperator {
 
     public CSVSourceOperator(String operatorName, Access access, String defaultFragment) {
         super(operatorName, access, defaultFragment);
+        this.iterator = Optional.empty();
 
     }
 
     @Override
     public MappingTuple consumeSource() {
         MappingTuple tuple = new MappingTuple();
-        try (CSVSourceIterator iterator = new CSVSourceIterator(this.access)) {
-            while (iterator.hasNext()) {
-                CSVRecord r = (CSVRecord) iterator.next();
+        try {
+            this.init();
+            while (this.iterator.get().hasNext()) {
+                CSVRecord r = (CSVRecord) this.iterator.get().next();
                 SolutionMapping map = consumeRecord(r);
 
                 tuple.addSolutionMap(this.defaultFragment, map);
@@ -61,4 +65,30 @@ public class CSVSourceOperator extends DataIOSourceOperator {
 
         return map;
     }
+
+    @Override
+    public boolean hasNext() {
+        return this.isReady() && !this.iterator.isEmpty() && this.iterator.get().hasNext();
+    }
+
+    @Override
+    protected MappingTuple nextEffective() {
+        MappingTuple tuple = new MappingTuple();
+        CSVRecord r = (CSVRecord) this.iterator.get().next();
+        SolutionMapping map = consumeRecord(r);
+        tuple.addSolutionMap(this.defaultFragment, map);
+        return tuple;
+    }
+
+    @Override
+    public void init() throws Exception {
+        try {
+            this.iterator = Optional.of(new CSVSourceIterator(this.access));
+            this.setReady(true);
+        } catch (Exception e) {
+            this.setReady(false);
+            throw new RuntimeException(e);
+        }
+    }
+
 }

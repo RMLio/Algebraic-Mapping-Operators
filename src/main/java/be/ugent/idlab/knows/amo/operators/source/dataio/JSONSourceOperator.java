@@ -10,29 +10,35 @@ import org.apache.jena.datatypes.xsd.XSDDatatype;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Implementation of the SourceOperator using DataIO for JSON sources.
- * DataIO is written with infinite sources in mind: it provides no way to inspect all variables present in the stream.
- * For this reason, this source must be provided with variables to be read and included in the MappingTuple
+ * DataIO is written with infinite sources in mind: it provides no way to
+ * inspect all variables present in the stream.
+ * For this reason, this source must be provided with variables to be read and
+ * included in the MappingTuple
  */
 public class JSONSourceOperator extends DataIOSourceOperator {
 
     private final Collection<String> rootVariables;
     private final String rootIterator;
     private final Collection<String> subIterators;
+    private Optional<JSONSourceIterator> sourceIteratorOpt;
 
     public JSONSourceOperator(String operatorName, Access access, Collection<String> rootVariables, String rootIterator,
-                              Collection<String> subIterators) {
+            Collection<String> subIterators) {
         this(operatorName, access, "default", rootVariables, rootIterator, subIterators);
     }
 
-    public JSONSourceOperator(String operatorName, Access access, String defaultFragment, Collection<String> rootVariables, String rootIterator,
-                              Collection<String> subIterators) {
+    public JSONSourceOperator(String operatorName, Access access, String defaultFragment,
+            Collection<String> rootVariables, String rootIterator,
+            Collection<String> subIterators) {
         super(operatorName, access, defaultFragment);
         this.rootVariables = rootVariables;
         this.rootIterator = rootIterator;
         this.subIterators = subIterators;
+        this.sourceIteratorOpt = Optional.empty();
     }
 
     @Override
@@ -41,7 +47,9 @@ public class JSONSourceOperator extends DataIOSourceOperator {
 
         // TODO consider caching the Access stream
         // get everything from rootIterator
-        try (JSONSourceIterator iterator = new JSONSourceIterator(this.access, this.rootIterator)) {
+        try {
+            this.init();
+            JSONSourceIterator iterator = this.sourceIteratorOpt.get();
             while (iterator.hasNext()) {
                 Record r = iterator.next();
                 SolutionMapping map = new SolutionMapping();
@@ -56,7 +64,6 @@ public class JSONSourceOperator extends DataIOSourceOperator {
             throw new RuntimeException(e);
         }
 
-
         return tuple;
     }
 
@@ -70,6 +77,39 @@ public class JSONSourceOperator extends DataIOSourceOperator {
                 value = "";
             }
             map.put(it, new LiteralNode(value, XSDDatatype.XSDstring));
+        }
+    }
+
+    @Override
+    protected MappingTuple nextEffective() {
+        MappingTuple tuple = new MappingTuple();
+        Record r = this.sourceIteratorOpt.get().next();
+        SolutionMapping map = new SolutionMapping();
+        // consume variables to be fetched from the root iterator
+        consumeRecord(r, this.rootVariables, map);
+        // consume any and all subiterators with respect to the root iterator
+        consumeRecord(r, this.subIterators, map);
+        tuple.addSolutionMap(this.defaultFragment, map);
+
+        return tuple;
+
+    }
+
+    @Override
+    public boolean hasNext() {
+        return this.isReady() && !this.sourceIteratorOpt.isEmpty() && this.sourceIteratorOpt.get().hasNext();
+    }
+
+    @Override
+    public void init() throws Exception {
+        try {
+            JSONSourceIterator iterator = new JSONSourceIterator(this.access, this.rootIterator);
+            this.sourceIteratorOpt = Optional.of(iterator);
+            this.setReady(true);
+        } catch (Exception e) {
+            this.setReady(false);
+            throw new RuntimeException(e);
+
         }
     }
 }
