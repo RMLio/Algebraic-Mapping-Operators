@@ -45,8 +45,9 @@ public class CSVSourceOperator extends DataIOSourceOperator {
     private SolutionMapping consumeRecord(CSVRecord r) {
         SolutionMapping map = new SolutionMapping();
         Map<String, String> data = r.getData();
-        for (String key : data.keySet()) {
+        for (Map.Entry<String, String> entry : data.entrySet()) {
             XSDDatatype datatype;
+            String key = entry.getKey(); 
             String recordedDatatype = r.getDataType(key);
             if (recordedDatatype != null) {
                 datatype = new XSDDatatype(recordedDatatype);
@@ -54,7 +55,7 @@ public class CSVSourceOperator extends DataIOSourceOperator {
                 datatype = XSDDatatype.XSDstring;
             }
 
-            Object value = data.get(key);
+            String value = entry.getValue();
             if (data.get(key) == null) {
                 value = "";
             }

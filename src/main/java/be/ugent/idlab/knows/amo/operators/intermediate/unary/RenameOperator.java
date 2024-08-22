@@ -3,10 +3,12 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 
 import java.io.ObjectInputStream;
 import java.io.Serial;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * RenameOperator will rename the variables.
@@ -72,11 +74,13 @@ public class RenameOperator extends UnaryOperator {
         public SolutionMapping apply(SolutionMapping mapping) {
             SolutionMapping out = new SolutionMapping();
             for (Pair<String, String> p : this.pairs) {
-                for (String key : mapping.keySet()) {
+                for (Map.Entry<String, RDFNode> entry : mapping.entrySet()) {
+                    String key = entry.getKey(); 
+                    RDFNode value = entry.getValue();
                     if (key.equals(p.first())) {
-                        out.put(p.second(), mapping.get(key));
+                        out.put(p.second(), value);
                     } else {
-                        out.put(key, mapping.get(key));
+                        out.put(key, value);
                     }
                 }
             }
@@ -96,9 +100,10 @@ public class RenameOperator extends UnaryOperator {
         @Override
         public SolutionMapping apply(SolutionMapping mapping) {
             SolutionMapping out = new SolutionMapping();
-            for (String key : mapping.keySet()) {
+            for (Map.Entry<String,RDFNode> entry: mapping.entrySet()) {
+                String key = entry.getKey();
                 String aliased = "?" + alias + key; // TODO: here stood key.substring(1), this might mess with the tests
-                out.put(aliased, mapping.get(key));
+                out.put(aliased, entry.getValue());
             }
 
             return out;
