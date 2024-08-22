@@ -9,11 +9,10 @@ import be.ugent.idlab.knows.dataio.record.CSVRecord;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 
 import java.util.Map;
-import java.util.Optional;
 
 public class CSVSourceOperator extends DataIOSourceOperator {
 
-    private Optional<CSVSourceIterator> iterator;
+    private CSVSourceIterator iterator;
 
     public CSVSourceOperator(String operatorName, Access access) {
         this(operatorName, access, "default");
@@ -21,7 +20,7 @@ public class CSVSourceOperator extends DataIOSourceOperator {
 
     public CSVSourceOperator(String operatorName, Access access, String defaultFragment) {
         super(operatorName, access, defaultFragment);
-        this.iterator = Optional.empty();
+        this.iterator = null;
 
     }
 
@@ -30,8 +29,8 @@ public class CSVSourceOperator extends DataIOSourceOperator {
         MappingTuple tuple = new MappingTuple();
         try {
             this.init();
-            while (this.iterator.get().hasNext()) {
-                CSVRecord r = (CSVRecord) this.iterator.get().next();
+            while (this.iterator.hasNext()) {
+                CSVRecord r = (CSVRecord) this.iterator.next();
                 SolutionMapping map = consumeRecord(r);
 
                 tuple.addSolutionMap(this.defaultFragment, map);
@@ -68,13 +67,13 @@ public class CSVSourceOperator extends DataIOSourceOperator {
 
     @Override
     public boolean hasNext() {
-        return this.isReady() && !this.iterator.isEmpty() && this.iterator.get().hasNext();
+        return this.isReady() && this.iterator != null && this.iterator.hasNext();
     }
 
     @Override
     protected MappingTuple nextEffective() {
         MappingTuple tuple = new MappingTuple();
-        CSVRecord r = (CSVRecord) this.iterator.get().next();
+        CSVRecord r = (CSVRecord) this.iterator.next();
         SolutionMapping map = consumeRecord(r);
         tuple.addSolutionMap(this.defaultFragment, map);
         return tuple;
@@ -83,7 +82,7 @@ public class CSVSourceOperator extends DataIOSourceOperator {
     @Override
     public void init() throws Exception {
         try {
-            this.iterator = Optional.of(new CSVSourceIterator(this.access));
+            this.iterator = new CSVSourceIterator(this.access);
             this.setReady(true);
         } catch (Exception e) {
             this.setReady(false);

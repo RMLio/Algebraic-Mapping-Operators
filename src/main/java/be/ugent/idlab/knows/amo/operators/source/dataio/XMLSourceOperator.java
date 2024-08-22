@@ -10,13 +10,12 @@ import org.apache.jena.datatypes.xsd.XSDDatatype;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 public class XMLSourceOperator extends DataIOSourceOperator {
     private final Collection<String> rootVariables;
     private final String rootIterator;
     private final Collection<String> subIterators;
-    private Optional<XMLSourceIterator> sourceIterator;
+    private XMLSourceIterator  sourceIterator;
 
     public XMLSourceOperator(String operatorName, Access access, Collection<String> rootVariables, String rootIterator,
             Collection<String> subIterators) {
@@ -29,7 +28,7 @@ public class XMLSourceOperator extends DataIOSourceOperator {
         this.rootVariables = rootVariables;
         this.rootIterator = rootIterator;
         this.subIterators = subIterators;
-        this.sourceIterator = Optional.empty();
+        this.sourceIterator = null;
     }
 
     @Override
@@ -37,7 +36,7 @@ public class XMLSourceOperator extends DataIOSourceOperator {
         MappingTuple mappingTuple = new MappingTuple();
         try {
             this.init();
-            XMLSourceIterator xmlSourceIterator = this.sourceIterator.get();
+            XMLSourceIterator xmlSourceIterator = this.sourceIterator;
             while (xmlSourceIterator.hasNext()) {
                 Record r = xmlSourceIterator.next();
                 SolutionMapping m = new SolutionMapping();
@@ -70,7 +69,7 @@ public class XMLSourceOperator extends DataIOSourceOperator {
     @Override
     protected MappingTuple nextEffective() {
         MappingTuple tuple = new MappingTuple();
-        Record r = this.sourceIterator.get().next();
+        Record r = this.sourceIterator.next();
         SolutionMapping m = new SolutionMapping();
         // consume variables to be fetched from the root iterator
         consumeRecord(r, this.rootVariables, m);
@@ -85,7 +84,8 @@ public class XMLSourceOperator extends DataIOSourceOperator {
 
     @Override
     public boolean hasNext() {
-        return this.isReady() && !this.sourceIterator.isEmpty() && this.sourceIterator.get().hasNext();
+        return this.isReady() && this.sourceIterator != null && this.sourceIterator.hasNext();
+
     }
 
     @Override
@@ -93,7 +93,7 @@ public class XMLSourceOperator extends DataIOSourceOperator {
         try {
 
             XMLSourceIterator xmlSourceIterator = new XMLSourceIterator(this.access, this.rootIterator);
-            this.sourceIterator = Optional.of(xmlSourceIterator);
+            this.sourceIterator = xmlSourceIterator;
             this.setReady(true);
         } catch (Exception e) {
             this.setReady(false);
