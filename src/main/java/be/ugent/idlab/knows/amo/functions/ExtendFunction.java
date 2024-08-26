@@ -1,8 +1,6 @@
 package be.ugent.idlab.knows.amo.functions;
 
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
-import org.apache.jena.graph.Node;
 
 import java.io.Serializable;
 
@@ -11,6 +9,6 @@ import java.io.Serializable;
  */
 @FunctionalInterface
 public interface ExtendFunction extends Serializable {
-    RDFNode apply(SolutionMapping mapping);
+    String apply(SolutionMapping mapping);
 
 }
