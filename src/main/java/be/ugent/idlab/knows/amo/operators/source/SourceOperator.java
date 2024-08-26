@@ -5,7 +5,7 @@ import be.ugent.idlab.knows.amo.operators.Operator;
 import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
 
 public abstract class SourceOperator extends Operator {
-    private boolean isReady;
+    private transient boolean isReady;
 
     public SourceOperator(String operatorName) {
         super(operatorName);

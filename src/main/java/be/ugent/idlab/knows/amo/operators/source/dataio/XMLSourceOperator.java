@@ -15,7 +15,7 @@ public class XMLSourceOperator extends DataIOSourceOperator {
     private final Collection<String> rootVariables;
     private final String rootIterator;
     private final Collection<String> subIterators;
-    private XMLSourceIterator  sourceIterator;
+    private transient XMLSourceIterator  sourceIterator;
 
     public XMLSourceOperator(String operatorName, Access access, Collection<String> rootVariables, String rootIterator,
             Collection<String> subIterators) {

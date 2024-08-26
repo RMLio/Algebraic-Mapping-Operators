@@ -23,7 +23,7 @@ public class JSONSourceOperator extends DataIOSourceOperator {
     private final Collection<String> rootVariables;
     private final String rootIterator;
     private final Collection<String> subIterators;
-    private JSONSourceIterator sourceIterator;
+    private transient JSONSourceIterator sourceIterator;
 
     public JSONSourceOperator(String operatorName, Access access, Collection<String> rootVariables, String rootIterator,
             Collection<String> subIterators) {

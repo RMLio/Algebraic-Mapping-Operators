@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class CSVSourceOperator extends DataIOSourceOperator {
 
-    private CSVSourceIterator iterator;
+    private transient CSVSourceIterator iterator;
 
     public CSVSourceOperator(String operatorName, Access access) {
         this(operatorName, access, "default");
