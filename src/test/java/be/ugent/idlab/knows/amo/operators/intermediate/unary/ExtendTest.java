@@ -15,14 +15,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExtendTest {
     // simple condition to concatenate first and last names
-    ExtendOperator op = new ExtendOperator("ExtendOp", "f_default", List.of(new Pair<String, ExtendFunction>("?full_name", (mapping -> {
-        String first = mapping.get("?first_name").getValue().toString();
-        String last = mapping.get("?last_name").getValue().toString();
+    ExtendOperator op = new ExtendOperator("ExtendOp", "f_default",
+            List.of(new Pair<String, ExtendFunction>("?full_name", (mapping -> {
+                String first = mapping.get("?first_name").getValue().toString();
+                String last = mapping.get("?last_name").getValue().toString();
 
-        LiteralNode n = (LiteralNode) mapping.get("?first_name");
-
-        return new LiteralNode(first + " " + last, n.getDatatype());
-    }))));
+                return first + " " + last;
+            }))));
 
     @Test
     public void simpleTestSolMapping() {

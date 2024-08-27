@@ -12,7 +12,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * ExtendOperator will generate new variables (potentially from existing variables) and add these to the SolutionMapping and / or MappingTuple.
+ * ExtendOperator will generate new variables (potentially from existing
+ * variables) and add these to the SolutionMapping and / or MappingTuple.
  * This is done using the ExtendFunction provided
  */
 public class ExtendOperator extends UnaryOperator {
@@ -48,7 +49,7 @@ public class ExtendOperator extends UnaryOperator {
         SolutionMapping newValues = new SolutionMapping();
         for (Pair<String, ExtendFunction> functionPair : this.replacements) {
             if (!mapping.containsKey(functionPair.first())) {
-                newValues.put(functionPair.first(), functionPair.second().apply(mapping));
+                newValues.put(functionPair.first(), functionPair.second().applyToNode(mapping));
             }
         }
 
