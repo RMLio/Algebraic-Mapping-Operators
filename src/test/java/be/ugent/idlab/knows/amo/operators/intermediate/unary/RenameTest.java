@@ -15,7 +15,7 @@ public class RenameTest {
 
     @Nested
     class PairRenameTests {
-        RenameOperator operator = new RenameOperator("RenameOp", "f_default", Set.of(new Pair<>("?name", "?fullname")));
+        RenameOperator operator = new RenameOperator("RenameOp", "f_default", Set.of(new Pair<>("?name", "fullname")));
 
         @Test
         public void simpleRenameSolutionMappingTest() {

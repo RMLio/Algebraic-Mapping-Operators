@@ -1,5 +1,5 @@
 {
-  "?fullname": {
+  "fullname": {
     "value": "John Doe",
     "type": "literal"
   }

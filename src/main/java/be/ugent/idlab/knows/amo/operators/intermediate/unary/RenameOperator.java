@@ -102,7 +102,7 @@ public class RenameOperator extends UnaryOperator {
             SolutionMapping out = new SolutionMapping();
             for (Map.Entry<String,RDFNode> entry: mapping.entrySet()) {
                 String key = entry.getKey();
-                String aliased = "?" + alias + key; // TODO: here stood key.substring(1), this might mess with the tests
+                String aliased = alias + key; // TODO: here stood key.substring(1), this might mess with the tests
                 out.put(aliased, entry.getValue());
             }
 
