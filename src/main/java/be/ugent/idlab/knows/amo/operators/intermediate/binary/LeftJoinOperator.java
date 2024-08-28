@@ -9,7 +9,7 @@ import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.JoinCondition;
 
-public class LeftJoin extends Join {
+public class LeftJoinOperator extends JoinOperator {
     /**
      * A convenience constructor with the output fragment being the same as input
      * fragment
@@ -19,11 +19,11 @@ public class LeftJoin extends Join {
      * @param condition
      * @param alias
      */
-    public LeftJoin(String operatorname, String inputFragment, JoinCondition condition, String alias) {
+    public LeftJoinOperator(String operatorname, String inputFragment, JoinCondition condition, String alias) {
         this(operatorname, inputFragment, inputFragment, condition, alias);
     }
 
-    public LeftJoin(String operatorName, String inputFragment, String outputFragment, JoinCondition condition,
+    public LeftJoinOperator(String operatorName, String inputFragment, String outputFragment, JoinCondition condition,
             String alias) {
         super(operatorName, inputFragment, outputFragment, condition, alias);
     }
@@ -51,7 +51,7 @@ public class LeftJoin extends Join {
 
     @Override
     public SolutionMapping apply(SolutionMapping mapping1, SolutionMapping mapping2) {
-        if (this.condition.apply(mapping1, mapping2)) {
+        if (this.condition.applyCheck(mapping1, mapping2)) {
             return mapping1.union(mapping2);
         }
 

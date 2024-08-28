@@ -5,7 +5,7 @@ import java.util.Set;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 
-public class NaturalJoin extends Join {
+public class NaturalJoinOperator extends JoinOperator {
 
     /**
      * A convenience constructor where the input fragment is the same as the output
@@ -14,15 +14,15 @@ public class NaturalJoin extends Join {
      * @param operatorName
      * @param inputFragment
      */
-    public NaturalJoin(String operatorName, String inputFragment) {
+    public NaturalJoinOperator(String operatorName, String inputFragment) {
         this(operatorName, inputFragment, inputFragment);
     }
 
-    public NaturalJoin(String operatorName, String inputFragment, String outputFragment) {
+    public NaturalJoinOperator(String operatorName, String inputFragment, String outputFragment) {
         this(operatorName, inputFragment, outputFragment, "");
     }
 
-    public NaturalJoin(String operatorName, String inputFragment, String outputFragment, String alias) {
+    public NaturalJoinOperator(String operatorName, String inputFragment, String outputFragment, String alias) {
         super(operatorName, inputFragment, outputFragment, SolutionMapping::isCompatibleWith, alias);
     }
 

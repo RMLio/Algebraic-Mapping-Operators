@@ -9,5 +9,5 @@ import java.io.Serializable;
  */
 @FunctionalInterface
 public interface JoinCondition extends Serializable {
-    boolean apply(SolutionMapping s1, SolutionMapping s2);
+    boolean applyCheck(SolutionMapping s1, SolutionMapping s2);
 }

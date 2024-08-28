@@ -18,7 +18,7 @@ public class ThetaJoinTest {
                 s2.containsKey("animal_?type") && s2.get("animal_?type") != null &&
                 s1.get("?$pet.type").equals(s2.get("animal_?type")));
 
-        ThetaJoin operator = new ThetaJoin("ThetaJoin", "f_contacts", "f_contacts", condition, "animal_");
+        ThetaJoinOperator operator = new ThetaJoinOperator("ThetaJoin", "f_contacts", "f_contacts", condition, "animal_");
 
         MappingTuple actual = operator.apply(table6, table7);
         assertEquals(expected, actual);

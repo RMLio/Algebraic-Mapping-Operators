@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NaturalJoinTest {
 
-    NaturalJoin operator = new NaturalJoin("NatJoin", "f_default", "f_default");
+    NaturalJoinOperator operator = new NaturalJoinOperator("NatJoin", "f_default", "f_default");
 
     @Test
     public void simpleTest() {

@@ -11,9 +11,9 @@ import java.util.Collection;
  * ThetaJoin implementing a join based on a condition.
  * This class also immediately serves as a base class for all conditional joins.
  */
-public class ThetaJoin extends Join {
+public class ThetaJoinOperator extends JoinOperator {
 
-    public ThetaJoin(String operatorName, String inputFragment, String outputFragment, JoinCondition condition,
+    public ThetaJoinOperator(String operatorName, String inputFragment, String outputFragment, JoinCondition condition,
             String alias) {
         super(operatorName, inputFragment, outputFragment, condition, alias);
     }
@@ -22,7 +22,7 @@ public class ThetaJoin extends Join {
             RenameOperator renameOperator, JoinCondition condition) {
         SolutionMapping m2Aliased = renameOperator.apply(mapping2);
 
-        if (condition.apply(mapping1, m2Aliased)) {
+        if (condition.applyCheck(mapping1, m2Aliased)) {
             return mapping1.union(m2Aliased);
         }
 
@@ -41,7 +41,7 @@ public class ThetaJoin extends Join {
      */
     @Override
     public SolutionMapping apply(SolutionMapping mapping1, SolutionMapping mapping2) {
-        return ThetaJoin.thetaJoinSolMap(mapping1, mapping2, this.renameOperator, this.condition);
+        return ThetaJoinOperator.thetaJoinSolMap(mapping1, mapping2, this.renameOperator, this.condition);
     }
 
     @Override
