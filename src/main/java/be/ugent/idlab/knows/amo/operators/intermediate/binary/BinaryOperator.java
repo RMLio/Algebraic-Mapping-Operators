@@ -11,6 +11,7 @@ import be.ugent.idlab.knows.amo.operators.intermediate.IntermediateOperator;
  * Binary operators accept two SolutionMappings or two MappingTuples and return a single SolutionMapping or a single MappingTuple
  */
 public abstract class BinaryOperator extends IntermediateOperator {
+    
 
     /**
      * @param fragment fragment the operator should operate on
@@ -18,6 +19,8 @@ public abstract class BinaryOperator extends IntermediateOperator {
     public BinaryOperator(String operatorName, String fragment) {
         super(operatorName, fragment);
     }
+
+    public abstract BinaryType getBinaryOpType(); 
 
     public abstract SolutionMapping apply(SolutionMapping mapping1, SolutionMapping mapping2);
 

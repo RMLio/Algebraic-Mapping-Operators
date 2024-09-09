@@ -19,18 +19,18 @@ public class NaturalJoinOperator extends JoinOperator {
     }
 
     public NaturalJoinOperator(String operatorName, String inputFragment, String outputFragment) {
-        this(operatorName, inputFragment, outputFragment, "");
+        super(operatorName, inputFragment, outputFragment, SolutionMapping::isCompatibleWith, "");
     }
 
-    public NaturalJoinOperator(String operatorName, String inputFragment, String outputFragment, String alias) {
-        super(operatorName, inputFragment, outputFragment, SolutionMapping::isCompatibleWith, alias);
+    @Override
+    public BinaryType getBinaryOpType() {
+        return new BinaryType.NaturalJoin();
     }
 
     @Override
     public SolutionMapping apply(SolutionMapping mapping1, SolutionMapping mapping2) {
         if (mapping1.isCompatibleWith(mapping2)) {
             return mapping1.union(mapping2);
-
         }
 
         return null;
@@ -39,7 +39,6 @@ public class NaturalJoinOperator extends JoinOperator {
 
     @Override
     public MappingTuple apply(MappingTuple tuple1, MappingTuple tuple2) {
-        // TODO: Auto-generated method stub
 
         MappingTuple result = new MappingTuple();
 

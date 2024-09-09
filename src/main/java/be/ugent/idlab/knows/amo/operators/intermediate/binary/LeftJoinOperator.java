@@ -28,6 +28,11 @@ public class LeftJoinOperator extends JoinOperator {
         super(operatorName, inputFragment, outputFragment, condition, alias);
     }
 
+    @Override 
+    public BinaryType getBinaryOpType() {
+        return new BinaryType.LeftJoin(); 
+    }
+
     @Override
     public MappingTuple apply(MappingTuple tuple1, MappingTuple tuple2) {
         MappingTuple result = tuple1;

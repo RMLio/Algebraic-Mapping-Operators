@@ -7,27 +7,39 @@ import be.ugent.idlab.knows.amo.operators.intermediate.unary.RenameOperator;
 
 import java.util.Collection;
 
+import org.h2.expression.condition.ConditionInParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * ThetaJoin implementing a join based on a condition.
  * This class also immediately serves as a base class for all conditional joins.
  */
 public class ThetaJoinOperator extends JoinOperator {
+    private static Logger LOG = LoggerFactory.getLogger(ThetaJoinOperator.class);
 
     public ThetaJoinOperator(String operatorName, String inputFragment, String outputFragment, JoinCondition condition,
             String alias) {
         super(operatorName, inputFragment, outputFragment, condition, alias);
     }
 
-    public static SolutionMapping thetaJoinSolMap(SolutionMapping mapping1, SolutionMapping mapping2,
+    public static SolutionMapping thetaJoinSolMap(SolutionMapping leftMapping, SolutionMapping rightMapping,
             RenameOperator renameOperator, JoinCondition condition) {
-        SolutionMapping m2Aliased = renameOperator.apply(mapping2);
+        SolutionMapping m2Aliased = renameOperator.apply(rightMapping);
 
-        if (condition.applyCheck(mapping1, m2Aliased)) {
-            return mapping1.union(m2Aliased);
+        LOG.warn(String.format("Join condition: \n %s", condition.toString()));
+        LOG.warn(String.format("Renamed solution mapping: \n %s", m2Aliased.toString()));
+        if (condition.applyCheck(leftMapping, m2Aliased)) {
+            return leftMapping.union(m2Aliased);
         }
 
         return new SolutionMapping(); // in case the condition doesn't apply, empty solution map is returned
 
+    }
+
+    @Override
+    public BinaryType getBinaryOpType() {
+        return new BinaryType.ThetaJoin();
     }
 
     /**
