@@ -22,4 +22,9 @@ public class BlankNode extends RDFNode {
     public String toString() {
         return "_:" + this.value.toString();
     }
+
+    @Override
+    public String getStringRepr() {
+        return this.toString(); 
+    }
 }

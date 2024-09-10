@@ -30,11 +30,15 @@ public class LiteralNode extends RDFNode {
 
     public LiteralNode(Object value, XSDDatatype datatype, String language) {
         /*
-         XSDDatatype is not serializable. Instead of writing a wrapper to enable serializability,
-         this library stores the information about the type as a string, with the XSDDatatype reconstructed from it as needed.
-
-         However, XSDDatatype constructor is unable to recognize the URI and instead, this hack needs to be performed:
-         Grab the index of the '#' after which the type follows and store that, as datatype.getURI() returns a string pointing to the type in XMLSchema.
+         * XSDDatatype is not serializable. Instead of writing a wrapper to enable
+         * serializability,
+         * this library stores the information about the type as a string, with the
+         * XSDDatatype reconstructed from it as needed.
+         * 
+         * However, XSDDatatype constructor is unable to recognize the URI and instead,
+         * this hack needs to be performed:
+         * Grab the index of the '#' after which the type follows and store that, as
+         * datatype.getURI() returns a string pointing to the type in XMLSchema.
          */
         this(value, datatype.getURI().substring(datatype.getURI().indexOf('#') + 1), language);
     }
@@ -47,7 +51,6 @@ public class LiteralNode extends RDFNode {
         return language;
     }
 
-
     public Object getValue() {
         return getDatatype().parse(this.value.toString());
     }
@@ -59,8 +62,10 @@ public class LiteralNode extends RDFNode {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         LiteralNode that = (LiteralNode) o;
         return this.datatype.equals(that.datatype) && language.equals(that.language) && this.value.equals(that.value);
@@ -90,6 +95,9 @@ public class LiteralNode extends RDFNode {
 
         return out;
     }
+
+    @Override
+    public String getStringRepr() {
+        return this.getJenaNode().toString(true);
+    }
 }
-
-

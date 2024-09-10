@@ -66,20 +66,20 @@ public class BGPTest {
 
     @Test
     public void subjectVariableWithLanguageTag() {
-        String pattern = "?sub@en ?pred ?obj .";
+        String pattern = "?sub ?pred ?obj@en .";
         BGP bgp = new BGP(pattern);
 
         SolutionMapping mapping = new SolutionMapping(Map.of(
                 "?sub", new LiteralNode("subject"),
                 "?pred", new LiteralNode("predicate"),
-                "?obj", new LiteralNode("object")
+                "?obj", new LiteralNode("object" , "string", "en")
         ));
 
         DatasetGraph expected = DatasetGraphFactory.create();
         expected.getDefaultGraph().add(
-                NodeFactory.createLiteral("subject", "en"),
+                NodeFactory.createLiteral("subject"),
                 NodeFactory.createLiteral("predicate"),
-                NodeFactory.createLiteral("object")
+                NodeFactory.createLiteral("object", "en")
         );
 
         DatasetGraph actual = bgp.apply(mapping);

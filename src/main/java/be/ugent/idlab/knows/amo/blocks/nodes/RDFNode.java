@@ -28,6 +28,10 @@ public abstract class RDFNode implements Serializable {
         return false;
     }
 
+    public abstract Node getJenaNode();
+    
+    public abstract String getStringRepr(); 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -37,7 +41,6 @@ public abstract class RDFNode implements Serializable {
         return value.equals(rdfNode.value);
     }
 
-    public abstract Node getJenaNode();
 
     @Override
     public int hashCode() {

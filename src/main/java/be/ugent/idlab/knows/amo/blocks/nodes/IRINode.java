@@ -15,7 +15,8 @@ public class IRINode extends RDFNode {
 
     @Override
     public Node getJenaNode() {
-//        String encoded = URLEncoder.encode(this.value.toString(), StandardCharsets.UTF_8);
+        // String encoded = URLEncoder.encode(this.value.toString(),
+        // StandardCharsets.UTF_8);
 
         StringBuilder sb = new StringBuilder();
         this.value.toString().chars().forEach(c -> {
@@ -37,4 +38,10 @@ public class IRINode extends RDFNode {
     public String toString() {
         return this.value.toString();
     }
+
+    @Override
+    public String getStringRepr() {
+        return "<" + this.getJenaNode().toString() + ">";
+    }
+
 }
