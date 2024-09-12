@@ -1,7 +1,6 @@
 package be.ugent.idlab.knows.amo.blocks;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,11 +8,13 @@ import com.google.gson.GsonBuilder;
 import java.io.Serializable;
 import java.util.*;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A partial map between fragments and solution mappings.
  */
 public class MappingTuple implements Serializable {
-    private Multimap<String, SolutionMapping> map;
+    private Multimap<String, @Nullable SolutionMapping> map;
 
     public MappingTuple() {
         this.map = ArrayListMultimap.create();
@@ -24,11 +25,11 @@ public class MappingTuple implements Serializable {
         this.map = that.map;
     }
 
-    public Multimap<String, SolutionMapping> getMap() {
+    public Multimap<String, @Nullable SolutionMapping> getMap() {
         return map;
     }
 
-    public void setMap(Multimap<String, SolutionMapping> map) {
+    public void setMap(Multimap<String, @Nullable SolutionMapping> map) {
         this.map = map;
     }
 
@@ -43,14 +44,8 @@ public class MappingTuple implements Serializable {
      * @param fragment fragment in question
      * @param mapping  SolutionMapping to add
      */
-    public void addSolutionMap(String fragment, SolutionMapping mapping) {
+    public void addSolutionMap(String fragment, @Nullable SolutionMapping mapping) {
         this.map.put(fragment, mapping);
-        // if (this.map.containsKey(fragment)) {
-        // Collection<SolutionMapping> present = this.map.get(fragment);
-        // present.add(mapping);
-        // } else {
-        // this.map.put(fragment, mapping);
-        // }
     }
 
     /**
@@ -60,16 +55,16 @@ public class MappingTuple implements Serializable {
      * @param fragment fragment to overwrite
      * @param mapping  a collection of SolutionMappings the fragment should refer to
      */
-    public void setSolutionMaps(String fragment, Collection<SolutionMapping> mapping) {
+    public void setSolutionMaps(String fragment, Collection<@Nullable SolutionMapping> mapping) {
 
         this.map.replaceValues(fragment, mapping);
     }
 
-    public void setSolutionMaps(String fragment, SolutionMapping... mapping) {
+    public void setSolutionMaps(String fragment, @Nullable SolutionMapping... mapping) {
         this.setSolutionMaps(fragment, Arrays.asList(mapping));
     }
 
-    public Collection<SolutionMapping> getSolutionMappings(String fragment) {
+    public Collection<@Nullable SolutionMapping> getSolutionMappings(String fragment) {
         return this.map.get(fragment);
     }
 
@@ -86,7 +81,11 @@ public class MappingTuple implements Serializable {
      * @param that MappingTuple to compare to
      * @return true if the MappingTuples are compatible, false otherwise
      */
-    public boolean isCompatibleWith(MappingTuple that) {
+    public boolean isCompatibleWith(@Nullable MappingTuple that) {
+        if (that == null) {
+            return true;
+        }
+
         Set<String> commonFragments = this.commonFragments(that);
 
         for (String fragment : commonFragments) {
@@ -110,7 +109,11 @@ public class MappingTuple implements Serializable {
     /**
      * Method to merge another MappingTuple with this MappingTuple.
      */
-    public MappingTuple union(MappingTuple that) {
+    public MappingTuple union(@Nullable MappingTuple that) {
+        if (that == null) {
+            return new MappingTuple(this);
+        }
+
         MappingTuple out = new MappingTuple(this);
 
         for (String fragment : that.getFragments()) {
@@ -128,7 +131,11 @@ public class MappingTuple implements Serializable {
      * @param that a MappingTuple
      * @return a set of fragments that are common between the two tuples.
      */
-    public Set<String> commonFragments(MappingTuple that) {
+    public Set<String> commonFragments(@Nullable MappingTuple that) {
+        if (that == null) {
+            return new HashSet<>();
+        }
+
         Set<String> fragments = new HashSet<>(this.getFragments());
         fragments.retainAll(that.getFragments());
 
@@ -168,10 +175,7 @@ public class MappingTuple implements Serializable {
 
     @Override
     public String toString() {
-        // TODO Auto-generated method stub
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-        
         return gson.toJson(this.map.asMap());
     }
 }
