@@ -105,9 +105,10 @@ public class SolutionMapping extends HashMap<String, @Nullable RDFNode> {
         if (this == o)
             return true;
         if (o instanceof SolutionMapping that) {
-            for (Map.Entry<String, RDFNode> e : this.entrySet()) {
-                RDFNode n = that.get(e.getKey());
-                if (!e.getValue().equals(n)) {
+            for (Map.Entry<String, RDFNode> entry : this.entrySet()) {
+                RDFNode thatValue = that.get(entry.getKey());
+                RDFNode thisValue = entry.getValue();
+                if (thisValue != null && !thisValue.equals(thatValue)) {
                     return false;
                 }
             }
