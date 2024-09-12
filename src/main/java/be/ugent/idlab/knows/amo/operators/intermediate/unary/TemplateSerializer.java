@@ -12,6 +12,7 @@ import org.jspecify.annotations.Nullable;
 import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 
 public class TemplateSerializer extends UnaryOperator {
 
@@ -65,7 +66,10 @@ public class TemplateSerializer extends UnaryOperator {
             String template = tuple.second();
 
             for (String variable : variables) {
-                template = template.replaceAll("\\" + variable, mapping.get(variable).getStringRepr());
+                RDFNode solutionValue = mapping.get(variable);
+                if (solutionValue != null) {
+                    template = template.replaceAll("\\" + variable, solutionValue.getStringRepr());
+                }
             }
 
             serializedStringList.add(template);

@@ -3,7 +3,6 @@ package be.ugent.idlab.knows.amo.operators.intermediate.binary;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.JoinCondition;
-import be.ugent.idlab.knows.amo.operators.intermediate.unary.RenameOperator;
 
 import java.util.Collection;
 
