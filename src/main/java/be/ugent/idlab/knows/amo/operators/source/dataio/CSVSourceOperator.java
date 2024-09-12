@@ -58,7 +58,7 @@ public class CSVSourceOperator extends DataIOSourceOperator {
             }
 
             String value = entry.getValue();
-            if (data.get(key) == null) {
+            if (value == null) {
                 value = "";
             }
 

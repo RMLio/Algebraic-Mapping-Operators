@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Basic Graph Pattern is a pattern to generate RDF triples by replacement of variables.
+ * Basic Graph Pattern is a pattern to generate RDF triples by replacement of
+ * variables.
  */
 public class BGP implements Serializable {
     public static final String DEFAULT_GRAPH_NAME = "http://www.w3.org/ns/r2rml#defaultGraph";
@@ -52,28 +53,30 @@ public class BGP implements Serializable {
         Query query = QueryFactory.create(start + end);
         this.quads = query.getConstructTemplate().getQuads();
 
-//
-//        for (String line : lines) {
-//            String[] parts = line.split(" ");
-//            Quad q;
-//            if (parts.length == 4) { // it's a triple: sub pred obj .
-//                Node subject = getNode(parts[0]);
-//                Node predicate = getNode(parts[1]);
-//                Node object = getNode(parts[2]);
-//
-//                q = new Quad(NodeFactory.createLiteral(DEFAULT_GRAPH_NAME), subject, predicate, object);
-//            } else if (parts.length == 5) { // it's a quad: sub pred obj graph .
-//                Node subject = getNode(parts[0]);
-//                Node predicate = getNode(parts[1]);
-//                Node object = getNode(parts[2]);
-//                Node graph = getNode(parts[3]);
-//
-//                q = new Quad(graph, subject, predicate, object);
-//            } else {
-//                throw new IllegalArgumentException(String.format("Can't process \"%s\": it's neither a triple, nor a quad", pattern));
-//            }
-//            this.quads.add(q);
-//        }
+        //
+        // for (String line : lines) {
+        // String[] parts = line.split(" ");
+        // Quad q;
+        // if (parts.length == 4) { // it's a triple: sub pred obj .
+        // Node subject = getNode(parts[0]);
+        // Node predicate = getNode(parts[1]);
+        // Node object = getNode(parts[2]);
+        //
+        // q = new Quad(NodeFactory.createLiteral(DEFAULT_GRAPH_NAME), subject,
+        // predicate, object);
+        // } else if (parts.length == 5) { // it's a quad: sub pred obj graph .
+        // Node subject = getNode(parts[0]);
+        // Node predicate = getNode(parts[1]);
+        // Node object = getNode(parts[2]);
+        // Node graph = getNode(parts[3]);
+        //
+        // q = new Quad(graph, subject, predicate, object);
+        // } else {
+        // throw new IllegalArgumentException(String.format("Can't process \"%s\": it's
+        // neither a triple, nor a quad", pattern));
+        // }
+        // this.quads.add(q);
+        // }
         this.bootstrap();
     }
 
@@ -96,11 +99,11 @@ public class BGP implements Serializable {
             parts[i] = part;
         }
         // escape the language tag: ?ob@en should become "?ob"@en
-//        if (line.charAt(line.length() - 3) == '@') {
-//            int atIndex = line.indexOf('@');
-//            line = "\"" + line.substring(0, atIndex) + "\"" + line.substring(atIndex);
-//        }
-//        return line;
+        // if (line.charAt(line.length() - 3) == '@') {
+        // int atIndex = line.indexOf('@');
+        // line = "\"" + line.substring(0, atIndex) + "\"" + line.substring(atIndex);
+        // }
+        // return line;
 
         return String.join(" ", parts);
     }
@@ -157,6 +160,8 @@ public class BGP implements Serializable {
         }
     }
 
+    // TODO: Remove warning supression when ready to handle nullness <12-09-24, Min Oo> //
+    @SuppressWarnings("null")
     public DatasetGraph apply(SolutionMapping m) {
         // replace all known variables
 
@@ -168,17 +173,17 @@ public class BGP implements Serializable {
             String variable;
             if (q.getSubject().isVariable()) {
                 variable = q.getSubject().toString();
-                if (m.containsKey(variable)) {
+                if (m.containsKey(variable) && m.get(variable) != null) {
                     q = Quad.create(q.getGraph(), m.get(variable).getJenaNode(), q.getPredicate(), q.getObject());
                     newQuads.set(index, q);
                 }
             } else {
                 Node_Literal n = (Node_Literal) q.getSubject();
                 variable = n.getLiteralValue().toString();
-//                n.getLiteral().getLexicalForm()
+                // n.getLiteral().getLexicalForm()
                 String value = m.get(variable).toString();
                 Node newNode = NodeFactory.createLiteral(value, n.getLiteralLanguage());
-//                q.getsubject() m.get(variable).getJenaNode();
+                // q.getsubject() m.get(variable).getJenaNode();
                 Quad newQ = Quad.create(q.getGraph(), newNode, q.getPredicate(), q.getObject());
                 newQuads.set(index, newQ);
             }
@@ -218,7 +223,7 @@ public class BGP implements Serializable {
             }
         }
 
-//        // construct a new graph
+        // // construct a new graph
         DatasetGraph g = DatasetGraphFactory.create();
         for (Quad quad : newQuads) {
             String value;
