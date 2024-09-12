@@ -8,6 +8,7 @@ import com.google.gson.GsonBuilder;
 import java.io.Serializable;
 import java.util.*;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -21,7 +22,7 @@ public class MappingTuple implements Serializable {
     }
 
     // a copy constructor
-    public MappingTuple(MappingTuple that) {
+    public MappingTuple(@NonNull MappingTuple that) {
         this.map = that.map;
     }
 
