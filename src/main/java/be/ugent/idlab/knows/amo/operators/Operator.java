@@ -2,6 +2,8 @@ package be.ugent.idlab.knows.amo.operators;
 
 import java.io.Serializable;
 
+import org.jspecify.annotations.NonNull;
+
 /**
  * Marker interface for all operators
  */
@@ -17,7 +19,8 @@ public abstract class Operator implements Serializable {
         return this.operatorName;
     }
 
-    public abstract <T> T accept(OperatorVisitor<T> visitor);
+    @NonNull
+    public abstract <@NonNull T> T accept(@NonNull OperatorVisitor<T> visitor);
 
     @Override
     public String toString() {

@@ -6,6 +6,8 @@ import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import java.io.Serializable;
 import java.util.Collection;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A function that determines how a particular fragment should be fragmented into new fragments.
  * <p>
@@ -21,5 +23,6 @@ public interface FragmentFunction extends Serializable {
      * Applies the fragment function
      * @return a MappingTuple with the function applied.
      */
-    MappingTuple apply(MappingTuple tuple);
+    @Nullable
+    MappingTuple apply(@Nullable MappingTuple tuple);
 }

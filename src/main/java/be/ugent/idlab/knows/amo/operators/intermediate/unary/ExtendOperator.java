@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * ExtendOperator will generate new variables (potentially from existing
  * variables) and add these to the SolutionMapping and / or MappingTuple.
@@ -45,7 +47,12 @@ public class ExtendOperator extends UnaryOperator {
     }
 
     @Override
-    public SolutionMapping apply(SolutionMapping mapping) {
+    @Nullable
+    public SolutionMapping apply(@Nullable SolutionMapping mapping) {
+        if (mapping == null){
+            return null; 
+        }
+
         SolutionMapping newValues = new SolutionMapping();
         for (Pair<String, ExtendFunction> functionPair : this.replacements) {
             if (!mapping.containsKey(functionPair.first())) {
@@ -57,7 +64,11 @@ public class ExtendOperator extends UnaryOperator {
     }
 
     @Override
-    public MappingTuple apply(MappingTuple tuple) {
+    public MappingTuple apply(@Nullable MappingTuple tuple) {
+        if (tuple == null){
+            return null; 
+        }
+
         MappingTuple out = new MappingTuple();
 
         Collection<SolutionMapping> mappings = tuple.getSolutionMappings(this.fragment);

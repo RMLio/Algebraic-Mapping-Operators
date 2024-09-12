@@ -7,14 +7,16 @@ import be.ugent.idlab.knows.amo.functions.TargetSink;
 import be.ugent.idlab.knows.amo.operators.Operator;
 import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
 
-import java.io.Serializable;
 import java.util.Collection;
+
+import org.jspecify.annotations.NonNull;
 
 /**
  * TargetOperator will perform side effects on the MappingTuple.
- * This is the output of the mapping plan, writing the results into a file or standard output or ... according to the TargetSink function
+ * This is the output of the mapping plan, writing the results into a file or
+ * standard output or ... according to the TargetSink function
  */
-public class TargetOperator extends Operator implements Serializable {
+public class TargetOperator extends Operator {
 
     public static final String TARGET_VARIABLE = "?serialized_output";
 
@@ -49,7 +51,8 @@ public class TargetOperator extends Operator implements Serializable {
     }
 
     @Override
-    public <T> T accept(OperatorVisitor<T> visitor) {
+    @NonNull
+    public <@NonNull T> T accept(@NonNull OperatorVisitor<T> visitor) {
         return visitor.visitTarget(this);
     }
 }

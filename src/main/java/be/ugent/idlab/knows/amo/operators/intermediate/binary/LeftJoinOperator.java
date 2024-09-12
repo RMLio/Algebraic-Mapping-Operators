@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.JoinCondition;
@@ -28,13 +31,22 @@ public class LeftJoinOperator extends JoinOperator {
         super(operatorName, inputFragment, outputFragment, condition, alias);
     }
 
-    @Override 
+    @Override
+    @NonNull
     public BinaryType getBinaryOpType() {
-        return new BinaryType.LeftJoin(); 
+        return new BinaryType.LeftJoin();
     }
 
     @Override
-    public MappingTuple apply(MappingTuple tuple1, MappingTuple tuple2) {
+    @Nullable
+    public MappingTuple apply(@Nullable MappingTuple tuple1, @Nullable MappingTuple tuple2) {
+        if (tuple1 == null) {
+            return null;
+        }
+        if (tuple2 == null) {
+            return tuple1;
+        }
+
         MappingTuple result = tuple1;
 
         // left-join on solution mappings of the target fragment
@@ -55,7 +67,16 @@ public class LeftJoinOperator extends JoinOperator {
     }
 
     @Override
-    public SolutionMapping apply(SolutionMapping mapping1, SolutionMapping mapping2) {
+    @Nullable
+    public SolutionMapping apply(@Nullable SolutionMapping mapping1, @Nullable SolutionMapping mapping2) {
+        if (mapping1 == null) {
+            return null;
+        }
+
+        if (mapping2 == null) {
+            return mapping1;
+        }
+
         if (this.condition.applyCheck(mapping1, mapping2)) {
             return mapping1.union(mapping2);
         }

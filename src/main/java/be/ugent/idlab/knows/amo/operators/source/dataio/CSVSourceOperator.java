@@ -7,6 +7,7 @@ import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.CSVSourceIterator;
 import be.ugent.idlab.knows.dataio.record.CSVRecord;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
 
@@ -25,6 +26,7 @@ public class CSVSourceOperator extends DataIOSourceOperator {
     }
 
     @Override
+    @NonNull
     public MappingTuple consumeSource() {
         MappingTuple tuple = new MappingTuple();
         try {
@@ -47,7 +49,7 @@ public class CSVSourceOperator extends DataIOSourceOperator {
         Map<String, String> data = r.getData();
         for (Map.Entry<String, String> entry : data.entrySet()) {
             XSDDatatype datatype;
-            String key = entry.getKey(); 
+            String key = entry.getKey();
             String recordedDatatype = r.getDataType(key);
             if (recordedDatatype != null) {
                 datatype = new XSDDatatype(recordedDatatype);
@@ -72,6 +74,7 @@ public class CSVSourceOperator extends DataIOSourceOperator {
     }
 
     @Override
+    @NonNull
     protected MappingTuple nextEffective() {
         MappingTuple tuple = new MappingTuple();
         CSVRecord r = (CSVRecord) this.iterator.next();

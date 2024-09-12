@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jspecify.annotations.Nullable;
+
 import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
@@ -49,7 +51,11 @@ public class TemplateSerializer extends UnaryOperator {
     }
 
     @Override
-    SolutionMapping apply(SolutionMapping mapping) {
+    @Nullable
+    SolutionMapping apply(@Nullable SolutionMapping mapping) {
+        if (mapping == null) {
+            return null;
+        }
 
         SolutionMapping result = new SolutionMapping();
         List<String> serializedStringList = new ArrayList<>();

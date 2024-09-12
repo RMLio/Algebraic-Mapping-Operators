@@ -6,9 +6,12 @@ import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import java.util.Collection;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Project operator responsible for restricting the solution mappings.
- * All variables that are not contained in the supplied collection will be removed from the SolutionMapping / MappingTuple.
+ * All variables that are not contained in the supplied collection will be
+ * removed from the SolutionMapping / MappingTuple.
  */
 public class ProjectOperator extends UnaryOperator {
 
@@ -20,7 +23,11 @@ public class ProjectOperator extends UnaryOperator {
     }
 
     @Override
-    public SolutionMapping apply(SolutionMapping mapping) {
+    @Nullable
+    public SolutionMapping apply(@Nullable SolutionMapping mapping) {
+        if (mapping == null) {
+            return null;
+        }
         SolutionMapping newMapping = new SolutionMapping();
         for (Map.Entry<String, RDFNode> entry : mapping.entrySet()) {
             if (this.variables.contains(entry.getKey())) {

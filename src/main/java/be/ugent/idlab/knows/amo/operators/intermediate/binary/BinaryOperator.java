@@ -1,5 +1,8 @@
 package be.ugent.idlab.knows.amo.operators.intermediate.binary;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
@@ -8,10 +11,10 @@ import be.ugent.idlab.knows.amo.operators.intermediate.IntermediateOperator;
 /**
  * Base interface for all binary operators
  * <p>
- * Binary operators accept two SolutionMappings or two MappingTuples and return a single SolutionMapping or a single MappingTuple
+ * Binary operators accept two SolutionMappings or two MappingTuples and return
+ * a single SolutionMapping or a single MappingTuple
  */
 public abstract class BinaryOperator extends IntermediateOperator {
-    
 
     /**
      * @param fragment fragment the operator should operate on
@@ -20,14 +23,18 @@ public abstract class BinaryOperator extends IntermediateOperator {
         super(operatorName, fragment);
     }
 
-    public abstract BinaryType getBinaryOpType(); 
+    @NonNull
+    public abstract BinaryType getBinaryOpType();
 
-    public abstract SolutionMapping apply(SolutionMapping mapping1, SolutionMapping mapping2);
+    @Nullable
+    public abstract SolutionMapping apply(@Nullable SolutionMapping mapping1, @Nullable SolutionMapping mapping2);
 
-    public abstract MappingTuple apply(MappingTuple tuple1, MappingTuple tuple2);
+    @Nullable
+    public abstract MappingTuple apply(@Nullable MappingTuple tuple1, @Nullable MappingTuple tuple2);
 
     @Override
-    public <T> T accept(OperatorVisitor<T> visitor) {
+    @NonNull
+    public <@NonNull T> T accept(@NonNull OperatorVisitor<T> visitor) {
         return visitor.visitBinary(this);
     }
 }

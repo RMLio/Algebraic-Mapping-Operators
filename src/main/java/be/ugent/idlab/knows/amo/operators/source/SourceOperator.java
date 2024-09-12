@@ -1,9 +1,13 @@
 package be.ugent.idlab.knows.amo.operators.source;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.operators.Operator;
 import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
 
+@NullMarked
 public abstract class SourceOperator extends Operator {
     private transient boolean isReady;
 
@@ -46,7 +50,8 @@ public abstract class SourceOperator extends Operator {
     }
 
     @Override
-    public <T> T accept(OperatorVisitor<T> visitor) {
+    public <@NonNull T> T accept( OperatorVisitor<T> visitor) {
         return visitor.visitSource(this);
     }
+
 }

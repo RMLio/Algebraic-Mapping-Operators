@@ -8,8 +8,12 @@ import be.ugent.idlab.knows.amo.operators.intermediate.IntermediateOperator;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 /**
- * Base interface for all operators that work on individual SolutionMappings and MappingTuples
+ * Base interface for all operators that work on individual SolutionMappings and
+ * MappingTuples
  */
 public abstract class UnaryOperator extends IntermediateOperator {
 
@@ -26,13 +30,15 @@ public abstract class UnaryOperator extends IntermediateOperator {
      * @param mapping
      * @return the processed SolutionMapping
      */
-    abstract SolutionMapping apply(SolutionMapping mapping);
+    @Nullable
+    abstract SolutionMapping apply(@Nullable SolutionMapping mapping);
 
     /**
      * Apply the operator on the entire collection of SolutionMappings.
      *
      * @param mappings a Collection of SolutionMappings to apply the operator on
-     * @return a collection of processed SolutionMappings (internally returned as a List)
+     * @return a collection of processed SolutionMappings (internally returned as a
+     *         List)
      */
     public Collection<SolutionMapping> applySolMapCollection(Collection<SolutionMapping> mappings) {
         return mappings.stream()
@@ -46,7 +52,11 @@ public abstract class UnaryOperator extends IntermediateOperator {
      * @param tuple tuple to apply the operator on.
      * @return the processed MappingTuple
      */
-    public MappingTuple apply(MappingTuple tuple) {
+    @Nullable
+    public MappingTuple apply(@Nullable MappingTuple tuple) {
+        if (tuple == null) {
+            return null;
+        }
         MappingTuple out = new MappingTuple();
 
         for (SolutionMapping map : tuple.getSolutionMappings(this.fragment)) {
@@ -61,14 +71,15 @@ public abstract class UnaryOperator extends IntermediateOperator {
      * Apply the operator on the entire collection of MappingTuples.
      *
      * @param tuples a Collection of MappingTuples to apply the operator on.
-     * @return a Collection of processed MappingTuples (internally returned as a List).
+     * @return a Collection of processed MappingTuples (internally returned as a
+     *         List).
      */
     public Collection<MappingTuple> applyMapTupCollection(Collection<MappingTuple> tuples) {
         return tuples.stream().map(this::apply).collect(Collectors.toList());
     }
 
     @Override
-    public <T> T accept(OperatorVisitor<T> visitor) {
+    public <@NonNull T> T accept(@NonNull OperatorVisitor<T> visitor) {
         return visitor.visitUnary(this);
     }
 }

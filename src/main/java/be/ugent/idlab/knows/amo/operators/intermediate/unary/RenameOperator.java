@@ -10,10 +10,13 @@ import java.io.Serial;
 import java.util.Collection;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * RenameOperator will rename the variables.
  *
- * @param pairs a collection of Pairs to rename the variables. The pairs are supplied as instances of Pair(var_to_rename, new_var_name).
+ * @param pairs a collection of Pairs to rename the variables. The pairs are
+ *              supplied as instances of Pair(var_to_rename, new_var_name).
  */
 public class RenameOperator extends UnaryOperator {
 
@@ -40,12 +43,13 @@ public class RenameOperator extends UnaryOperator {
     }
 
     @Override
-    public SolutionMapping apply(SolutionMapping mapping) {
+    @Nullable
+    public SolutionMapping apply(@Nullable SolutionMapping mapping) {
         return this.implementation.apply(mapping);
     }
 
     @Override
-    public MappingTuple apply(MappingTuple tuple) {
+    public MappingTuple apply(@Nullable MappingTuple tuple) {
         return this.implementation.apply(tuple);
     }
 
@@ -71,11 +75,16 @@ public class RenameOperator extends UnaryOperator {
         }
 
         @Override
-        public SolutionMapping apply(SolutionMapping mapping) {
+        @Nullable
+        public SolutionMapping apply(@Nullable SolutionMapping mapping) {
+            if (mapping == null) {
+                return null;
+            }
+
             SolutionMapping out = new SolutionMapping();
             for (Pair<String, String> p : this.pairs) {
                 for (Map.Entry<String, RDFNode> entry : mapping.entrySet()) {
-                    String key = entry.getKey(); 
+                    String key = entry.getKey();
                     RDFNode value = entry.getValue();
                     if (key.equals(p.first())) {
                         out.put(p.second(), value);
@@ -98,9 +107,13 @@ public class RenameOperator extends UnaryOperator {
         }
 
         @Override
-        public SolutionMapping apply(SolutionMapping mapping) {
+        @Nullable
+        public SolutionMapping apply(@Nullable SolutionMapping mapping) {
+            if (mapping == null) {
+                return null;
+            }
             SolutionMapping out = new SolutionMapping();
-            for (Map.Entry<String,RDFNode> entry: mapping.entrySet()) {
+            for (Map.Entry<String, RDFNode> entry : mapping.entrySet()) {
                 String key = entry.getKey();
                 String aliased = alias + key; // TODO: here stood key.substring(1), this might mess with the tests
                 out.put(aliased, entry.getValue());

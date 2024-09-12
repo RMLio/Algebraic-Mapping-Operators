@@ -4,18 +4,9 @@ import be.ugent.idlab.knows.amo.blocks.BGP;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
-import org.apache.jena.query.ARQ;
-import org.apache.jena.query.Syntax;
-import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.riot.*;
-import org.apache.jena.riot.out.NodeToLabel;
-import org.apache.jena.riot.system.StreamRDF;
-import org.apache.jena.riot.writer.WriterGraphRIOTBase;
-import org.apache.jena.riot.writer.WriterStreamRDFFlat;
 import org.apache.jena.sparql.core.DatasetGraph;
-import org.apache.jena.sparql.core.DatasetGraphWrapper;
-import org.apache.jena.sparql.util.Context;
-import org.apache.jena.sparql.util.Symbol;
+import org.jspecify.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -25,7 +16,8 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Serialize operator will accept a Basic Graph Pattern and replace the variables with the values as provided in the mapping tuple.
+ * Serialize operator will accept a Basic Graph Pattern and replace the
+ * variables with the values as provided in the mapping tuple.
  *
  * @param bgp
  */
@@ -46,18 +38,29 @@ public class SerializeOperator extends UnaryOperator {
     }
 
     @Override
-    public SolutionMapping apply(SolutionMapping mapping) {
+    @Nullable
+    public SolutionMapping apply(@Nullable SolutionMapping mapping) {
         throw new IllegalStateException("Serialize operator is undefined for SolutionMappings");
     }
 
     /**
-     * Serializes MappingTuple into a graph as described by the BGP, with variables replaced
+     * Serializes MappingTuple into a graph as described by the BGP, with variables
+     * replaced
      *
      * @param m        MappingTuple to serialize
-     * @param language language to output the serialization in. Supported languages are "RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE", "TURTLE", (and "TTL") and "N3", as supported by Jena's Model::write
-     * @return a MappingTuple with the serialization contained in the variable "?serialized_output"
+     * @param language language to output the serialization in. Supported languages
+     *                 are "RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE", "TURTLE", (and
+     *                 "TTL") and "N3", as supported by Jena's Model::write
+     * @return a MappingTuple with the serialization contained in the variable
+     *         "?serialized_output"
      */
-    public MappingTuple apply(MappingTuple m) {
+
+    @Override
+    @Nullable
+    public MappingTuple apply(@Nullable MappingTuple m) {
+        if (m == null) {
+            return null;
+        }
         if (m.getMap().keys().isEmpty()) {
             return m;
         }

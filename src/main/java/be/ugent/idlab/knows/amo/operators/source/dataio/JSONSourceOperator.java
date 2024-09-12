@@ -7,6 +7,7 @@ import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.JSONSourceIterator;
 import be.ugent.idlab.knows.dataio.record.Record;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
 import java.util.List;
@@ -41,6 +42,7 @@ public class JSONSourceOperator extends DataIOSourceOperator {
     }
 
     @Override
+    @NonNull
     public MappingTuple consumeSource() {
         MappingTuple tuple = new MappingTuple();
 
@@ -80,6 +82,7 @@ public class JSONSourceOperator extends DataIOSourceOperator {
     }
 
     @Override
+    @NonNull
     protected MappingTuple nextEffective() {
         MappingTuple tuple = new MappingTuple();
         Record r = this.sourceIterator.next();
