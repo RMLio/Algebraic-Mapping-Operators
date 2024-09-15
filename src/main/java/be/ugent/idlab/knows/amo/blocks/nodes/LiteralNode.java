@@ -4,7 +4,12 @@ import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.ext.xerces.impl.dv.XSSimpleType;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+
+@NullMarked
 public class LiteralNode extends RDFNode {
 
     private final String datatype;
@@ -61,7 +66,7 @@ public class LiteralNode extends RDFNode {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())

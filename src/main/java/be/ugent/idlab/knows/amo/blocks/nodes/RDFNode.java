@@ -1,9 +1,12 @@
 package be.ugent.idlab.knows.amo.blocks.nodes;
 
 import org.apache.jena.graph.Node;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.io.Serializable;
 
+@NullMarked
 public abstract class RDFNode implements Serializable {
 
     protected final Object value;
@@ -33,12 +36,12 @@ public abstract class RDFNode implements Serializable {
     public abstract String getStringRepr(); 
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         RDFNode rdfNode = (RDFNode) o;
-        return value.equals(rdfNode.value);
+        return this.value.equals(rdfNode.value);
     }
 
 

@@ -2,7 +2,9 @@ package be.ugent.idlab.knows.amo.blocks.nodes;
 
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class IRINode extends RDFNode {
     public IRINode(String value) {
         super(value);

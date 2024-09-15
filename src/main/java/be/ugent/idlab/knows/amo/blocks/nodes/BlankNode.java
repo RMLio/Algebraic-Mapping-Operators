@@ -2,9 +2,11 @@ package be.ugent.idlab.knows.amo.blocks.nodes;
 
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class BlankNode extends RDFNode {
-    public BlankNode(String value) {
+    public BlankNode(String  value) {
         super(value);
     }
 
