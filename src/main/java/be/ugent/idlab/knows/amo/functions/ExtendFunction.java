@@ -18,6 +18,9 @@ public interface ExtendFunction extends Serializable {
     @Nullable
     default RDFNode applyToNode(@Nullable SolutionMapping mapping) {
         String innerValue = this.apply(mapping);
+        if (innerValue == null) {
+            return null;
+        }
         if (this.getRDFTypeOpt().isPresent()) {
             return this.getRDFTypeOpt().get().create(innerValue);
         } else {

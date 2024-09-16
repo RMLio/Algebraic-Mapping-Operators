@@ -1,5 +1,8 @@
 package be.ugent.idlab.knows.amo.blocks.nodes;
 
+import org.jspecify.annotations.NullMarked;
+
+@NullMarked
 public enum RDFType {
     Literal {
         @Override

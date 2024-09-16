@@ -65,14 +65,21 @@ public class TemplateSerializer extends UnaryOperator {
             Set<String> variables = tuple.first();
             String template = tuple.second();
 
+            boolean nullFound = false;
             for (String variable : variables) {
                 RDFNode solutionValue = mapping.get(variable);
                 if (solutionValue != null) {
                     template = template.replaceAll("\\" + variable, solutionValue.getStringRepr());
+                } else {
+                    nullFound = true;
+                    break;
+
                 }
             }
 
-            serializedStringList.add(template);
+            if (!nullFound) {
+                serializedStringList.add(template);
+            }
         }
 
         String serializedString = String.join("\n", serializedStringList);
