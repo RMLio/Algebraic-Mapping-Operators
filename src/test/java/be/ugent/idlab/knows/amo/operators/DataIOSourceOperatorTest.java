@@ -17,9 +17,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class DataIOSourceOperatorTest {
 
     @Test
-    public void JSONTest() {
+    public void JSONTestSingleField() {
         Access access = new LocalFileAccess("operators/source/input.json", "src/test/resources", "json");
         JSONSourceOperator operator = new JSONSourceOperator("JSONSourceOp", access, List.of("name"), "$.peoples[*]", List.of("$.pet.type", "$.pet.name"));
+
+        MappingTuple actual = operator.consumeSource();
+
+        MappingTuple expected = BlocksIO.readMappingTuple("operators/source/output.json");
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void JSONTestMultipleField() {
+        Access access = new LocalFileAccess("operators/source/input.json", "src/test/resources", "json");
+        JSONSourceOperator operator = new JSONSourceOperator("JSONSourceOp", access, List.of("name","age"), "$.peoples[*]", List.of("$.pet.type", "$.pet.name"));
 
         MappingTuple actual = operator.consumeSource();
 
