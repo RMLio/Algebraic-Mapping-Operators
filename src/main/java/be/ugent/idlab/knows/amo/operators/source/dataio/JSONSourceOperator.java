@@ -73,7 +73,7 @@ public class JSONSourceOperator extends DataIOSourceOperator {
             List<Object> values = r.get(it);
             String value;
             if (!values.isEmpty()) {
-                value = (String) values.get(0);
+                value = values.get(0).toString(); // stringify non string JSON values (numbers, bools, etc)
             } else {
                 value = "";
             }
