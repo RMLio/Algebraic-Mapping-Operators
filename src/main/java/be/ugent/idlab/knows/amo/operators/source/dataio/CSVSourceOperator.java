@@ -50,12 +50,19 @@ public class CSVSourceOperator extends DataIOSourceOperator {
         for (Map.Entry<String, String> entry : data.entrySet()) {
             XSDDatatype datatype;
             String key = entry.getKey();
+
+            /*
+            FIXME:
+            With the current implementation this datatype is ignored, as it is always set to string later in the execution.
+            Unless a specific datatype function is given. So this code is not needed.
             String recordedDatatype = r.getDataType(key);
             if (recordedDatatype != null) {
                 datatype = new XSDDatatype(recordedDatatype);
             } else {
                 datatype = XSDDatatype.XSDstring;
-            }
+            }*/
+
+            datatype = XSDDatatype.XSDstring;
 
             String value = entry.getValue();
             if (value == null) {
