@@ -66,10 +66,11 @@ public class CSVSourceOperator extends DataIOSourceOperator {
 
             String value = entry.getValue();
             if (value == null) {
-                value = "";
+                map.put(key, null);
+            }else {
+                map.put(key, new LiteralNode(value, datatype));
             }
 
-            map.put(key, new LiteralNode(value.toString(), datatype));
         }
 
         return map;
