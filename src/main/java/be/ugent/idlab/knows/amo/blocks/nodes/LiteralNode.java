@@ -103,6 +103,13 @@ public class LiteralNode extends RDFNode {
 
     @Override
     public String getStringRepr() {
-        return this.getJenaNode().toString(true);
+        // We have to implement this ourselves, because the default jena implementation doesn't put <> around the datatype
+        String out = "\"" + value.toString() + "\"";
+        if (!this.language.isEmpty()) {
+            out += "@" + this.language;
+        } else if (!this.datatype.equals("string")) {
+            out += "^^<" + XSDDatatype.XSD + "#" + this.datatype + ">";
+        }
+        return out;
     }
 }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.junit.jupiter.api.Test;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
@@ -42,12 +43,12 @@ public class TemplateSerializerTest {
 
     @Test
     public void simpleTemplateSerialization() {
+
         MappingTuple mappingTuple = new MappingTuple();
         SolutionMapping solutionMapping = new SolutionMapping();
-
         solutionMapping.put("?sm", new IRINode("http://example.com/1"));
         solutionMapping.put("?pm", new IRINode("http://example.com/name"));
-        solutionMapping.put("?om", new IRINode("Min Oo"));
+        solutionMapping.put("?om", new LiteralNode("Min Oo"));
 
         mappingTuple.addSolutionMap("default", solutionMapping);
 
@@ -55,11 +56,37 @@ public class TemplateSerializerTest {
 
         MappingTuple serializedTuple = serializer.apply(mappingTuple);
 
-        MappingTuple expected = new MappingTuple();
+        MappingTuple expected = new MappingTuple();;
         SolutionMapping expectedSolutionMapping = new SolutionMapping();
         expectedSolutionMapping.put("serialized_output",
                 new LiteralNode("<http://example.com/1> <http://example.com/name> \"Min Oo\"@en."));
+        expected.addSolutionMap("default", expectedSolutionMapping);
+        assertEquals(expected, serializedTuple);
 
+    }
+
+    @Test
+    public void datatypeTemplateSerialization() {
+
+
+        MappingTuple mappingTuple = new MappingTuple();
+        SolutionMapping solutionMapping = new SolutionMapping();
+        solutionMapping.put("?sm", new IRINode("http://example.com/10/Venus"));
+        solutionMapping.put("?pm", new IRINode("http://example.com/id"));
+        solutionMapping.put("?om", new LiteralNode(10, new XSDDatatype("integer")));
+
+
+        mappingTuple.addSolutionMap("default", solutionMapping);
+
+        TemplateSerializer serializer = new TemplateSerializer("Serializer", "default", "?sm ?pm ?om .");
+
+        MappingTuple serializedTuple = serializer.apply(mappingTuple);
+
+        MappingTuple expected = new MappingTuple();
+        SolutionMapping expectedSolutionMapping = new SolutionMapping();
+        expectedSolutionMapping.put("serialized_output",
+                new LiteralNode("<http://example.com/10/Venus> <http://example.com/id> \"10\"^^<http://www.w3.org/2001/XMLSchema#integer> ."));
+        expected.addSolutionMap("default", expectedSolutionMapping);
         assertEquals(expected, serializedTuple);
 
     }

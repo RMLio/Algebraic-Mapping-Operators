@@ -9,6 +9,7 @@ import be.ugent.idlab.knows.dataio.record.CSVRecord;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Arrays;
 import java.util.Map;
 
 public class CSVSourceOperator extends DataIOSourceOperator {
@@ -51,18 +52,14 @@ public class CSVSourceOperator extends DataIOSourceOperator {
             XSDDatatype datatype;
             String key = entry.getKey();
 
-            /*
-            FIXME:
-            With the current implementation this datatype is ignored, as it is always set to string later in the execution.
-            Unless a specific datatype function is given. So this code is not needed.
             String recordedDatatype = r.getDataType(key);
             if (recordedDatatype != null) {
-                datatype = new XSDDatatype(recordedDatatype);
+                String datatypeExtract = recordedDatatype.substring(recordedDatatype.lastIndexOf('#') + 1);
+                datatype = new XSDDatatype(datatypeExtract);
             } else {
                 datatype = XSDDatatype.XSDstring;
-            }*/
+            }
 
-            datatype = XSDDatatype.XSDstring;
 
             String value = entry.getValue();
             if (value == null) {
