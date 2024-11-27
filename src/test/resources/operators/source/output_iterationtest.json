@@ -1,0 +1,94 @@
+{
+  "default" : [ {
+	"title" : {
+	  "type" : "literal",
+	  "language" : "",
+	  "value" : "The big rabbit's trip"
+	},
+	"publishers[*]" : {
+	  "type" : "literal",
+	  "language" : "",
+	  "value" : "Amazen"
+	},
+	"authors[*]" : {
+	  "type" : "literal",
+	  "language" : "",
+	  "value" : "Edward"
+	}
+  }, {
+	"title" : {
+	  "type" : "literal",
+	  "language" : "",
+	  "value" : "The big rabbit's trip"
+	},
+	"publishers[*]" : {
+	  "type" : "literal",
+	  "language" : "",
+	  "value" : "Amazen"
+	},
+	"authors[*]" : {
+	  "type" : "literal",
+	  "language" : "",
+	  "value" : "Steve"
+	}
+  }, {
+	"title" : {
+	  "type" : "literal",
+	  "language" : "",
+	  "value" : "The big rabbit's trip"
+	},
+	"publishers[*]" : {
+	  "type" : "literal",
+	  "language" : "",
+	  "value" : "Bookman"
+	},
+	"authors[*]" : {
+	  "type" : "literal",
+	  "language" : "",
+	  "value" : "Edward"
+	}
+  }, {
+	"title" : {
+	  "type" : "literal",
+	  "language" : "",
+	  "value" : "The big rabbit's trip"
+	},
+	"publishers[*]" : {
+	  "type" : "literal",
+	  "language" : "",
+	  "value" : "Bookman"
+	},
+	"authors[*]" : {
+	  "type" : "literal",
+	  "language" : "",
+	  "value" : "Steve"
+	}
+  }, {
+	"publishers[*]" : {
+	  "type" : "literal",
+	  "language" : "",
+	  "value" : "Bookman"
+	},
+	"title" : {
+	  "type" : "literal",
+	  "language" : "",
+	  "value" : "A new horizon at the end of the night"
+	}
+  }, {
+	"publishers[*]" : {
+	  "type" : "literal",
+	  "language" : "",
+	  "value" : ""
+	},
+	"authors[*]" : {
+	  "type" : "literal",
+	  "language" : "",
+	  "value" : ""
+	},
+	"title" : {
+	  "type" : "literal",
+	  "language" : "",
+	  "value" : "The past comes back in the future"
+	}
+  } ]
+}

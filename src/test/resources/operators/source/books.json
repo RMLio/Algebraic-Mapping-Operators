@@ -1,0 +1,7 @@
+{
+  "books": [
+	{"title": "The big rabbit's trip", "authors": ["Edward", "Steve"], "publishers":  ["Amazen", "Bookman"]},
+	{"title": "A new horizon at the end of the night", "authors": [], "publishers":  ["Bookman"]},
+	{"title": "The past comes back in the future"}
+  ]
+}
