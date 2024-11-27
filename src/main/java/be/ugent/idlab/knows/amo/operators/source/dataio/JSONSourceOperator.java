@@ -6,11 +6,12 @@ import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.JSONSourceIterator;
 import be.ugent.idlab.knows.dataio.record.Record;
+import com.google.common.collect.Lists;
+import net.minidev.json.JSONArray;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.jspecify.annotations.NonNull;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Implementation of the SourceOperator using DataIO for JSON sources.
@@ -25,6 +26,9 @@ public class JSONSourceOperator extends DataIOSourceOperator {
     private final String rootIterator;
     private final Collection<String> subIterators;
     private transient JSONSourceIterator sourceIterator;
+
+    private Deque<SolutionMapping> solutionMappingQueue = new ArrayDeque<>();
+
 
     public JSONSourceOperator(String operatorName, Access access, Collection<String> rootVariables, String rootIterator,
             Collection<String> subIterators) {
@@ -45,21 +49,15 @@ public class JSONSourceOperator extends DataIOSourceOperator {
     @NonNull
     public MappingTuple consumeSource() {
         MappingTuple tuple = new MappingTuple();
-
-        // TODO consider caching the Access stream
-        // get everything from rootIterator
         try {
             this.init();
             JSONSourceIterator iterator = this.sourceIterator;
             while (iterator.hasNext()) {
-                Record r = iterator.next();
-                SolutionMapping map = new SolutionMapping();
-                // consume variables to be fetched from the root iterator
-                consumeRecord(r, this.rootVariables, map);
-                // consume any and all subiterators with respect to the root iterator
-                consumeRecord(r, this.subIterators, map);
-
-                tuple.addSolutionMap(this.defaultFragment, map);
+                queueNextSolutionMappings();
+                // put queue contents in tuple, and clear
+                while (!solutionMappingQueue.isEmpty()) {
+                    tuple.addSolutionMap(this.defaultFragment, solutionMappingQueue.poll());
+                }
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -68,38 +66,72 @@ public class JSONSourceOperator extends DataIOSourceOperator {
         return tuple;
     }
 
-    private void consumeRecord(Record r, Collection<String> iterators, SolutionMapping map) {
-        for (String it : iterators) {
-            List<Object> values = r.get(it);
-            String value;
-            if (!values.isEmpty()) {
-                value = values.get(0).toString(); // stringify non string JSON values (numbers, bools, etc)
-            } else {
-                value = "";
+
+    // Multiple solutions are queued if there is lists usage (e.g. authors[*]) -> {book1, author:author1}, {book1, author, author2}
+    private void queueNextSolutionMappings() {
+
+        Record r = sourceIterator.next();
+
+        // Gather iterators
+        List<Collection<String>> iterators = List.of(this.rootVariables, this.subIterators);
+
+        List<SolutionMapping> maps = new ArrayList<>();
+        // Add initial solution mapping
+        maps.add(new SolutionMapping());
+
+        for(Collection<String> vars : iterators){
+            for(String var : vars){
+                List<Object> values = r.get(var);
+                if(!values.isEmpty()){
+                    Object value = values.get(0);
+
+                    // We have a list, we need to create multiple mappings
+                    if(value instanceof JSONArray){
+                        JSONArray array = (JSONArray) value;
+                        if(array.isEmpty()){
+                            // Dont add empty list variable
+                            continue;
+                        }
+                        List<SolutionMapping> temp = new ArrayList<>();
+                        for (Object obj : array) {
+                            maps.forEach(m -> {
+                                SolutionMapping copy = new SolutionMapping(m);
+                                copy.put(var, new LiteralNode(obj.toString(), XSDDatatype.XSDstring));
+                                temp.add(copy);
+                            });
+                        }
+                        maps = temp;
+                    } else {
+                        maps.forEach(map -> map.put(var, new LiteralNode(value.toString(), XSDDatatype.XSDstring)));
+                    }
+                }else{
+                    // Add empty value
+                    maps.forEach(map -> map.put(var, new LiteralNode("", XSDDatatype.XSDstring)));
+                }
             }
-            map.put(it, new LiteralNode(value, XSDDatatype.XSDstring));
         }
+        solutionMappingQueue.addAll(maps);
     }
+
 
     @Override
     @NonNull
     protected MappingTuple nextEffective() {
+        if (solutionMappingQueue.isEmpty() && this.sourceIterator.hasNext()) {
+            queueNextSolutionMappings();
+        }
         MappingTuple tuple = new MappingTuple();
-        Record r = this.sourceIterator.next();
-        SolutionMapping map = new SolutionMapping();
-        // consume variables to be fetched from the root iterator
-        consumeRecord(r, this.rootVariables, map);
-        // consume any and all subiterators with respect to the root iterator
-        consumeRecord(r, this.subIterators, map);
+        SolutionMapping map = solutionMappingQueue.poll();
         tuple.addSolutionMap(this.defaultFragment, map);
-
         return tuple;
 
     }
 
+
     @Override
     public boolean hasNext() {
-        return this.isReady() && this.sourceIterator != null && this.sourceIterator.hasNext();
+        // No need to check if source iterator is null, since this would throw an exception during the init.
+        return this.isReady() && (!this.solutionMappingQueue.isEmpty() || (this.sourceIterator.hasNext()));
     }
 
     @Override

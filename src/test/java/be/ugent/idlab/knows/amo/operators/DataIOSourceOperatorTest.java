@@ -9,6 +9,7 @@ import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.access.LocalFileAccess;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,7 +32,7 @@ public class DataIOSourceOperatorTest {
     @Test
     public void JSONTestMultipleField() {
         Access access = new LocalFileAccess("operators/source/input.json", "src/test/resources", "json");
-        JSONSourceOperator operator = new JSONSourceOperator("JSONSourceOp", access, List.of("name","age"), "$.peoples[*]", List.of("$.pet.type", "$.pet.name"));
+        JSONSourceOperator operator = new JSONSourceOperator("JSONSourceOp", access, List.of("name"), "$.peoples[*]", List.of("$.pet.type", "$.pet.name"));
 
         MappingTuple actual = operator.consumeSource();
 
@@ -60,5 +61,17 @@ public class DataIOSourceOperatorTest {
         MappingTuple expected = BlocksIO.readMappingTuple("operators/source/output_xml.json");
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void JSONIteratingProductTest() throws Exception {
+        Access access = new LocalFileAccess("operators/source/books.json", "src/test/resources", "xml");
+        JSONSourceOperator operator = new JSONSourceOperator("JSONSourceOp", access, List.of("authors[*]","publishers[*]","title"), "$.books[*]", List.of());
+        operator.init();
+        MappingTuple result = operator.consumeSource();
+
+        MappingTuple expected = BlocksIO.readMappingTuple("operators/source/output_iterationtest.json");
+        assertEquals(expected, result);
+
     }
 }
