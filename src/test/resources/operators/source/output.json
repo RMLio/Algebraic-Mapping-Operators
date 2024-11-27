@@ -18,14 +18,6 @@
       "name": {
         "value": "Susan Sue",
         "type": "literal"
-      },
-      "$.pet.type": {
-        "value": "",
-        "type": "literal"
-      },
-      "$.pet.name": {
-        "value": "",
-        "type": "literal"
       }
     }
   ]

@@ -9,6 +9,7 @@ import be.ugent.idlab.knows.dataio.record.CSVRecord;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.jspecify.annotations.NonNull;
 
+import java.util.Arrays;
 import java.util.Map;
 
 public class CSVSourceOperator extends DataIOSourceOperator {
@@ -50,19 +51,23 @@ public class CSVSourceOperator extends DataIOSourceOperator {
         for (Map.Entry<String, String> entry : data.entrySet()) {
             XSDDatatype datatype;
             String key = entry.getKey();
+
             String recordedDatatype = r.getDataType(key);
             if (recordedDatatype != null) {
-                datatype = new XSDDatatype(recordedDatatype);
+                String datatypeExtract = recordedDatatype.substring(recordedDatatype.lastIndexOf('#') + 1);
+                datatype = new XSDDatatype(datatypeExtract);
             } else {
                 datatype = XSDDatatype.XSDstring;
             }
 
+
             String value = entry.getValue();
             if (value == null) {
-                value = "";
+                map.put(key, null);
+            }else {
+                map.put(key, new LiteralNode(value, datatype));
             }
 
-            map.put(key, new LiteralNode(value.toString(), datatype));
         }
 
         return map;
