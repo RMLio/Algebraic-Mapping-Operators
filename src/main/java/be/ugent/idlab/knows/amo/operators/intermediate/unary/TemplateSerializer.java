@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 
@@ -17,7 +18,7 @@ import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 public class TemplateSerializer extends UnaryOperator {
 
     private String serializedVariable;
-    private List<Pair<Set<String>, String>> variablesTemplatePairs;
+    private List<Pair<List<String>, String>> variablesTemplatePairs;
     private Pattern variablePattern;
 
     public TemplateSerializer(String operatorName, String fragment, String templateString) {
@@ -34,18 +35,19 @@ public class TemplateSerializer extends UnaryOperator {
 
     }
 
-    private List<Pair<Set<String>, String>> extractTemplateVariables(String template) {
+    private List<Pair<List<String>, String>> extractTemplateVariables(String template) {
 
-        List<Pair<Set<String>, String>> result = new ArrayList<>();
+        List<Pair<List<String>, String>> result = new ArrayList<>();
         String[] newlinedTemplates = template.split("\n");
 
         for (String line : newlinedTemplates) {
             Matcher matcher = this.variablePattern.matcher(line);
-            Set<String> variables = new HashSet<>();
+            List<String> variables = new ArrayList<>();
             while (matcher.find()) {
                 variables.add(matcher.group().trim());
             }
-            result.add(new Pair<Set<String>, String>(variables, line));
+            variables.sort((o1, o2) -> o2.length() - o1.length());
+            result.add(new Pair<>(variables, line));
         }
 
         return result;
@@ -60,9 +62,9 @@ public class TemplateSerializer extends UnaryOperator {
 
         SolutionMapping result = new SolutionMapping();
         List<String> serializedStringList = new ArrayList<>();
-        for (Pair<Set<String>, String> tuple : this.variablesTemplatePairs) {
+        for (Pair<List<String>, String> tuple : this.variablesTemplatePairs) {
 
-            Set<String> variables = tuple.first();
+            List<String> variables = tuple.first();
             String template = tuple.second();
 
             boolean nullFound = false;
@@ -92,7 +94,7 @@ public class TemplateSerializer extends UnaryOperator {
         return serializedVariable;
     }
 
-    public List<Pair<Set<String>, String>> getVariablesTemplatePairs() {
+    public List<Pair<List<String>, String>> getVariablesTemplatePairs() {
         return variablesTemplatePairs;
     }
 

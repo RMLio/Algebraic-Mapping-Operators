@@ -33,8 +33,8 @@ public class TemplateSerializerTest {
                         tuple.second()))
                 .collect(Collectors.toList());
         List<Pair<List<String>, String>> expected = new ArrayList<>();
-        expected.add(new Pair<List<String>, String>(List.of("?om", "?pm_1", "?sm"), "?sm ?pm_1 ?om@en."));
-        expected.add(new Pair<List<String>, String>(List.of("?om2", "?sm"),
+        expected.add(new Pair<>(List.of("?om", "?pm_1", "?sm"), "?sm ?pm_1 ?om@en."));
+        expected.add(new Pair<>(List.of("?om2", "?sm"),
                 "?sm <http://example.com/name/> ?om2^^<http://example.com/string>."));
 
         assertEquals(expected, pairs);
@@ -56,7 +56,8 @@ public class TemplateSerializerTest {
 
         MappingTuple serializedTuple = serializer.apply(mappingTuple);
 
-        MappingTuple expected = new MappingTuple();;
+        MappingTuple expected = new MappingTuple();
+
         SolutionMapping expectedSolutionMapping = new SolutionMapping();
         expectedSolutionMapping.put("serialized_output",
                 new LiteralNode("<http://example.com/1> <http://example.com/name> \"Min Oo\"@en."));
@@ -67,8 +68,6 @@ public class TemplateSerializerTest {
 
     @Test
     public void datatypeTemplateSerialization() {
-
-
         MappingTuple mappingTuple = new MappingTuple();
         SolutionMapping solutionMapping = new SolutionMapping();
         solutionMapping.put("?sm", new IRINode("http://example.com/10/Venus"));
@@ -88,6 +87,24 @@ public class TemplateSerializerTest {
                 new LiteralNode("<http://example.com/10/Venus> <http://example.com/id> \"10\"^^<http://www.w3.org/2001/XMLSchema#integer> ."));
         expected.addSolutionMap("default", expectedSolutionMapping);
         assertEquals(expected, serializedTuple);
+    }
 
+    @Test
+    public void greedySerialization() {
+        MappingTuple mappingTuple = new MappingTuple();
+        SolutionMapping solutionMapping = new SolutionMapping();
+        solutionMapping.put("?sm", new IRINode("http://example.com/10/Venus"));
+        solutionMapping.put("?pm", new IRINode("http://example.com/id"));
+        solutionMapping.put("?om", new LiteralNode(10, new XSDDatatype("integer")));
+        solutionMapping.put("?sm_g", new IRINode("http://example.com/graph"));
+
+        mappingTuple.addSolutionMap("default", solutionMapping);
+        TemplateSerializer serializer = new TemplateSerializer("Serializer", "default", "?sm ?pm ?om ?sm_g .");
+        MappingTuple serializedTuple = serializer.apply(mappingTuple);
+
+        String expectedQuad = "<http://example.com/10/Venus> <http://example.com/id> \"10\"^^<http://www.w3.org/2001/XMLSchema#integer> <http://example.com/graph> .";
+        String actualQuad = serializedTuple.getSolutionMappings("default").stream().findFirst().get().get("serialized_output").toString();
+
+        assertEquals(expectedQuad, actualQuad);
     }
 }
