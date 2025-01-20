@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 
@@ -45,7 +46,7 @@ public class TemplateSerializer extends UnaryOperator {
             while (matcher.find()) {
                 variables.add(matcher.group().trim());
             }
-            result.add(new Pair<Set<String>, String>(variables, line));
+            result.add(new Pair<>(variables, line));
         }
 
         return result;
@@ -62,7 +63,10 @@ public class TemplateSerializer extends UnaryOperator {
         List<String> serializedStringList = new ArrayList<>();
         for (Pair<Set<String>, String> tuple : this.variablesTemplatePairs) {
 
-            Set<String> variables = tuple.first();
+            List<String> variables = tuple.first().stream()
+                    // sort the variables such that the longest variables are matched first
+                    .sorted((o1, o2) -> o2.length() - o1.length())
+                    .toList();
             String template = tuple.second();
 
             boolean nullFound = false;
