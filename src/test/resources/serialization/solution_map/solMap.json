@@ -16,5 +16,8 @@
   "?iri": {
     "value": "http://example.com",
     "type": "iri"
+  },
+  "?null": {
+    "type": "null"
   }
 }
