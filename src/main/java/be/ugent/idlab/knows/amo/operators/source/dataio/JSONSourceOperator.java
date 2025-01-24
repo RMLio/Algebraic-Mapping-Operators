@@ -103,33 +103,6 @@ public class JSONSourceOperator extends DataIOSourceOperator {
                 } else {
                     maps.forEach(map -> map.put(var, new NullNode()));
                 }
-//                List<Object> values = r.get(var);
-//                if (!values.isEmpty()) {
-//                    Object value = values.get(0);
-//
-//                    // We have a list, we need to create multiple mappings
-//                    if (value instanceof JSONArray) {
-//                        JSONArray array = (JSONArray) value;
-//                        if (array.isEmpty()) {
-//                            // Dont add empty list variable
-//                            continue;
-//                        }
-//                        List<SolutionMapping> temp = new ArrayList<>();
-//                        for (Object obj : array) {
-//                            maps.forEach(m -> {
-//                                SolutionMapping copy = new SolutionMapping(m);
-//                                copy.put(var, new LiteralNode(obj.toString(), XSDDatatype.XSDstring));
-//                                temp.add(copy);
-//                            });
-//                        }
-//                        maps = temp;
-//                    } else {
-//                        maps.forEach(map -> map.put(var, new LiteralNode(value.toString(), XSDDatatype.XSDstring)));
-//                    }
-//                } else {
-//                    // Add empty value
-//                    maps.forEach(map -> map.put(var, new LiteralNode("", XSDDatatype.XSDstring)));
-//                }
             }
         }
         solutionMappingQueue.addAll(maps);

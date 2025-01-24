@@ -96,14 +96,12 @@ public class XMLSourceOperator extends DataIOSourceOperator {
     @Override
     public boolean hasNext() {
         return this.isReady() && this.sourceIterator != null && this.sourceIterator.hasNext();
-
     }
 
     @Override
     public void init() {
         try {
-            XMLSourceIterator xmlSourceIterator = new XMLSourceIterator(this.access, this.rootIterator);
-            this.sourceIterator = xmlSourceIterator;
+            this.sourceIterator = new XMLSourceIterator(this.access, this.rootIterator);
             this.setReady(true);
         } catch (Exception e) {
             this.setReady(false);

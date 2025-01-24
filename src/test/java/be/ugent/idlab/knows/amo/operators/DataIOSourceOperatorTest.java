@@ -9,7 +9,6 @@ import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.access.LocalFileAccess;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -66,14 +65,11 @@ public class DataIOSourceOperatorTest {
     @Test
     public void JSONIteratingProductTest() throws Exception {
         Access access = new LocalFileAccess("operators/source/books.json", "src/test/resources", "json");
-        JSONSourceOperator operator = new JSONSourceOperator("JSONSourceOp", access, List.of("authors[*]","publishers[*]","title"), "$.books[*]", List.of());
+        JSONSourceOperator operator = new JSONSourceOperator("JSONSourceOp", access, List.of("authors[*]", "publishers[*]", "title"), "$.books[*]", List.of());
         operator.init();
         MappingTuple result = operator.consumeSource();
 
         MappingTuple expected = BlocksIO.readMappingTuple("operators/source/output_iterationtest.json");
-        System.out.println(expected);
-        System.out.println("--------------------");
-        System.out.println(result);
         assertEquals(expected, result);
 
     }
