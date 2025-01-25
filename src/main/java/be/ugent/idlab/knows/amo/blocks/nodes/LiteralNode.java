@@ -4,9 +4,13 @@ import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.ext.xerces.impl.dv.XSSimpleType;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 
 @NullMarked
@@ -39,7 +43,7 @@ public class LiteralNode extends RDFNode {
          * serializability,
          * this library stores the information about the type as a string, with the
          * XSDDatatype reconstructed from it as needed.
-         * 
+         *
          * However, XSDDatatype constructor is unable to recognize the URI and instead,
          * this hack needs to be performed:
          * Grab the index of the '#' after which the type follows and store that, as
@@ -103,13 +107,35 @@ public class LiteralNode extends RDFNode {
 
     @Override
     public String getStringRepr() {
+        String out;
+        if (this.datatype.equals("double")) {
+            out = '"' + formatToScientific(Double.parseDouble(this.value.toString())) + '"';
+        } else {
+            out = "\"" + value.toString() + "\"";
+        }
+
         // We have to implement this ourselves, because the default jena implementation doesn't put <> around the datatype
-        String out = "\"" + value.toString() + "\"";
         if (!this.language.isEmpty()) {
             out += "@" + this.language;
         } else if (!this.datatype.equals("string")) {
             out += "^^<" + XSDDatatype.XSD + "#" + this.datatype + ">";
         }
         return out;
+    }
+
+    private String formatToScientific(Double d) {
+        BigDecimal input = BigDecimal.valueOf(d).stripTrailingZeros();
+        int precision = input.scale() < 0
+                ? input.precision() - input.scale()
+                : input.precision();
+        StringBuilder s = new StringBuilder("0.0");
+        for (int i = 2; i < precision; i++) {
+            s.append("#");
+        }
+        s.append("E0");
+        NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
+        DecimalFormat df = (DecimalFormat) nf;
+        df.applyPattern(s.toString());
+        return df.format(d);
     }
 }
