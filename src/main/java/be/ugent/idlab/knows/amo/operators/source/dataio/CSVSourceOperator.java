@@ -9,7 +9,10 @@ import be.ugent.idlab.knows.dataio.record.CSVRecord;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.jspecify.annotations.NonNull;
 
-import java.util.Arrays;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Map;
 
 public class CSVSourceOperator extends DataIOSourceOperator {
@@ -64,7 +67,7 @@ public class CSVSourceOperator extends DataIOSourceOperator {
             String value = entry.getValue();
             if (value == null) {
                 map.put(key, null);
-            }else {
+            } else {
                 map.put(key, new LiteralNode(value, datatype));
             }
 
@@ -89,13 +92,13 @@ public class CSVSourceOperator extends DataIOSourceOperator {
     }
 
     @Override
-    public void init() throws Exception {
+    public void init() throws SQLException, IOException, ParserConfigurationException, TransformerException {
         try {
             this.iterator = new CSVSourceIterator(this.access);
             this.setReady(true);
         } catch (Exception e) {
             this.setReady(false);
-            throw new RuntimeException(e);
+            throw e; // rethrow the exception to be explicit about it for the rest of code
         }
     }
 
