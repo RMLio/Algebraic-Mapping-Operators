@@ -6,10 +6,9 @@ import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.functions.TargetSink;
 import be.ugent.idlab.knows.amo.operators.Operator;
 import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
-
-import org.jspecify.annotations.NonNull;
 
 /**
  * TargetOperator will perform side effects on the MappingTuple.
