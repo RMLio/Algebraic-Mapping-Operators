@@ -8,6 +8,13 @@
     <artifactId>algebraic-mapping-operators</artifactId>
     <version>0.1-ALPHA</version>
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.release>21</maven.compiler.release>
