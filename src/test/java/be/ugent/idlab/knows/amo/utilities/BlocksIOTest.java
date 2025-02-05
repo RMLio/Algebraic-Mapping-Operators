@@ -24,7 +24,7 @@ public class BlocksIOTest {
             String filepath = "serialization/solution_map/solMap.json";
             SolutionMapping sm = BlocksIO.readSolutionMapping(filepath);
 
-            assertEquals(4, sm.keySet().size());
+            assertEquals(5, sm.keySet().size());
 
             assertTrue(sm.get("?literalString").isLiteral());
             assertEquals("foo", sm.get("?literalString").getValue());
@@ -37,6 +37,8 @@ public class BlocksIOTest {
 
             assertTrue(sm.get("?iri").isIRI());
             assertEquals("http://example.com", sm.get("?iri").getValue());
+
+            assertTrue(sm.get("?null").isNull());
         }
 
         @Nested

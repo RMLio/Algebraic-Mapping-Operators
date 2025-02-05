@@ -1,12 +1,14 @@
 # BlocksIO
 
-The following document describes the serialization JSON format we use for `SolutionMapping` and `MappingTuple`. It is designed to be flexible and concise
+The following document describes the serialization JSON format we use for `SolutionMapping` and `MappingTuple`. It is designed to be flexible and concise.
 
 ## SolutionMapping
-A SolutionMapping is described as a JSON object. Keys of this object are the variables. Each key has a value of a JSON object consisting of at least two fields: `value` and `type`.
+A SolutionMapping is described as a JSON object. Keys of this object are the variables. Each key has a value of a JSON object consisting of at least one field `type`.
 
-`type` (String) controls how the value will be modelled in SolutionMapping. It can be one of the following: `iri`, `blank` and `literal`.
-If the type is `blank`, key `value` will be considered a label for the blank node. Otherwise, the key `value` will be considered the value for the node.
+`type` (String) controls how the value will be modelled in SolutionMapping. It can be one of the following: `iri`, `blank`, `literal` or `null`.
+- If the type is `blank`, then key `value` will be considered a label for the blank node.
+- If the type is `null`, then key `value` is ignored and can be omitted from the specification, as a null node is rendered.
+- Otherwise, the key `value` will be considered the value for the node.
 
 `value` (String) contains the value associated with the key.
 
@@ -35,6 +37,10 @@ An example of a serialized `SolutionMapping`
   "?blank": {
     "value": "blankNode",
     "type": "blank"
+  },
+  "?null": {
+    "value": "ignored",
+    "type": "null"
   }
 }
 ```

@@ -2,10 +2,7 @@ package be.ugent.idlab.knows.amo.utilities;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.blocks.nodes.BlankNode;
-import be.ugent.idlab.knows.amo.blocks.nodes.IRINode;
-import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
-import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
+import be.ugent.idlab.knows.amo.blocks.nodes.*;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,10 +25,15 @@ public class BlocksIO {
     private static final Map<String, ParsingFunction> PARSING_FUNCTIONS = Map.of(
             "iri", BlocksIO::parseIRI,
             "blank", BlocksIO::parseBlank,
-            "literal", BlocksIO::parseLiteral
+            "literal", BlocksIO::parseLiteral,
+            "null", BlocksIO::parseNull
     );
 
-    private static final Set<String> ALLOWED_TYPES = Set.of("iri", "blank", "literal");
+    private static RDFNode parseNull(JSONObject jsonObject) {
+        return new NullNode();
+    }
+
+    private static final Set<String> ALLOWED_TYPES = Set.of("iri", "blank", "literal", "null");
 
     /**
      * @param filepath filepath with respect to src/test/resources/
@@ -76,13 +78,15 @@ public class BlocksIO {
     }
 
     private static RDFNode parseTerm(JSONObject json) {
-        if (!json.has("value")) {
-            throw new IllegalArgumentException(String.format("%s is missing a required field 'value'!", json));
-        }
-
         if (!json.has("type")) {
             throw new IllegalArgumentException(String.format("%s is missing a required field 'type'!", json));
         }
+
+        if (!json.has("value") && !json.get("type").equals("null")) {
+            throw new IllegalArgumentException(String.format("%s is missing a required field 'value'!", json));
+        }
+
+
 
         String type = json.getString("type");
         if (!ALLOWED_TYPES.contains(type)) {

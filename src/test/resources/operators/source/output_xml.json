@@ -20,12 +20,10 @@
         "type": "literal"
       },
       "pet/type": {
-        "value": "",
-        "type": "literal"
+        "type": "null"
       },
       "pet/name": {
-        "value": "",
-        "type": "literal"
+        "type": "null"
       }
     }
   ]

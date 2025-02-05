@@ -1,17 +1,15 @@
 package be.ugent.idlab.knows.amo.blocks;
 
 import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * Solution mapping is a collection of key-value pairs connecting variables to

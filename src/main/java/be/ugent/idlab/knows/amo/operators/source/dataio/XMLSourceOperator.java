@@ -3,9 +3,11 @@ package be.ugent.idlab.knows.amo.operators.source.dataio;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.XMLSourceIterator;
 import be.ugent.idlab.knows.dataio.record.Record;
+import be.ugent.idlab.knows.dataio.record.RecordValue;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.jspecify.annotations.NonNull;
 
@@ -16,15 +18,15 @@ public class XMLSourceOperator extends DataIOSourceOperator {
     private final Collection<String> rootVariables;
     private final String rootIterator;
     private final Collection<String> subIterators;
-    private transient XMLSourceIterator  sourceIterator;
+    private transient XMLSourceIterator sourceIterator;
 
     public XMLSourceOperator(String operatorName, Access access, Collection<String> rootVariables, String rootIterator,
-            Collection<String> subIterators) {
+                             Collection<String> subIterators) {
         this(operatorName, access, "default", rootVariables, rootIterator, subIterators);
     }
 
     public XMLSourceOperator(String operatorName, Access access, String defaultOperator,
-            Collection<String> rootVariables, String rootIterator, Collection<String> subIterators) {
+                             Collection<String> rootVariables, String rootIterator, Collection<String> subIterators) {
         super(operatorName, access, defaultOperator);
         this.rootVariables = rootVariables;
         this.rootIterator = rootIterator;
@@ -57,14 +59,20 @@ public class XMLSourceOperator extends DataIOSourceOperator {
 
     private void consumeRecord(Record r, Collection<String> iterators, SolutionMapping mapping) {
         for (String it : iterators) {
-            List<Object> values = r.get(it);
-            String value;
-            if (!values.isEmpty()) {
-                value = values.getFirst().toString();
+            RecordValue recordValue = r.get(it);
+
+            if (recordValue.isOk()) {
+                // when RecordValue is ok, the result of the iterator is a list
+                //noinspection unchecked
+                List<String> value = (List<String>) recordValue.getValue();
+                if (value.size() == 1) {
+                    mapping.put(it, new LiteralNode(value.getFirst(), XSDDatatype.XSDstring));
+                } else {
+                    mapping.put(it, new LiteralNode(recordValue.getValue().toString(), XSDDatatype.XSDstring));
+                }
             } else {
-                value = "";
+                mapping.put(it, new NullNode());
             }
-            mapping.put(it, new LiteralNode(value, XSDDatatype.XSDstring));
         }
     }
 
@@ -88,15 +96,12 @@ public class XMLSourceOperator extends DataIOSourceOperator {
     @Override
     public boolean hasNext() {
         return this.isReady() && this.sourceIterator != null && this.sourceIterator.hasNext();
-
     }
 
     @Override
-    public void init() throws Exception {
+    public void init() {
         try {
-
-            XMLSourceIterator xmlSourceIterator = new XMLSourceIterator(this.access, this.rootIterator);
-            this.sourceIterator = xmlSourceIterator;
+            this.sourceIterator = new XMLSourceIterator(this.access, this.rootIterator);
             this.setReady(true);
         } catch (Exception e) {
             this.setReady(false);

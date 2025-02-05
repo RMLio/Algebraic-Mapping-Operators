@@ -8,6 +8,13 @@
     <artifactId>algebraic-mapping-operators</artifactId>
     <version>0.1-ALPHA</version>
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.release>21</maven.compiler.release>
@@ -66,8 +73,16 @@
         <dependency>
             <groupId>be.ugent.idlab.knows</groupId>
             <artifactId>dataio</artifactId>
-            <version>1.1.0</version>
+            <version>2.0.3</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/net.minidev/json-smart -->
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+
 
         <dependency> 
             <groupId>org.slf4j</groupId>
@@ -107,9 +122,6 @@
             </dependency>
           </dependencies>
         </plugin>
-
-
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>

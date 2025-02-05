@@ -6,7 +6,6 @@ import org.jspecify.annotations.Nullable;
 
 import java.io.Serializable;
 
-@NullMarked
 public abstract class RDFNode implements Serializable {
 
     protected final Object value;
@@ -31,6 +30,8 @@ public abstract class RDFNode implements Serializable {
         return false;
     }
 
+    public boolean isNull() { return false;}
+
     public abstract Node getJenaNode();
     
     public abstract String getStringRepr(); 
@@ -41,6 +42,9 @@ public abstract class RDFNode implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
 
         RDFNode rdfNode = (RDFNode) o;
+
+        if (this.isNull() && rdfNode.isNull()) return true;
+
         return this.value.equals(rdfNode.value);
     }
 

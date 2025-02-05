@@ -3,10 +3,11 @@ package be.ugent.idlab.knows.amo.operators.source.dataio;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.JSONSourceIterator;
 import be.ugent.idlab.knows.dataio.record.Record;
-import com.google.common.collect.Lists;
+import be.ugent.idlab.knows.dataio.record.RecordValue;
 import net.minidev.json.JSONArray;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.jspecify.annotations.NonNull;
@@ -29,15 +30,14 @@ public class JSONSourceOperator extends DataIOSourceOperator {
 
     private Deque<SolutionMapping> solutionMappingQueue = new ArrayDeque<>();
 
-
     public JSONSourceOperator(String operatorName, Access access, Collection<String> rootVariables, String rootIterator,
-            Collection<String> subIterators) {
+                              Collection<String> subIterators) {
         this(operatorName, access, "default", rootVariables, rootIterator, subIterators);
     }
 
     public JSONSourceOperator(String operatorName, Access access, String defaultFragment,
-            Collection<String> rootVariables, String rootIterator,
-            Collection<String> subIterators) {
+                              Collection<String> rootVariables, String rootIterator,
+                              Collection<String> subIterators) {
         super(operatorName, access, defaultFragment);
         this.rootVariables = rootVariables;
         this.rootIterator = rootIterator;
@@ -66,10 +66,8 @@ public class JSONSourceOperator extends DataIOSourceOperator {
         return tuple;
     }
 
-
     // Multiple solutions are queued if there is lists usage (e.g. authors[*]) -> {book1, author:author1}, {book1, author, author2}
     private void queueNextSolutionMappings() {
-
         Record r = sourceIterator.next();
 
         // Gather iterators
@@ -79,21 +77,19 @@ public class JSONSourceOperator extends DataIOSourceOperator {
         // Add initial solution mapping
         maps.add(new SolutionMapping());
 
-        for(Collection<String> vars : iterators){
-            for(String var : vars){
-                List<Object> values = r.get(var);
-                if(!values.isEmpty()){
-                    Object value = values.get(0);
+        for (Collection<String> vars : iterators) {
+            for (String var : vars) {
+                RecordValue recordValue = r.get(var);
 
-                    // We have a list, we need to create multiple mappings
-                    if(value instanceof JSONArray){
-                        JSONArray array = (JSONArray) value;
-                        if(array.isEmpty()){
-                            // Dont add empty list variable
-                            continue;
+                if (recordValue.isOk()) {
+                    Object value = recordValue.getValue();
+                    if (value instanceof JSONArray jsonArray) {
+                        if (jsonArray.isEmpty()) {
+                            continue; // don't add empty list variables
                         }
+
                         List<SolutionMapping> temp = new ArrayList<>();
-                        for (Object obj : array) {
+                        for (Object obj : jsonArray) {
                             maps.forEach(m -> {
                                 SolutionMapping copy = new SolutionMapping(m);
                                 copy.put(var, new LiteralNode(obj.toString(), XSDDatatype.XSDstring));
@@ -104,9 +100,8 @@ public class JSONSourceOperator extends DataIOSourceOperator {
                     } else {
                         maps.forEach(map -> map.put(var, new LiteralNode(value.toString(), XSDDatatype.XSDstring)));
                     }
-                }else{
-                    // Add empty value
-                    maps.forEach(map -> map.put(var, new LiteralNode("", XSDDatatype.XSDstring)));
+                } else {
+                    maps.forEach(map -> map.put(var, new NullNode()));
                 }
             }
         }
