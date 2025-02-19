@@ -71,6 +71,5 @@ public class DataIOSourceOperatorTest {
 
         MappingTuple expected = BlocksIO.readMappingTuple("operators/source/output_iterationtest.json");
         assertEquals(expected, result);
-
     }
 }

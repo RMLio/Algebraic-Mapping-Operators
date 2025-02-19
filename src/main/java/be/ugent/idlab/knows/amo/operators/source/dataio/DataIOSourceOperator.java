@@ -1,9 +1,8 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio;
 
-import org.jspecify.annotations.NullMarked;
-
 import be.ugent.idlab.knows.amo.operators.source.SourceOperator;
 import be.ugent.idlab.knows.dataio.access.Access;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Operator responsible for reading input into the plan.
@@ -23,6 +22,10 @@ public abstract class DataIOSourceOperator extends SourceOperator {
 
     public Access getAccess() {
         return access;
+    }
+
+    public void setAccess(Access access) {
+        this.access = access;
     }
 
     public String getDefaultFragment() {
