@@ -6,17 +6,12 @@ import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.operators.source.SourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.CSVSourceOperator;
 import be.ugent.idlab.knows.dataio.access.Access;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class CSVSourceOperatorBuilder extends SourceOperatorBuilder {
-
-    private List<Pair<String, String>> aliases = new ArrayList<>();
-    private Map<String, RDFNode> defaultValues = new HashMap<>();
-
     public CSVSourceOperatorBuilder withName(String name) {
         this.name = name;
         return this;
@@ -53,7 +48,7 @@ public class CSVSourceOperatorBuilder extends SourceOperatorBuilder {
     }
 
     public CSVSourceOperatorBuilder withDefaultStringValue(String key, String value) {
-        this.defaultValues.put(key, new LiteralNode(value));
+        this.defaultValues.put(key, new LiteralNode(value, XSDDatatype.XSDstring));
         return this;
     }
 
@@ -63,7 +58,7 @@ public class CSVSourceOperatorBuilder extends SourceOperatorBuilder {
             throw new IllegalArgumentException("Access field must be set");
         }
 
-        return new CSVSourceOperator(name, access, fragment, aliases, defaultValues);
+        return new CSVSourceOperator(this.name, this.access, this.fragment, this.aliases, this.defaultValues);
     }
 
 }

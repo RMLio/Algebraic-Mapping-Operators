@@ -1,21 +1,24 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio.builders;
 
 import be.ugent.idlab.knows.amo.blocks.Pair;
+import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.operators.source.SourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.XMLSourceOperator;
 import be.ugent.idlab.knows.dataio.access.Access;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class XMLSourceOperatorBuilder extends SourceOperatorBuilder {
 
     private Collection<String> rootVariables = new ArrayList<>();
     private String rootIterator = null;
     private List<String> subIterators = new ArrayList<>();
-    private List<Pair<String, String>> aliases = new ArrayList<>();
 
     public XMLSourceOperatorBuilder withName(String name) {
         this.name = name;
@@ -67,6 +70,21 @@ public class XMLSourceOperatorBuilder extends SourceOperatorBuilder {
         return this;
     }
 
+    public XMLSourceOperatorBuilder withDefaultValues(Map<String, RDFNode> defaultValues) {
+        this.defaultValues = defaultValues;
+        return this;
+    }
+
+    public XMLSourceOperatorBuilder withDefaultValue(String key, RDFNode defaultValue) {
+        this.defaultValues.put(key, defaultValue);
+        return this;
+    }
+
+    public XMLSourceOperatorBuilder withDefaultStringValue(String key, String value) {
+        this.defaultValues.put(key, new LiteralNode(value, XSDDatatype.XSDstring));
+        return this;
+    }
+
 
     @Override
     public SourceOperator build() {
@@ -78,6 +96,6 @@ public class XMLSourceOperatorBuilder extends SourceOperatorBuilder {
         }
 
 
-        return new XMLSourceOperator(this.name, this.access, this.fragment, this.rootVariables, this.rootIterator, this.subIterators, this.aliases);
+        return new XMLSourceOperator(this.name, this.access, this.fragment, this.rootVariables, this.rootIterator, this.subIterators, this.aliases, this.defaultValues);
     }
 }

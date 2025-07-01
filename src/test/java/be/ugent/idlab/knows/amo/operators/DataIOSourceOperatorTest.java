@@ -164,4 +164,50 @@ public class DataIOSourceOperatorTest {
         assertTrue(result.getSolutionMappings("default").stream().findFirst().get().containsKey("newName"));
         assertEquals("Bax", result.getSolutionMappings("default").stream().findFirst().get().get("newName").getValue());
     }
+
+    @Test
+    public void defaultValueCSV() throws SQLException, IOException, ParserConfigurationException, TransformerException {
+        Access access = new LocalFileAccess("operators/source/input.csv", "src/test/resources", "csv");
+        CSVSourceOperator operator = (CSVSourceOperator) SourceOperatorBuilder.CSV()
+                .withAccess(access)
+                .withDefaultStringValue("foo", "bar")
+                .build();
+        operator.init();
+
+        MappingTuple result = operator.consumeSource();
+
+        assertEquals("bar", result.getSolutionMappings("default").stream().findFirst().get().get("foo").getValue());
+    }
+
+    @Test
+    public void defaultValueJSON() throws Exception {
+        Access access = new LocalFileAccess("operators/source/books.json", "src/test/resources", "json");
+        JSONSourceOperator operator = (JSONSourceOperator) SourceOperatorBuilder.JSON()
+                .withAccess(access)
+                .withRootVariables(List.of("authors[*]", "publishers[*]", "title"))
+                .withRootIterator("$.books[*]")
+                .withDefaultStringValue("foo", "bar")
+                .build();
+        operator.init();
+
+        MappingTuple result = operator.consumeSource();
+
+        assertEquals("bar", result.getSolutionMappings("default").stream().findFirst().get().get("foo").getValue());
+    }
+
+    @Test
+    public void defaultValueXML() {
+        Access access = new LocalFileAccess("operators/source/input.xml", "src/test/resources", "xml");
+        XMLSourceOperator operator = (XMLSourceOperator) SourceOperatorBuilder.XML().withAccess(access)
+                .withRootVariable("name")
+                .withRootIterator("/people/person")
+                .withRootVariables(List.of("pet/type", "pet/name"))
+                .withDefaultStringValue("foo", "bar")
+                .build();
+        operator.init();
+
+        MappingTuple result = operator.consumeSource();
+
+        assertEquals("bar", result.getSolutionMappings("default").stream().findFirst().get().get("foo").getValue());
+    }
 }

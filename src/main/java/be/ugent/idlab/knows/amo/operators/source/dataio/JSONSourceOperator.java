@@ -5,6 +5,7 @@ import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
+import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.JSONSourceIterator;
 import be.ugent.idlab.knows.dataio.record.Record;
@@ -28,23 +29,21 @@ public class JSONSourceOperator extends DataIOSourceOperator {
     private final Collection<String> subIterators;
     private transient JSONSourceIterator sourceIterator;
     private final Collection<Pair<String, String>> aliases;
+    private final Map<String, RDFNode> defaultValues;
 
     private Deque<SolutionMapping> solutionMappingQueue = new ArrayDeque<>();
-
-    public JSONSourceOperator(String operatorName, Access access, Collection<String> rootVariables, String rootIterator,
-                              Collection<String> subIterators) {
-        this(operatorName, access, "default", rootVariables, rootIterator, subIterators, List.of());
-    }
 
     public JSONSourceOperator(String operatorName, Access access, String defaultFragment,
                               Collection<String> rootVariables, String rootIterator,
                               Collection<String> subIterators,
-                              Collection<Pair<String, String>> aliases) {
+                              Collection<Pair<String, String>> aliases,
+                              Map<String, RDFNode> defaultValues) {
         super(operatorName, access, defaultFragment);
         this.rootVariables = rootVariables;
         this.rootIterator = rootIterator;
         this.subIterators = subIterators;
         this.aliases = aliases;
+        this.defaultValues = defaultValues;
         this.sourceIterator = null;
     }
 
@@ -109,6 +108,9 @@ public class JSONSourceOperator extends DataIOSourceOperator {
                 }
             }
         }
+
+        // include default values in each map
+        maps.forEach(m -> m.putAll(this.defaultValues));
 
         for (SolutionMapping mapping : maps) {
             for (Pair<String, String> pair : aliases) {

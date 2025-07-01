@@ -81,8 +81,9 @@ public class CSVSourceOperator extends DataIOSourceOperator {
             } else {
                 map.put(key, new LiteralNode(value, datatype));
             }
-
         }
+
+        map.putAll(this.defaultValues);
 
         for (Pair<String, String> pair : aliases) {
             if (map.containsKey(pair.first())) {

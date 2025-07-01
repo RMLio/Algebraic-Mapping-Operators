@@ -5,6 +5,7 @@ import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
+import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.XMLSourceIterator;
 import be.ugent.idlab.knows.dataio.record.Record;
@@ -14,6 +15,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class XMLSourceOperator extends DataIOSourceOperator {
     private final Collection<String> rootVariables;
@@ -21,19 +23,19 @@ public class XMLSourceOperator extends DataIOSourceOperator {
     private final Collection<String> subIterators;
     private final Collection<Pair<String, String>> aliases;
     private transient XMLSourceIterator sourceIterator;
-
-    public XMLSourceOperator(String operatorName, Access access, Collection<String> rootVariables, String rootIterator,
-                             Collection<String> subIterators) {
-        this(operatorName, access, "default", rootVariables, rootIterator, subIterators, List.of());
-    }
+    private final Map<String, RDFNode> defaultValues;
 
     public XMLSourceOperator(String operatorName, Access access, String defaultOperator,
-                             Collection<String> rootVariables, String rootIterator, Collection<String> subIterators, Collection<Pair<String, String>> aliases) {
+                             Collection<String> rootVariables, String rootIterator,
+                             Collection<String> subIterators,
+                             Collection<Pair<String, String>> aliases,
+                             Map<String, RDFNode> defaultValues) {
         super(operatorName, access, defaultOperator);
         this.rootVariables = rootVariables;
         this.rootIterator = rootIterator;
         this.subIterators = subIterators;
         this.aliases = aliases;
+        this.defaultValues = defaultValues;
         this.sourceIterator = null;
     }
 
@@ -61,6 +63,7 @@ public class XMLSourceOperator extends DataIOSourceOperator {
     }
 
     private void consumeRecord(Record r, Collection<String> iterators, SolutionMapping mapping) {
+        mapping.putAll(this.defaultValues);
         for (String it : iterators) {
             RecordValue recordValue = r.get(it);
 
@@ -77,6 +80,7 @@ public class XMLSourceOperator extends DataIOSourceOperator {
                 mapping.put(it, new NullNode());
             }
         }
+
 
         for (Pair<String, String> pair : aliases) {
             if (mapping.containsKey(pair.first())) {
