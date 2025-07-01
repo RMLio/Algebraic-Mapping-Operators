@@ -23,7 +23,7 @@ public class LeftJoinTest {
                         s2.containsKey("?type") && s2.get("?alias_type") != null &&
                         s1.get("?$pet.type").equals(s2.get("?alias_type")));
 
-        LeftJoinOperator operator = new LeftJoinOperator("LeftJoin", "f_default", condition, "alias_");
+        LeftJoinOperator operator = new LeftJoinOperator("LeftJoin", "f_default", condition);
 
         MappingTuple actual = operator.apply(table6, table7);
 

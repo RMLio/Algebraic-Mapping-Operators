@@ -8,7 +8,6 @@ import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.JSONSourceIterator;
 import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.idlab.knows.dataio.record.RecordValue;
-import net.minidev.json.JSONArray;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.jspecify.annotations.NonNull;
 
@@ -83,7 +82,8 @@ public class JSONSourceOperator extends DataIOSourceOperator {
 
                 if (recordValue.isOk()) {
                     Object value = recordValue.getValue();
-                    if (value instanceof JSONArray jsonArray) {
+                    if (value instanceof ArrayList jsonArray) {
+
                         if (jsonArray.isEmpty()) {
                             continue; // don't add empty list variables
                         }

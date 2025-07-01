@@ -9,9 +9,8 @@ import be.ugent.idlab.knows.amo.functions.JoinCondition;
 
 public class CrossJoin extends JoinOperator {
 
-    public CrossJoin(String operatorName, String inputFragment, String outputFragment, JoinCondition condition,
-            String alias) {
-        super(operatorName, inputFragment, outputFragment, condition, alias);
+    public CrossJoin(String operatorName, String inputFragment, String outputFragment, JoinCondition condition) {
+        super(operatorName, inputFragment, outputFragment, condition);
     }
 
     @Override

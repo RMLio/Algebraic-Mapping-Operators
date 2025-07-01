@@ -34,4 +34,9 @@ class TestSink implements TargetSink<RDFNode> {
     public void sink(RDFNode data) {
         this.output = (String) data.getValue();
     }
+
+    @Override
+    public void close() throws Exception {
+
+    }
 }

@@ -41,6 +41,17 @@ public class DataIOSourceOperatorTest {
     }
 
     @Test
+    public void JSONListInField() {
+        Access access = new LocalFileAccess("operators/source/list.json", "src/test/resources", "json");
+        JSONSourceOperator operator = new JSONSourceOperator("JSONSourceOp", access, List.of("ID", "Sport"), "$.students[*]", List.of());
+
+        MappingTuple actual = operator.consumeSource();
+
+        System.out.println(actual);
+
+    }
+
+    @Test
     public void CSVTest() {
         Access access = new LocalFileAccess("operators/source/input.csv", "src/test/resources", "csv");
         CSVSourceOperator operator = new CSVSourceOperator("CSVSourceOp", access);

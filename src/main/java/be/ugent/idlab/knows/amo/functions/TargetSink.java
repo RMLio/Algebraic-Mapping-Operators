@@ -5,8 +5,7 @@ import java.io.Serializable;
 
 import org.jspecify.annotations.Nullable;
 
-@FunctionalInterface
-public interface TargetSink<T> extends Serializable {
+public interface TargetSink<T> extends Serializable, AutoCloseable {
 
     /**
      * A function to consume the data provided in the solution mapping into a sink (file, standard output...)

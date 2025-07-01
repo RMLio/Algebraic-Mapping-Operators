@@ -20,15 +20,13 @@ public class LeftJoinOperator extends JoinOperator {
      * @param operatorname
      * @param inputFragment
      * @param condition
-     * @param alias
      */
-    public LeftJoinOperator(String operatorname, String inputFragment, JoinCondition condition, String alias) {
-        this(operatorname, inputFragment, inputFragment, condition, alias);
+    public LeftJoinOperator(String operatorname, String inputFragment, JoinCondition condition) {
+        this(operatorname, inputFragment, inputFragment, condition);
     }
 
-    public LeftJoinOperator(String operatorName, String inputFragment, String outputFragment, JoinCondition condition,
-            String alias) {
-        super(operatorName, inputFragment, outputFragment, condition, alias);
+    public LeftJoinOperator(String operatorName, String inputFragment, String outputFragment, JoinCondition condition) {
+        super(operatorName, inputFragment, outputFragment, condition);
     }
 
     @Override
@@ -85,5 +83,4 @@ public class LeftJoinOperator extends JoinOperator {
         // mapping2 will return null anyway
         return mapping1;
     }
-
 }

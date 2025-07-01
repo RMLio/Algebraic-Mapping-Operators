@@ -22,7 +22,7 @@ public class NaturalJoinOperator extends JoinOperator {
     }
 
     public NaturalJoinOperator(String operatorName, String inputFragment, String outputFragment) {
-        super(operatorName, inputFragment, outputFragment, SolutionMapping::isCompatibleWith, "");
+        super(operatorName, inputFragment, outputFragment, SolutionMapping::isCompatibleWith);
     }
 
     @Override
