@@ -1,8 +1,10 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
+import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.CSVSourceIterator;
 import be.ugent.idlab.knows.dataio.record.CSVRecord;
@@ -13,20 +15,29 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public class CSVSourceOperator extends DataIOSourceOperator {
 
+    private final Collection<Pair<String, String>> aliases;
+    private final Map<String, RDFNode> defaultValues;
     private transient CSVSourceIterator iterator;
 
     public CSVSourceOperator(String operatorName, Access access) {
-        this(operatorName, access, "default");
+        this(operatorName, access, "default", List.of(), Map.of());
     }
 
-    public CSVSourceOperator(String operatorName, Access access, String defaultFragment) {
+    public CSVSourceOperator(String operatorName,
+                             Access access,
+                             String defaultFragment,
+                             Collection<Pair<String, String>> aliases,
+                             Map<String, RDFNode> defaultValues) {
         super(operatorName, access, defaultFragment);
         this.iterator = null;
-
+        this.aliases = aliases;
+        this.defaultValues = defaultValues;
     }
 
     @Override
@@ -73,6 +84,13 @@ public class CSVSourceOperator extends DataIOSourceOperator {
 
         }
 
+        for (Pair<String, String> pair : aliases) {
+            if (map.containsKey(pair.first())) {
+                map.put(pair.second(), map.get(pair.first()));
+                map.remove(pair.first());
+            }
+        }
+
         return map;
     }
 
@@ -87,6 +105,7 @@ public class CSVSourceOperator extends DataIOSourceOperator {
         MappingTuple tuple = new MappingTuple();
         CSVRecord r = (CSVRecord) this.iterator.next();
         SolutionMapping map = consumeRecord(r);
+        map.putAll(this.defaultValues);
         tuple.addSolutionMap(this.defaultFragment, map);
         return tuple;
     }

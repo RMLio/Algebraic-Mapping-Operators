@@ -1,19 +1,15 @@
 package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import org.jspecify.annotations.Nullable;
-
 import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
+import org.jspecify.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TemplateSerializer extends UnaryOperator {
 
@@ -73,8 +69,15 @@ public class TemplateSerializer extends UnaryOperator {
                 if (solutionValue != null) {
                     template = template.replaceAll("\\" + variable, solutionValue.getStringRepr());
                 } else {
-                    nullFound = true;
-                    break;
+                    // check if the variable maybe needs to be prepended by ?
+                    String unpreprended = variable.substring(1);
+                    solutionValue = mapping.get(unpreprended);
+                    if (solutionValue != null) {
+                        template = template.replaceAll("\\" + variable, solutionValue.getStringRepr());
+                    } else {
+                        nullFound = true;
+                        break;
+                    }
 
                 }
             }

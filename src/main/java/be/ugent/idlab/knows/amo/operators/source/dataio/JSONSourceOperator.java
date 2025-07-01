@@ -1,6 +1,7 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
+import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
@@ -26,21 +27,24 @@ public class JSONSourceOperator extends DataIOSourceOperator {
     private final String rootIterator;
     private final Collection<String> subIterators;
     private transient JSONSourceIterator sourceIterator;
+    private final Collection<Pair<String, String>> aliases;
 
     private Deque<SolutionMapping> solutionMappingQueue = new ArrayDeque<>();
 
     public JSONSourceOperator(String operatorName, Access access, Collection<String> rootVariables, String rootIterator,
                               Collection<String> subIterators) {
-        this(operatorName, access, "default", rootVariables, rootIterator, subIterators);
+        this(operatorName, access, "default", rootVariables, rootIterator, subIterators, List.of());
     }
 
     public JSONSourceOperator(String operatorName, Access access, String defaultFragment,
                               Collection<String> rootVariables, String rootIterator,
-                              Collection<String> subIterators) {
+                              Collection<String> subIterators,
+                              Collection<Pair<String, String>> aliases) {
         super(operatorName, access, defaultFragment);
         this.rootVariables = rootVariables;
         this.rootIterator = rootIterator;
         this.subIterators = subIterators;
+        this.aliases = aliases;
         this.sourceIterator = null;
     }
 
@@ -105,6 +109,16 @@ public class JSONSourceOperator extends DataIOSourceOperator {
                 }
             }
         }
+
+        for (SolutionMapping mapping : maps) {
+            for (Pair<String, String> pair : aliases) {
+                if (mapping.containsKey(pair.first())) {
+                    mapping.put(pair.second(), mapping.get(pair.first()));
+                    mapping.remove(pair.first());
+                }
+            }
+        }
+
         solutionMappingQueue.addAll(maps);
     }
 

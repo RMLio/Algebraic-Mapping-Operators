@@ -1,6 +1,7 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
+import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
@@ -18,19 +19,21 @@ public class XMLSourceOperator extends DataIOSourceOperator {
     private final Collection<String> rootVariables;
     private final String rootIterator;
     private final Collection<String> subIterators;
+    private final Collection<Pair<String, String>> aliases;
     private transient XMLSourceIterator sourceIterator;
 
     public XMLSourceOperator(String operatorName, Access access, Collection<String> rootVariables, String rootIterator,
                              Collection<String> subIterators) {
-        this(operatorName, access, "default", rootVariables, rootIterator, subIterators);
+        this(operatorName, access, "default", rootVariables, rootIterator, subIterators, List.of());
     }
 
     public XMLSourceOperator(String operatorName, Access access, String defaultOperator,
-                             Collection<String> rootVariables, String rootIterator, Collection<String> subIterators) {
+                             Collection<String> rootVariables, String rootIterator, Collection<String> subIterators, Collection<Pair<String, String>> aliases) {
         super(operatorName, access, defaultOperator);
         this.rootVariables = rootVariables;
         this.rootIterator = rootIterator;
         this.subIterators = subIterators;
+        this.aliases = aliases;
         this.sourceIterator = null;
     }
 
@@ -72,6 +75,13 @@ public class XMLSourceOperator extends DataIOSourceOperator {
                 }
             } else {
                 mapping.put(it, new NullNode());
+            }
+        }
+
+        for (Pair<String, String> pair : aliases) {
+            if (mapping.containsKey(pair.first())) {
+                mapping.put(pair.second(), mapping.get(pair.first()));
+                mapping.remove(pair.first());
             }
         }
     }
