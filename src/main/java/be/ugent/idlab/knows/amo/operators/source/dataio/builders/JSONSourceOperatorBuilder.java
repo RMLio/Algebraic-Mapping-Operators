@@ -9,10 +9,7 @@ import be.ugent.idlab.knows.dataio.access.Access;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.jspecify.annotations.NonNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class JSONSourceOperatorBuilder extends SourceOperatorBuilder {
 
@@ -26,7 +23,7 @@ public class JSONSourceOperatorBuilder extends SourceOperatorBuilder {
     }
 
     public JSONSourceOperatorBuilder withAccess(Access access) {
-        this.access = access;
+        this.access = Optional.of(access);
         return this;
     }
 
@@ -89,14 +86,17 @@ public class JSONSourceOperatorBuilder extends SourceOperatorBuilder {
 
     @Override
     public SourceOperator build() {
-        if (this.rootVariables.isEmpty()) {
-            throw new IllegalArgumentException("This operator cannot dynamically recognize present variables, set them using .withRootVariables()");
+        if (this.access.isEmpty()) {
+            throw new IllegalArgumentException("Access field must be set");
         }
+//        if (this.rootVariables.isEmpty()) {
+//            throw new IllegalArgumentException("This operator cannot dynamically recognize present variables, set them using .withRootVariables()");
+//        }
         if (this.rootIterator == null) {
             throw new IllegalArgumentException("Root iterator must be set");
         }
 
 
-        return new JSONSourceOperator(this.name, this.access, this.fragment, this.rootVariables, this.rootIterator, this.subIterators, this.aliases, this.defaultValues);
+        return new JSONSourceOperator(this.name, this.access.get(), this.fragment, this.rootVariables, this.rootIterator, this.subIterators, this.aliases, this.defaultValues);
     }
 }

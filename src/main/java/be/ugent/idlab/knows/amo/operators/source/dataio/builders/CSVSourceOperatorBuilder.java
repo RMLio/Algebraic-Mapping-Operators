@@ -10,6 +10,7 @@ import org.apache.jena.datatypes.xsd.XSDDatatype;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class CSVSourceOperatorBuilder extends SourceOperatorBuilder {
     public CSVSourceOperatorBuilder withName(String name) {
@@ -18,7 +19,7 @@ public class CSVSourceOperatorBuilder extends SourceOperatorBuilder {
     }
 
     public CSVSourceOperatorBuilder withAccess(Access access) {
-        this.access = access;
+        this.access = Optional.of(access);
         return this;
     }
 
@@ -54,11 +55,11 @@ public class CSVSourceOperatorBuilder extends SourceOperatorBuilder {
 
     @Override
     public SourceOperator build() {
-        if (this.access == null) {
+        if (this.access.isEmpty()) {
             throw new IllegalArgumentException("Access field must be set");
         }
 
-        return new CSVSourceOperator(this.name, this.access, this.fragment, this.aliases, this.defaultValues);
+        return new CSVSourceOperator(this.name, this.access.get(), this.fragment, this.aliases, this.defaultValues);
     }
 
 }
