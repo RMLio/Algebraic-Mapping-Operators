@@ -1,21 +1,21 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio.builders;
 
-import be.ugent.idlab.knows.amo.blocks.Pair;
-import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.operators.source.SourceOperator;
+import be.ugent.idlab.knows.amo.operators.source.dataio.Field;
 import be.ugent.idlab.knows.amo.operators.source.dataio.JSONSourceOperator;
 import be.ugent.idlab.knows.dataio.access.Access;
-import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.jspecify.annotations.NonNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 public class JSONSourceOperatorBuilder extends SourceOperatorBuilder {
 
-    private Collection<String> rootVariables = new ArrayList<>();
     private String rootIterator = null;
-    private List<String> subIterators = new ArrayList<>();
+    private List<Field> fields = new ArrayList<>();
 
     public JSONSourceOperatorBuilder withName(String name) {
         this.name = name;
@@ -32,57 +32,35 @@ public class JSONSourceOperatorBuilder extends SourceOperatorBuilder {
         return this;
     }
 
-    public JSONSourceOperatorBuilder withRootVariables(@NonNull Collection<String> rootVariables) {
-        this.rootVariables = rootVariables;
-        return this;
-    }
-
-    public JSONSourceOperatorBuilder withRootVariable(String rootVariable) {
-        this.rootVariables.add(rootVariable);
-        return this;
-    }
-
     public JSONSourceOperatorBuilder withRootIterator(String rootIterator) {
         this.rootIterator = rootIterator;
         return this;
     }
 
-    public JSONSourceOperatorBuilder withSubIterators(Collection<String> subIterators) {
-        this.subIterators = new ArrayList<>(subIterators);
+    public JSONSourceOperatorBuilder withField(@NonNull Field field) {
+        this.fields.add(field);
         return this;
     }
 
-    public JSONSourceOperatorBuilder withSubIterator(String subIterator) {
-        this.subIterators.add(subIterator);
+    public JSONSourceOperatorBuilder withField(String name, String iterator) {
+        this.fields.add(new Field(name, iterator));
         return this;
     }
 
-    public JSONSourceOperatorBuilder withAliases(Collection<Pair<String, String>> aliases) {
-        this.aliases = new ArrayList<>(aliases);
+    public JSONSourceOperatorBuilder withField(String iterator) {
+        this.fields.add(new Field(iterator));
         return this;
     }
 
-    public JSONSourceOperatorBuilder withAlias(String from, String to) {
-        this.aliases.add(new Pair<>(from, to));
+    public JSONSourceOperatorBuilder withDefaultField(String name, RDFNode value) {
+        this.fields.add(new Field(name, value));
         return this;
     }
 
-    public JSONSourceOperatorBuilder withDefaultValue(String key, RDFNode value) {
-        this.defaultValues.put(key, value);
+    public JSONSourceOperatorBuilder withFields(Collection<Field> fields) {
+        this.fields.addAll(fields);
         return this;
     }
-
-    public JSONSourceOperatorBuilder withDefaultStringValue(String key, String value) {
-        this.defaultValues.put(key, new LiteralNode(value, XSDDatatype.XSDstring));
-        return this;
-    }
-
-    public JSONSourceOperatorBuilder withDefaultValues(Map<String, RDFNode> defaultValues) {
-        this.defaultValues = defaultValues;
-        return this;
-    }
-
-
 
     @Override
     public SourceOperator build() {
@@ -96,7 +74,6 @@ public class JSONSourceOperatorBuilder extends SourceOperatorBuilder {
             throw new IllegalArgumentException("Root iterator must be set");
         }
 
-
-        return new JSONSourceOperator(this.name, this.access.get(), this.fragment, this.rootVariables, this.rootIterator, this.subIterators, this.aliases, this.defaultValues);
+        return new JSONSourceOperator(this.name, this.access.get(), this.fragment, this.rootIterator, this.fields);
     }
 }

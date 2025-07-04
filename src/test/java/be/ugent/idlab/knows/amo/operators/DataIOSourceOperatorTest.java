@@ -1,7 +1,9 @@
 package be.ugent.idlab.knows.amo.operators;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
+import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.operators.source.dataio.CSVSourceOperator;
+import be.ugent.idlab.knows.amo.operators.source.dataio.Field;
 import be.ugent.idlab.knows.amo.operators.source.dataio.JSONSourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.XMLSourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.builders.SourceOperatorBuilder;
@@ -26,9 +28,9 @@ public class DataIOSourceOperatorTest {
         Access access = new LocalFileAccess("operators/source/input.json", "src/test/resources", "json");
         JSONSourceOperator operator = (JSONSourceOperator) SourceOperatorBuilder.JSON()
                 .withAccess(access)
-                .withRootVariables(List.of("name"))
+                .withFields(List.of(new Field("name"), new Field("$.pet.type"), new Field("$.pet.name")))
+//                .withRootVariables(List.of("name"))
                 .withRootIterator("$.peoples[*]")
-                .withSubIterators(List.of("$.pet.type", "$.pet.name"))
                 .build();
 
         MappingTuple actual = operator.consumeSource();
@@ -43,9 +45,8 @@ public class DataIOSourceOperatorTest {
         Access access = new LocalFileAccess("operators/source/input.json", "src/test/resources", "json");
         JSONSourceOperator operator = (JSONSourceOperator) SourceOperatorBuilder.JSON()
                 .withAccess(access)
-                .withRootVariable("name")
+                .withFields(List.of(new Field("name"), new Field("$.pet.type"), new Field("$.pet.name")))
                 .withRootIterator("$.peoples[*]")
-                .withSubIterators(List.of("$.pet.type", "$.pet.name"))
                 .build();
 
         MappingTuple actual = operator.consumeSource();
@@ -60,7 +61,7 @@ public class DataIOSourceOperatorTest {
         Access access = new LocalFileAccess("operators/source/list.json", "src/test/resources", "json");
         JSONSourceOperator operator = (JSONSourceOperator) SourceOperatorBuilder.JSON()
                 .withAccess(access)
-                .withRootVariables(List.of("ID", "Sport"))
+                .withFields(List.of(new Field("ID"), new Field("Sport")))
                 .withRootIterator("$.students[*]")
                 .build();
 
@@ -104,7 +105,7 @@ public class DataIOSourceOperatorTest {
         Access access = new LocalFileAccess("operators/source/books.json", "src/test/resources", "json");
         JSONSourceOperator operator = (JSONSourceOperator) SourceOperatorBuilder.JSON()
                 .withAccess(access)
-                .withRootVariables(List.of("authors[*]", "publishers[*]", "title"))
+                .withFields(List.of(new Field("authors[*]"), new Field("publishers[*]"), new Field("title")))
                 .withRootIterator("$.books[*]")
                 .build();
 
@@ -135,9 +136,8 @@ public class DataIOSourceOperatorTest {
         Access access = new LocalFileAccess("operators/source/books.json", "src/test/resources", "json");
         JSONSourceOperator operator = (JSONSourceOperator) SourceOperatorBuilder.JSON()
                 .withAccess(access)
-                .withRootVariables(List.of("authors[*]", "publishers[*]", "title"))
+                .withFields(List.of(new Field("authors[*]"), new Field("publishers[*]"), new Field("newTitle", "title")))
                 .withRootIterator("$.books[*]")
-                .withAlias("title", "newTitle")
                 .build();
 
         operator.init();
@@ -184,9 +184,8 @@ public class DataIOSourceOperatorTest {
         Access access = new LocalFileAccess("operators/source/books.json", "src/test/resources", "json");
         JSONSourceOperator operator = (JSONSourceOperator) SourceOperatorBuilder.JSON()
                 .withAccess(access)
-                .withRootVariables(List.of("authors[*]", "publishers[*]", "title"))
+                .withFields(List.of(new Field("authors[*]"), new Field("publishers[*]"), new Field("title"), new Field("foo", new LiteralNode("bar"))))
                 .withRootIterator("$.books[*]")
-                .withDefaultStringValue("foo", "bar")
                 .build();
         operator.init();
 

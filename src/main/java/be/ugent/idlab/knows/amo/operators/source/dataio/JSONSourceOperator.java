@@ -1,11 +1,9 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
-import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
-import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.JSONSourceIterator;
 import be.ugent.idlab.knows.dataio.record.Record;
@@ -13,7 +11,10 @@ import be.ugent.idlab.knows.dataio.record.RecordValue;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.jspecify.annotations.NonNull;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 
 /**
  * Implementation of the SourceOperator using DataIO for JSON sources.
@@ -24,26 +25,17 @@ import java.util.*;
  */
 public class JSONSourceOperator extends DataIOSourceOperator {
 
-    private final Collection<String> rootVariables;
     private final String rootIterator;
-    private final Collection<String> subIterators;
+    private final List<Field> fields;
+    private final Deque<SolutionMapping> solutionMappingQueue = new ArrayDeque<>();
     private transient JSONSourceIterator sourceIterator;
-    private final Collection<Pair<String, String>> aliases;
-    private final Map<String, RDFNode> defaultValues;
-
-    private Deque<SolutionMapping> solutionMappingQueue = new ArrayDeque<>();
 
     public JSONSourceOperator(String operatorName, Access access, String defaultFragment,
-                              Collection<String> rootVariables, String rootIterator,
-                              Collection<String> subIterators,
-                              Collection<Pair<String, String>> aliases,
-                              Map<String, RDFNode> defaultValues) {
+                              String rootIterator,
+                              List<Field> fields) {
         super(operatorName, access, defaultFragment);
-        this.rootVariables = rootVariables;
         this.rootIterator = rootIterator;
-        this.subIterators = subIterators;
-        this.aliases = aliases;
-        this.defaultValues = defaultValues;
+        this.fields = fields;
         this.sourceIterator = null;
     }
 
@@ -72,55 +64,42 @@ public class JSONSourceOperator extends DataIOSourceOperator {
     private void queueNextSolutionMappings() {
         Record r = sourceIterator.next();
 
-        // Gather iterators
-        List<Collection<String>> iterators = List.of(this.rootVariables, this.subIterators);
-
         List<SolutionMapping> maps = new ArrayList<>();
-        // Add initial solution mapping
         maps.add(new SolutionMapping());
 
-        for (Collection<String> vars : iterators) {
-            for (String var : vars) {
-                RecordValue recordValue = r.get(var);
+        for (Field f : fields) {
 
-                if (recordValue.isOk()) {
-                    Object value = recordValue.getValue();
-                    if (value instanceof ArrayList jsonArray) {
+            if (f.hasConstantValue()) {
+                maps.forEach(m -> m.put(f.name(), f.getConstantValue()));
+                continue;
+            }
 
-                        if (jsonArray.isEmpty()) {
-                            continue; // don't add empty list variables
-                        }
+            RecordValue recordValue = r.get(f.iterator());
 
-                        List<SolutionMapping> temp = new ArrayList<>();
-                        for (Object obj : jsonArray) {
-                            maps.forEach(m -> {
-                                SolutionMapping copy = new SolutionMapping(m);
-                                copy.put(var, new LiteralNode(obj.toString(), XSDDatatype.XSDstring));
-                                temp.add(copy);
-                            });
-                        }
-                        maps = temp;
-                    } else {
-                        maps.forEach(map -> map.put(var, new LiteralNode(value.toString(), XSDDatatype.XSDstring)));
+            if (recordValue.isOk()) {
+                Object value = recordValue.getValue();
+                if (value instanceof ArrayList<?> jsonArray) {
+
+                    if (jsonArray.isEmpty()) {
+                        continue; // don't add empty list variables
                     }
-                } else {
-                    maps.forEach(map -> map.put(var, new NullNode()));
+
+                    List<SolutionMapping> temp = new ArrayList<>();
+                    for (Object obj : jsonArray) {
+                        maps.forEach(m -> {
+                            SolutionMapping copy = new SolutionMapping(m);
+                            copy.put(f.name(), new LiteralNode(obj.toString(), XSDDatatype.XSDstring));
+                            temp.add(copy);
+                        });
+                    }
+                    maps = temp;
+                } else { // a JSON value
+                    maps.forEach(map -> map.put(f.name(), new LiteralNode(value.toString(), XSDDatatype.XSDstring)));
                 }
+            } else { // value not ok, put a null
+                maps.forEach(map -> map.put(f.name(), new NullNode()));
             }
         }
-
-        // include default values in each map
-        maps.forEach(m -> m.putAll(this.defaultValues));
-
-        for (SolutionMapping mapping : maps) {
-            for (Pair<String, String> pair : aliases) {
-                if (mapping.containsKey(pair.first())) {
-                    mapping.put(pair.second(), mapping.get(pair.first()));
-                    mapping.remove(pair.first());
-                }
-            }
-        }
-
         solutionMappingQueue.addAll(maps);
     }
 
@@ -146,15 +125,13 @@ public class JSONSourceOperator extends DataIOSourceOperator {
     }
 
     @Override
-    public void init() throws Exception {
+    public void init() {
         try {
-            JSONSourceIterator iterator = new JSONSourceIterator(this.access, this.rootIterator);
-            this.sourceIterator = iterator;
+            this.sourceIterator = new JSONSourceIterator(this.access, this.rootIterator);
             this.setReady(true);
         } catch (Exception e) {
             this.setReady(false);
             throw new RuntimeException(e);
-
         }
     }
 }
