@@ -69,8 +69,8 @@ public class JSONSourceOperator extends DataIOSourceOperator {
 
         for (Field f : fields) {
 
-            if (f.hasConstantValue()) {
-                maps.forEach(m -> m.put(f.name(), f.getConstantValue()));
+            if (f.constant() != null) {
+                maps.forEach(m -> m.put(f.name(), f.constant()));
                 continue;
             }
 
