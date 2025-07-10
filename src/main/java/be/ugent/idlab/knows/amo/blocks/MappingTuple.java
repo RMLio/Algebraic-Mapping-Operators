@@ -4,12 +4,11 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.*;
-
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 /**
  * A partial map between fragments and solution mappings.
@@ -57,7 +56,6 @@ public class MappingTuple implements Serializable {
      * @param mapping  a collection of SolutionMappings the fragment should refer to
      */
     public void setSolutionMaps(String fragment, Collection<@Nullable SolutionMapping> mapping) {
-
         this.map.replaceValues(fragment, mapping);
     }
 

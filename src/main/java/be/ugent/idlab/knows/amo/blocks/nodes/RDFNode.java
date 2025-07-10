@@ -11,7 +11,12 @@ public abstract class RDFNode implements Serializable {
     protected final Object value;
 
     public RDFNode(Object value) {
-        this.value = value;
+        // Some JSON libraries will parse numbers as Longs: allow the user to freely specify integers and cast them to long under the hood
+        if (value instanceof Integer integer) {
+            this.value = integer.longValue();
+        } else {
+            this.value = value;
+        }
     }
 
     public Object getValue() {

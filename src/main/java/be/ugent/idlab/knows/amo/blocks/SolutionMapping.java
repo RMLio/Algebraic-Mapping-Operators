@@ -17,17 +17,14 @@ import java.util.Set;
  * These can be applied on a templated string
  */
 public class SolutionMapping extends HashMap<String, @Nullable RDFNode> {
-    /**
-     * A copy constructor
-     *
-     * @param mapping SolutionMapping to be copied
-     */
-    public SolutionMapping(@NonNull SolutionMapping mapping) {
-        this.putAll(mapping);
-    }
 
     public SolutionMapping() {
         super();
+    }
+
+    public SolutionMapping(@NonNull SolutionMapping solutionMapping) {
+        super();
+        this.putAll(solutionMapping);
     }
 
     public SolutionMapping(@NonNull Map<String, @Nullable RDFNode> solutionMapping) {
@@ -46,6 +43,7 @@ public class SolutionMapping extends HashMap<String, @Nullable RDFNode> {
         // find all common keys
         Set<String> commonKeys = new HashSet<>(this.keySet());
         commonKeys.retainAll(sol.keySet());
+
 
         for (String key : commonKeys) {
             RDFNode thisValue = this.get(key);

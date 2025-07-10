@@ -5,11 +5,11 @@
         "value": "John Doe",
         "type": "literal"
       },
-      "$.pet.type": {
+      "pet.type": {
         "value": "dog",
         "type": "literal"
       },
-      "$.pet.name": {
+      "pet.name": {
         "value": "Bax",
         "type": "literal"
       }

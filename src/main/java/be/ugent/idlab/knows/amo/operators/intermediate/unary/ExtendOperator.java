@@ -53,14 +53,13 @@ public class ExtendOperator extends UnaryOperator {
             return null; 
         }
 
-        SolutionMapping newValues = new SolutionMapping();
         for (Pair<String, ExtendFunction> functionPair : this.replacements) {
             if (!mapping.containsKey(functionPair.first())) {
-                newValues.put(functionPair.first(), functionPair.second().applyToNode(mapping));
+                mapping.put(functionPair.first(), functionPair.second().applyToNode(mapping));
             }
         }
 
-        return mapping.union(newValues);
+        return mapping;
     }
 
     @Override
