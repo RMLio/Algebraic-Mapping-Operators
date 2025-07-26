@@ -1,9 +1,7 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio.builders;
 
-import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.operators.source.SourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.JSONSourceOperator;
-import be.ugent.idlab.knows.amo.operators.source.dataio.fields.ExpressionField;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
 import org.jspecify.annotations.NonNull;
@@ -40,26 +38,6 @@ public class JSONSourceOperatorBuilder extends SourceOperatorBuilder {
         return this;
     }
 
-    public JSONSourceOperatorBuilder withField(String name, String iterator) {
-        this.fields.add(new ExpressionField(name, iterator));
-        return this;
-    }
-
-    public JSONSourceOperatorBuilder withField(String iterator) {
-        this.fields.add(new ExpressionField(iterator, iterator));
-        return this;
-    }
-
-    public JSONSourceOperatorBuilder withDefaultField(String name, RDFNode value) {
-        this.fields.add(new ExpressionField(name, value));
-        return this;
-    }
-
-    public JSONSourceOperatorBuilder withFields(Collection<Field> fields) {
-        this.fields.addAll(fields);
-        return this;
-    }
-
     public JSONSourceOperatorBuilder withFields(Field... fields) {
         return this.withFields(Arrays.asList(fields));
     }
@@ -77,5 +55,10 @@ public class JSONSourceOperatorBuilder extends SourceOperatorBuilder {
         }
 
         return new JSONSourceOperator(this.name, this.access.get(), this.fragment, this.rootIterator, this.fields);
+    }
+
+    public JSONSourceOperatorBuilder withFields(Collection<Field> fields) {
+        this.fields.addAll(fields);
+        return this;
     }
 }

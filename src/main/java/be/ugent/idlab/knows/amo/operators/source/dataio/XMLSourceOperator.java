@@ -1,11 +1,10 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
-import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
-import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
+import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.XMLSourceIterator;
 import be.ugent.idlab.knows.dataio.record.Record;
@@ -15,27 +14,15 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 public class XMLSourceOperator extends DataIOSourceOperator {
-    private final Collection<String> rootVariables;
     private final String rootIterator;
-    private final Collection<String> subIterators;
-    private final Collection<Pair<String, String>> aliases;
     private transient XMLSourceIterator sourceIterator;
-    private final Map<String, RDFNode> defaultValues;
 
-    public XMLSourceOperator(String operatorName, Access access, String defaultOperator,
-                             Collection<String> rootVariables, String rootIterator,
-                             Collection<String> subIterators,
-                             Collection<Pair<String, String>> aliases,
-                             Map<String, RDFNode> defaultValues) {
-        super(operatorName, access, defaultOperator);
-        this.rootVariables = rootVariables;
+    public XMLSourceOperator(String operatorName, Access access, String defaultFragment,
+                             String rootIterator, List<Field> fields) {
+        super(operatorName, access, defaultFragment, fields);
         this.rootIterator = rootIterator;
-        this.subIterators = subIterators;
-        this.aliases = aliases;
-        this.defaultValues = defaultValues;
         this.sourceIterator = null;
     }
 
@@ -50,9 +37,9 @@ public class XMLSourceOperator extends DataIOSourceOperator {
                 Record r = xmlSourceIterator.next();
                 SolutionMapping m = new SolutionMapping();
                 // consume variables to be fetched from the root iterator
-                consumeRecord(r, this.rootVariables, m);
+//                consumeRecord(r, this.rootVariables, m);
                 // consume any and all subiterators with respect to the root iterator
-                consumeRecord(r, this.subIterators, m);
+//                consumeRecord(r, this.subIterators, m);
 
                 mappingTuple.addSolutionMap("default", m);
             }
@@ -63,7 +50,6 @@ public class XMLSourceOperator extends DataIOSourceOperator {
     }
 
     private void consumeRecord(Record r, Collection<String> iterators, SolutionMapping mapping) {
-        mapping.putAll(this.defaultValues);
         for (String it : iterators) {
             RecordValue recordValue = r.get(it);
 
@@ -80,14 +66,6 @@ public class XMLSourceOperator extends DataIOSourceOperator {
                 mapping.put(it, new NullNode());
             }
         }
-
-
-        for (Pair<String, String> pair : aliases) {
-            if (mapping.containsKey(pair.first())) {
-                mapping.put(pair.second(), mapping.get(pair.first()));
-                mapping.remove(pair.first());
-            }
-        }
     }
 
     @Override
@@ -97,9 +75,9 @@ public class XMLSourceOperator extends DataIOSourceOperator {
         Record r = this.sourceIterator.next();
         SolutionMapping m = new SolutionMapping();
         // consume variables to be fetched from the root iterator
-        consumeRecord(r, this.rootVariables, m);
+//        consumeRecord(r, this.rootVariables, m);
         // consume any and all subiterators with respect to the root iterator
-        consumeRecord(r, this.subIterators, m);
+//        consumeRecord(r, this.subIterators, m);
 
         tuple.addSolutionMap(this.defaultFragment, m);
 

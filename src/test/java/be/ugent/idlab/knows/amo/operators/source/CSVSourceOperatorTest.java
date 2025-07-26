@@ -1,0 +1,185 @@
+package be.ugent.idlab.knows.amo.operators.source;
+
+import be.ugent.idlab.knows.amo.blocks.MappingTuple;
+import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import be.ugent.idlab.knows.amo.operators.source.dataio.builders.SourceOperatorBuilder;
+import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
+import be.ugent.idlab.knows.dataio.access.Access;
+import be.ugent.idlab.knows.dataio.access.LocalFileAccess;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class CSVSourceOperatorTest {
+
+    @Test
+    public void simpleTest() {
+        Field name = Field.builder().withName("name").CSV().withReference("name").build();
+
+        Field age = Field.builder().CSV().withName("age").withReference("age").build();
+        Field items = Field.builder().CSV().withName("item").withSubfields(name, age).build();
+
+        Access access = new LocalFileAccess("operators/source/csv/simple.csv", "src/test/resources", "csv");
+        SourceOperator op = SourceOperatorBuilder.CSV()
+                .withAccess(access)
+                .withFields(items)
+                .build();
+
+        MappingTuple actual = op.consumeSource();
+
+        MappingTuple expected = new MappingTuple();
+        expected.setSolutionMaps("default", List.of(
+                new SolutionMapping(Map.of(
+                        "item.name", new LiteralNode("John"),
+                        "item.age", new LiteralNode("20")
+                ))
+        ));
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void itemIndexes() {
+        Field type = Field.builder().CSV().withName("type").withReference("type").build();
+        Field weight = Field.builder().CSV().withName("weight").withReference("weight").build();
+        Field items = Field.builder().CSV().withName("item").withSubfields(type, weight).build();
+
+        Access access = new LocalFileAccess("operators/source/csv/indexes.csv", "src/test/resources", "csv");
+        SourceOperator op = SourceOperatorBuilder.CSV()
+                .withAccess(access)
+                .withFields(items)
+                .build();
+
+        MappingTuple actual = op.consumeSource();
+
+        MappingTuple expected = new MappingTuple();
+        expected.setSolutionMaps("default", List.of(
+                new SolutionMapping(Map.of(
+                        "#", new LiteralNode(0, XSDDatatype.XSDinteger),
+                        "item.type", new LiteralNode("sword"),
+                        "item.weight", new LiteralNode("1500"),
+                        "item.#", new LiteralNode(0, XSDDatatype.XSDinteger),
+                        "item.type.#", new LiteralNode(0, XSDDatatype.XSDinteger),
+                        "item.weight.#", new LiteralNode(0, XSDDatatype.XSDinteger)
+                )),
+                new SolutionMapping(Map.of(
+                        "#", new LiteralNode(1, XSDDatatype.XSDinteger),
+                        "item.type", new LiteralNode("shield"),
+                        "item.weight", new LiteralNode("2500"),
+                        "item.#", new LiteralNode(0, XSDDatatype.XSDinteger),
+                        "item.type.#", new LiteralNode(0, XSDDatatype.XSDinteger),
+                        "item.weight.#", new LiteralNode(0, XSDDatatype.XSDinteger)
+                ))
+        ));
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void defaultValues() {
+        Field defaultValue = Field.builder().CSV().withName("defaultValue").withConstant(new LiteralNode("default")).build();
+        Field name = Field.builder().CSV().withName("name").withReference("name").build();
+        Field age = Field.builder().CSV().withName("age").withReference("age").build();
+        Field items = Field.builder().CSV().withName("item").withSubfields(name, age).build();
+
+        Access access = new LocalFileAccess("operators/source/csv/simple.csv", "src/test/resources", "csv");
+        SourceOperator op = SourceOperatorBuilder.CSV()
+                .withAccess(access)
+                .withFields(defaultValue, items)
+                .build();
+
+        MappingTuple actual = op.consumeSource();
+
+        MappingTuple expected = new MappingTuple();
+        expected.setSolutionMaps("default", List.of(
+                new SolutionMapping(Map.of(
+                        "defaultValue", new LiteralNode("default"),
+                        "item.name", new LiteralNode("John")
+                ))
+        ));
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void nestedJSONArray() {
+        Field type = Field.builder().JSON().withName("type").withReference("$.type").build();
+        Field weight = Field.builder().JSON().withName("weight").withReference("$.weight").build();
+
+        Field item = Field.builder().JSON().withIterator("$[*]").withName("item").withSubfields(type, weight).build();
+        Field items = Field.builder().CSV().withName("items").withReference("items").withSubfields(item).build();
+        Field name = Field.builder().CSV().withName("name").withReference("name").build();
+
+        Access access = new LocalFileAccess("operators/source/csv/nested_json_array.csv", "src/test/resources", "csv");
+        SourceOperator op = SourceOperatorBuilder.CSV()
+                .withAccess(access)
+                .withFields(name, items)
+                .build();
+
+        MappingTuple actual = op.consumeSource();
+
+        MappingTuple expected = new MappingTuple();
+        expected.setSolutionMaps("default", List.of(
+                new SolutionMapping(Map.of(
+                        "name", new LiteralNode("alice"),
+                        "items.item.type", new LiteralNode("sword"),
+                        "items.item.weight", new LiteralNode(1500, XSDDatatype.XSDinteger)
+                )),
+                new SolutionMapping(Map.of(
+                        "name", new LiteralNode("alice"),
+                        "items.item.type", new LiteralNode("shield"),
+                        "items.item.weight", new LiteralNode(2500, XSDDatatype.XSDinteger)
+                )),
+                new SolutionMapping(Map.of(
+                        "name", new LiteralNode("bob"),
+                        "items.item.type", new LiteralNode("flower"),
+                        "items.item.weight", new LiteralNode(15, XSDDatatype.XSDinteger)
+                ))
+        ));
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void nestedJSONObject() {
+        Field type = Field.builder().JSON().withName("type").withReference("$.type").build();
+        Field weight = Field.builder().JSON().withName("weight").withReference("$.weight").build();
+        Field itemJson = Field.builder().JSON().withName("itemJson").withIterator("$").withSubfields(type, weight).build();
+        Field item = Field.builder().CSV().withName("item").withReference("item").withSubfields(itemJson).build();
+
+        Field name = Field.builder().CSV().withName("name").withReference("name").build();
+        Access access = new LocalFileAccess("operators/source/csv/nested_json_object.csv", "src/test/resources", "csv");
+
+        SourceOperator op = SourceOperatorBuilder.CSV()
+                .withAccess(access)
+                .withFields(name, item)
+                .build();
+
+        MappingTuple actual = op.consumeSource();
+
+        MappingTuple expected = new MappingTuple();
+        expected.setSolutionMaps("default", List.of(
+                new SolutionMapping(Map.of(
+                        "name", new LiteralNode("alice"),
+                        "item.itemJson.type", new LiteralNode("sword"),
+                        "item.itemJson.weight", new LiteralNode(1500, XSDDatatype.XSDinteger)
+                )),
+                new SolutionMapping(Map.of(
+                        "name", new LiteralNode("alice"),
+                        "item.itemJson.type", new LiteralNode("shield"),
+                        "item.itemJson.weight", new LiteralNode(2500, XSDDatatype.XSDinteger)
+                )),
+                new SolutionMapping(Map.of(
+                        "name", new LiteralNode("bob"),
+                        "item.itemJson.type", new LiteralNode("flower"),
+                        "item.itemJson.weight", new LiteralNode(15, XSDDatatype.XSDinteger)
+                ))
+        ));
+        assertEquals(expected, actual);
+    }
+}

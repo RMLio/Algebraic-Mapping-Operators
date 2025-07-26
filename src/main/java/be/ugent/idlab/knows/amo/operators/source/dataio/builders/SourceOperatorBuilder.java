@@ -1,23 +1,22 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio.builders;
 
-import be.ugent.idlab.knows.amo.blocks.Pair;
-import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.operators.source.SourceOperator;
+import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Builder class for constructing the source operators
  */
 public abstract class SourceOperatorBuilder {
     protected String name = "source-operator";
+    // access is kept as optional due to some source operators building it on the fly
     protected Optional<Access> access = Optional.empty();
     protected String fragment = "default";
-    protected List<Pair<String, String>> aliases = new ArrayList<>();
-    protected Map<String, RDFNode> defaultValues = new HashMap<>();
-
-    public abstract SourceOperator build();
+    protected List<Field> fields = new ArrayList<>();
 
     public static CSVSourceOperatorBuilder CSV() {
         return new CSVSourceOperatorBuilder();
@@ -30,4 +29,17 @@ public abstract class SourceOperatorBuilder {
     public static XMLSourceOperatorBuilder XML() {
         return new XMLSourceOperatorBuilder();
     }
+
+    public abstract SourceOperator build();
+
+    // a construct to force each builder to implement these methods without losing the specific builder type
+    public abstract <T extends SourceOperatorBuilder> T withName(String name);
+
+    public abstract <T extends SourceOperatorBuilder> T withAccess(Access access);
+
+    public abstract <T extends SourceOperatorBuilder> T withFragment(String fragment);
+
+    public abstract <T extends SourceOperatorBuilder> T withField(Field field);
+
+    public abstract <T extends SourceOperatorBuilder> T withFields(Field... fields);
 }

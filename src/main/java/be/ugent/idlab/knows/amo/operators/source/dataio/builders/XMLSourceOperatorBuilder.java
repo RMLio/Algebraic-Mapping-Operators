@@ -5,6 +5,7 @@ import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.operators.source.SourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.XMLSourceOperator;
+import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.jspecify.annotations.NonNull;
@@ -57,32 +58,6 @@ public class XMLSourceOperatorBuilder extends SourceOperatorBuilder {
         return this;
     }
 
-    public XMLSourceOperatorBuilder withAliases(Collection<Pair<String, String>> aliases) {
-        this.aliases = new ArrayList<>(aliases);
-        return this;
-    }
-
-    public XMLSourceOperatorBuilder withAlias(String from, String to) {
-        this.aliases.add(new Pair<>(from, to));
-        return this;
-    }
-
-    public XMLSourceOperatorBuilder withDefaultValues(Map<String, RDFNode> defaultValues) {
-        this.defaultValues = defaultValues;
-        return this;
-    }
-
-    public XMLSourceOperatorBuilder withDefaultValue(String key, RDFNode defaultValue) {
-        this.defaultValues.put(key, defaultValue);
-        return this;
-    }
-
-    public XMLSourceOperatorBuilder withDefaultStringValue(String key, String value) {
-        this.defaultValues.put(key, new LiteralNode(value, XSDDatatype.XSDstring));
-        return this;
-    }
-
-
     @Override
     public SourceOperator build() {
 //        if (this.rootVariables.isEmpty()) {
@@ -96,6 +71,18 @@ public class XMLSourceOperatorBuilder extends SourceOperatorBuilder {
         }
 
 
-        return new XMLSourceOperator(this.name, this.access.get(), this.fragment, this.rootVariables, this.rootIterator, this.subIterators, this.aliases, this.defaultValues);
+        return new XMLSourceOperator(this.name, this.access.get(), this.fragment, this.rootIterator, this.fields);
+    }
+
+    @Override
+    public XMLSourceOperatorBuilder withField(Field field) {
+        this.fields.add(field);
+        return this;
+    }
+
+    @Override
+    public XMLSourceOperatorBuilder withFields(Field... fields) {
+        this.fields.addAll(Arrays.asList(fields));
+        return this;
     }
 }
