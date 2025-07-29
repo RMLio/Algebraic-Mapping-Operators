@@ -1,14 +1,16 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio.fields;
 
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import be.ugent.idlab.knows.dataio.access.VirtualAccess;
+import be.ugent.idlab.knows.dataio.iterators.XMLSourceIterator;
+import be.ugent.idlab.knows.dataio.record.XMLRecord;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.opencsv.CSVReader;
 import net.minidev.json.JSONObject;
-import org.apache.jena.datatypes.xsd.XSDDatatype;
 
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.util.*;
 
 public class ReferenceField extends Field {
@@ -24,7 +26,7 @@ public class ReferenceField extends Field {
         List<Object> values = switch (this.referenceFormulation) {
             case CSVRows -> processCSV(obj);
             case JSONPath -> processJSON(obj);
-            default -> List.of();
+            case XPath -> processXML(obj);
         };
 
         List<SolutionMapping> out = new ArrayList<>();
@@ -50,20 +52,46 @@ public class ReferenceField extends Field {
 
             Collection<SolutionMapping> subfieldMaps = this.applySubfields(sub);
             for (SolutionMapping sm : subfieldMaps) {
+                // extend keys with field's name
                 for (String key : new HashSet<>(sm.keySet())) {
                     sm.put(this.name + "." + key, sm.get(key));
                     sm.remove(key);
                 }
             }
 
-            out.addAll(subfieldMaps);
+            if (subfieldMaps.isEmpty()) {
+                out.add(new SolutionMapping(Map.of(
+                        this.name, getLiteralNode(o),
+                        this.name + ".#", getLiteralNode(i)
+                )));
+            } else {
+                for (SolutionMapping sm : subfieldMaps) {
+                    sm.put(this.name, getLiteralNode(o));
+                    sm.put(this.name + ".#", getLiteralNode(i));
+                }
+            }
 
-            out.add(new SolutionMapping(Map.of(
-                    this.name, getLiteralNode(o),
-                    this.name + ".#", new LiteralNode(i, XSDDatatype.XSDinteger)
-            )));
+            out.addAll(subfieldMaps);
         }
 
+        return out;
+    }
+
+    private List<Object> processXML(String obj) {
+        VirtualAccess access = new VirtualAccess(obj.getBytes(Charset.defaultCharset()));
+
+        XMLSourceIterator iterator;
+        try {
+             iterator = new XMLSourceIterator(access, this.reference);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        List<Object> out = new ArrayList<>();
+        while (iterator.hasNext()) {
+            XMLRecord r = (XMLRecord) iterator.next();
+            out.add(r.get("."));
+        }
         return out;
     }
 

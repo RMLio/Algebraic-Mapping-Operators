@@ -2,15 +2,5 @@
     <person>
         <name>John Doe</name>
         <age>23</age>
-        <email>"john.doe@example.com</email>
-        <pet>
-            <name>Bax</name>
-            <type>dog</type>
-        </pet>
-    </person>
-    <person>
-        <name>Susan Sue</name>
-        <age>23</age>
-        <email>susan.sue@example.com</email>
     </person>
 </people>

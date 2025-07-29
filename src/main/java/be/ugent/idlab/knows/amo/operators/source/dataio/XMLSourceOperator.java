@@ -2,18 +2,15 @@ package be.ugent.idlab.knows.amo.operators.source.dataio;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
-import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.XMLSourceIterator;
 import be.ugent.idlab.knows.dataio.record.Record;
-import be.ugent.idlab.knows.dataio.record.RecordValue;
-import org.apache.jena.datatypes.xsd.XSDDatatype;
+import be.ugent.idlab.knows.dataio.record.XMLRecord;
 import org.jspecify.annotations.NonNull;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class XMLSourceOperator extends DataIOSourceOperator {
     private final String rootIterator;
@@ -26,72 +23,58 @@ public class XMLSourceOperator extends DataIOSourceOperator {
         this.sourceIterator = null;
     }
 
-    @Override
-    @NonNull
-    public MappingTuple consumeSource() {
-        MappingTuple mappingTuple = new MappingTuple();
-        try {
-            this.init();
-            XMLSourceIterator xmlSourceIterator = this.sourceIterator;
-            while (xmlSourceIterator.hasNext()) {
-                Record r = xmlSourceIterator.next();
-                SolutionMapping m = new SolutionMapping();
-                // consume variables to be fetched from the root iterator
-//                consumeRecord(r, this.rootVariables, m);
-                // consume any and all subiterators with respect to the root iterator
-//                consumeRecord(r, this.subIterators, m);
-
-                mappingTuple.addSolutionMap("default", m);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return mappingTuple;
-    }
-
-    private void consumeRecord(Record r, Collection<String> iterators, SolutionMapping mapping) {
-        for (String it : iterators) {
-            RecordValue recordValue = r.get(it);
-
-            if (recordValue.isOk()) {
-                // when RecordValue is ok, the result of the iterator is a list
-                //noinspection unchecked
-                List<String> value = (List<String>) recordValue.getValue();
-                if (value.size() == 1) {
-                    mapping.put(it, new LiteralNode(value.getFirst(), XSDDatatype.XSDstring));
-                } else {
-                    mapping.put(it, new LiteralNode(recordValue.getValue().toString(), XSDDatatype.XSDstring));
-                }
-            } else {
-                mapping.put(it, new NullNode());
-            }
-        }
+    private List<SolutionMapping> consumeRecord(Record r) {
+//        for (String it : iterators) {
+//            RecordValue recordValue = r.get(it);
+//
+//            if (recordValue.isOk()) {
+//                // when RecordValue is ok, the result of the iterator is a list
+//                //noinspection unchecked
+//                List<String> value = (List<String>) recordValue.getValue();
+//                if (value.size() == 1) {
+//                    mapping.put(it, new LiteralNode(value.getFirst(), XSDDatatype.XSDstring));
+//                } else {
+//                    mapping.put(it, new LiteralNode(recordValue.getValue().toString(), XSDDatatype.XSDstring));
+//                }
+//            } else {
+//                mapping.put(it, new NullNode());
+//            }
+//        }
+        return null;
     }
 
     @Override
     @NonNull
     protected MappingTuple nextEffective() {
-        MappingTuple tuple = new MappingTuple();
-        Record r = this.sourceIterator.next();
-        SolutionMapping m = new SolutionMapping();
-        // consume variables to be fetched from the root iterator
-//        consumeRecord(r, this.rootVariables, m);
-        // consume any and all subiterators with respect to the root iterator
-//        consumeRecord(r, this.subIterators, m);
 
-        tuple.addSolutionMap(this.defaultFragment, m);
+        if (!this.hasNext()) {
+            throw new NoSuchElementException();
+        }
 
-        return tuple;
+        XMLRecord r = (XMLRecord) this.sourceIterator.next();
+        List<SolutionMapping> sms = applySubfields(r.getItem().toString(), r.getIndex());
 
+        MappingTuple out = new MappingTuple();
+        out.setSolutionMaps(this.defaultFragment, sms);
+
+        return out;
     }
 
     @Override
     public boolean hasNext() {
+        if (!this.isReady()) {
+            this.init();
+        }
+
         return this.isReady() && this.sourceIterator != null && this.sourceIterator.hasNext();
     }
 
     @Override
     public void init() {
+        if (this.isReady()) {
+            return;
+        }
+
         try {
             this.sourceIterator = new XMLSourceIterator(this.access, this.rootIterator);
             this.setReady(true);

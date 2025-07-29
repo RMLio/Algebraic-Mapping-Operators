@@ -1,11 +1,17 @@
 package be.ugent.idlab.knows.amo.operators.source;
 
+import be.ugent.idlab.knows.amo.blocks.MappingTuple;
+import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import be.ugent.idlab.knows.amo.operators.Operator;
+import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
+import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 
-import be.ugent.idlab.knows.amo.blocks.MappingTuple;
-import be.ugent.idlab.knows.amo.operators.Operator;
-import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
+import java.util.ArrayList;
+import java.util.List;
 
 @NullMarked
 public abstract class SourceOperator extends Operator {
@@ -39,6 +45,11 @@ public abstract class SourceOperator extends Operator {
 
     public abstract String getDefaultFragment();
 
+    /**
+     * Performs operator-specific operations to get it ready for consumption
+     *
+     * @throws Exception when something goes wrong, differs per operator
+     */
     public abstract void init() throws Exception;
 
     public boolean isReady() {
@@ -50,8 +61,7 @@ public abstract class SourceOperator extends Operator {
     }
 
     @Override
-    public <@NonNull T> T accept( OperatorVisitor<T> visitor) {
+    public <@NonNull T> T accept(OperatorVisitor<T> visitor) {
         return visitor.visitSource(this);
     }
-
 }

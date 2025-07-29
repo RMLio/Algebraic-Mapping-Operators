@@ -5,6 +5,7 @@ import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,19 +14,28 @@ import java.util.Optional;
  */
 public abstract class SourceOperatorBuilder {
     protected String name = "source-operator";
-    // access is kept as optional due to some source operators building it on the fly
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType") // access is kept as optional due to some source operators building it on the fly
     protected Optional<Access> access = Optional.empty();
     protected String fragment = "default";
     protected List<Field> fields = new ArrayList<>();
 
+    /**
+     * @return the specific builder for a CSVSourceOperatorBuilder
+     */
     public static CSVSourceOperatorBuilder CSV() {
         return new CSVSourceOperatorBuilder();
     }
 
+    /**
+     * @return the specific builder for a JSONSourceOperator
+     */
     public static JSONSourceOperatorBuilder JSON() {
         return new JSONSourceOperatorBuilder();
     }
 
+    /**
+     * @return the specific builder for an XMLSourceOperator
+     */
     public static XMLSourceOperatorBuilder XML() {
         return new XMLSourceOperatorBuilder();
     }

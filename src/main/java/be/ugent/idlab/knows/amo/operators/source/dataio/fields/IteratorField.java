@@ -2,6 +2,9 @@ package be.ugent.idlab.knows.amo.operators.source.dataio.fields;
 
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import be.ugent.idlab.knows.dataio.access.VirtualAccess;
+import be.ugent.idlab.knows.dataio.iterators.XMLSourceIterator;
+import be.ugent.idlab.knows.dataio.record.XMLRecord;
 import com.jayway.jsonpath.JsonPath;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
@@ -13,6 +16,7 @@ import org.apache.jena.datatypes.xsd.XSDDatatype;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.*;
 
 public class IteratorField extends Field {
@@ -29,7 +33,7 @@ public class IteratorField extends Field {
         List<SolutionMapping> applied = switch (this.referenceFormulation) {
             case CSVRows -> processCSV(obj);
             case JSONPath -> processJSON(obj);
-            default -> null; // TODO
+            case XPath -> processXML(obj);
         };
 
         for (SolutionMapping sm : applied) {
@@ -46,6 +50,29 @@ public class IteratorField extends Field {
 
 
         return applied;
+    }
+
+    private List<SolutionMapping> processXML(String obj) {
+        VirtualAccess access = new VirtualAccess(obj.getBytes(Charset.defaultCharset()));
+        XMLSourceIterator xmlIterator;
+
+        String iterator = this.iterator == null  ? "." :  this.iterator;
+
+        try {
+            xmlIterator = new XMLSourceIterator(access, iterator);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        List<SolutionMapping> result = new ArrayList<>();
+
+        while (xmlIterator.hasNext()) {
+            XMLRecord r =  (XMLRecord) xmlIterator.next();
+            String sub = r.getItem().toString();
+            result.addAll(applySubfields(sub));
+        }
+
+        return result;
     }
 
     private List<SolutionMapping> processJSON(String obj) {
@@ -128,4 +155,8 @@ public class IteratorField extends Field {
         return iterator;
     }
 
+    @Override
+    public String toString() {
+        return "IteratorField[name=%s,iterator=%s,subfields=%s]".formatted(this.name, this.iterator, this.subfields);
+    }
 }

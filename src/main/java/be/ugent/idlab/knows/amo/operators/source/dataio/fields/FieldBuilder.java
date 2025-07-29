@@ -68,6 +68,14 @@ public class FieldBuilder {
         return this;
     }
 
+    public FieldBuilder withReferenceFormulation(ReferenceFormulation referenceFormulation) {
+        return switch (referenceFormulation) {
+            case CSVRows -> this.CSV();
+            case JSONPath -> this.JSON();
+            case XPath -> this.XML();
+        };
+    }
+
     public Field build() {
         if (this.name == null) {
             throw new IllegalStateException("Field name is required");

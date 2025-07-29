@@ -1,10 +1,15 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio;
 
+import be.ugent.idlab.knows.amo.blocks.MappingTuple;
+import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.operators.source.SourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.jspecify.annotations.NullMarked;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,5 +39,43 @@ public abstract class DataIOSourceOperator extends SourceOperator {
 
     public String getDefaultFragment() {
         return this.defaultFragment;
+    }
+
+    protected List<SolutionMapping> applySubfields(String object, int index) {
+        List<SolutionMapping> mappings = new ArrayList<>();
+
+        for (Field f : this.fields) {
+            List<SolutionMapping> fieldMaps = f.apply(object);
+            if (mappings.isEmpty()) {
+                mappings.addAll(fieldMaps);
+            } else {
+                List<SolutionMapping> newMaps = new ArrayList<>();
+
+                for (SolutionMapping m : mappings) {
+                    for (SolutionMapping fieldMap : fieldMaps) {
+                        newMaps.add(m.union(fieldMap));
+                    }
+                }
+
+                mappings = new ArrayList<>(newMaps);
+            }
+        }
+
+        mappings.forEach(m -> m.put("#", new LiteralNode(index, XSDDatatype.XSDinteger)));
+
+        return mappings;
+    }
+
+    public MappingTuple consumeSource() {
+        MappingTuple tuple = new MappingTuple();
+        try {
+            while (this.hasNext()) {
+                MappingTuple nextTuple = this.nextEffective();
+                tuple = tuple.union(nextTuple);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return tuple;
     }
 }

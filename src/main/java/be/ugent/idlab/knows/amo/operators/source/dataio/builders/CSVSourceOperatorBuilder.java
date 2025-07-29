@@ -6,6 +6,7 @@ import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 
 public class CSVSourceOperatorBuilder extends SourceOperatorBuilder {
@@ -24,15 +25,6 @@ public class CSVSourceOperatorBuilder extends SourceOperatorBuilder {
         return this;
     }
 
-    @Override
-    public SourceOperator build() {
-        if (this.access.isEmpty()) {
-            throw new IllegalArgumentException("Access field must be set");
-        }
-
-        return new CSVSourceOperator(this.name, this.access.get(), this.fragment, this.fields);
-    }
-
     public CSVSourceOperatorBuilder withField(Field field) {
         this.fields.add(field);
         return this;
@@ -43,4 +35,17 @@ public class CSVSourceOperatorBuilder extends SourceOperatorBuilder {
         return this;
     }
 
+    public CSVSourceOperatorBuilder withFields(Collection<Field> fields) {
+        this.fields.addAll(fields);
+        return this;
+    }
+
+    @Override
+    public SourceOperator build() {
+        if (this.access.isEmpty()) {
+            throw new IllegalArgumentException("Access field must be set");
+        }
+
+        return new CSVSourceOperator(this.name, this.access.get(), this.fragment, this.fields);
+    }
 }

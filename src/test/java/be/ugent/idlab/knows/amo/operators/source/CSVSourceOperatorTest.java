@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CSVSourceOperatorTest {
 
@@ -181,5 +182,22 @@ public class CSVSourceOperatorTest {
                 ))
         ));
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testNextEffective() {
+        Field type = Field.builder().CSV().withName("type").withReference("type").build();
+        Field weight = Field.builder().CSV().withName("weight").withReference("weight").build();
+        Field items = Field.builder().CSV().withName("item").withSubfields(type, weight).build();
+
+        Access access = new LocalFileAccess("operators/source/csv/indexes.csv", "src/test/resources", "csv");
+        SourceOperator op = SourceOperatorBuilder.CSV()
+                .withAccess(access)
+                .withFields(items)
+                .build();
+
+        assertTrue(op.hasNext());
+        MappingTuple n = op.next();
+
     }
 }

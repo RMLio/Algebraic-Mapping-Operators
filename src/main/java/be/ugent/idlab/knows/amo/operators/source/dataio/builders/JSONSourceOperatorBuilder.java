@@ -39,26 +39,25 @@ public class JSONSourceOperatorBuilder extends SourceOperatorBuilder {
     }
 
     public JSONSourceOperatorBuilder withFields(Field... fields) {
-        return this.withFields(Arrays.asList(fields));
+        Collections.addAll(this.fields, fields);
+        return this;
     }
+
+    public JSONSourceOperatorBuilder withFields(Collection<Field> fields) {
+        this.fields.addAll(fields);
+        return this;
+    }
+
 
     @Override
     public SourceOperator build() {
         if (this.access.isEmpty()) {
             throw new IllegalArgumentException("Access field must be set");
         }
-//        if (this.rootVariables.isEmpty()) {
-//            throw new IllegalArgumentException("This operator cannot dynamically recognize present variables, set them using .withRootVariables()");
-//        }
         if (this.rootIterator == null) {
             throw new IllegalArgumentException("Root iterator must be set");
         }
 
         return new JSONSourceOperator(this.name, this.access.get(), this.fragment, this.rootIterator, this.fields);
-    }
-
-    public JSONSourceOperatorBuilder withFields(Collection<Field> fields) {
-        this.fields.addAll(fields);
-        return this;
     }
 }

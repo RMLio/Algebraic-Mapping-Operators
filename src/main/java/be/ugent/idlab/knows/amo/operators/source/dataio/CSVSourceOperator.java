@@ -2,13 +2,11 @@ package be.ugent.idlab.knows.amo.operators.source.dataio;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.CSVSourceIterator;
 import be.ugent.idlab.knows.dataio.record.CSVRecord;
 import com.opencsv.CSVWriter;
-import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.jspecify.annotations.NonNull;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -16,7 +14,6 @@ import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -28,56 +25,20 @@ public class CSVSourceOperator extends DataIOSourceOperator {
         this(operatorName, access, "default", List.of());
     }
 
+    /**
+     * Constructs the CSV operator
+     *
+     * @param operatorName    name of the operator
+     * @param access          access to consume
+     * @param defaultFragment default fragment to generate the solution mappings on
+     * @param fields          fields to be present in generated solution mappings
+     */
     public CSVSourceOperator(String operatorName,
                              Access access,
                              String defaultFragment,
                              List<Field> fields) {
         super(operatorName, access, defaultFragment, fields);
         this.iterator = null;
-    }
-
-    @Override
-    @NonNull
-    public MappingTuple consumeSource() {
-        MappingTuple tuple = new MappingTuple();
-        List<SolutionMapping> out = new ArrayList<>();
-
-        try {
-            this.init();
-            while (this.iterator.hasNext()) {
-                CSVRecord r = (CSVRecord) this.iterator.next();
-
-                String obj = processRecord(r);
-
-                List<SolutionMapping> mappings = new ArrayList<>();
-                for (Field f : this.fields) {
-                    List<SolutionMapping> fieldMaps = f.apply(obj);
-                    if (mappings.isEmpty()) {
-                        mappings.addAll(fieldMaps);
-                    } else if (!fieldMaps.isEmpty()) {
-                        List<SolutionMapping> newMaps = new ArrayList<>();
-
-                        for (SolutionMapping m : mappings) {
-                            for (SolutionMapping fieldMap : fieldMaps) {
-                                newMaps.add(m.union(fieldMap));
-                            }
-                        }
-
-                        mappings = new ArrayList<>(newMaps);
-                    }
-                }
-
-                // TODO: getIndex() instead of 0
-                mappings.forEach(m -> m.put("#", new LiteralNode(this.iterator.getIndex(), XSDDatatype.XSDinteger)));
-
-                out.addAll(mappings);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        tuple.setSolutionMaps("default", out);
-        return tuple;
     }
 
     /**
@@ -102,38 +63,18 @@ public class CSVSourceOperator extends DataIOSourceOperator {
         writer.writeAll(List.of(header, items));
 
         return sw.toString();
-//        return header.stream().reduce((a,b) -> a + "," + b).get() + "\n" + item;
-    }
-
-    private SolutionMapping consumeRecord(CSVRecord r) {
-        SolutionMapping map = new SolutionMapping();
-        Map<String, String> data = r.getData();
-        for (Map.Entry<String, String> entry : data.entrySet()) {
-            XSDDatatype datatype;
-            String key = entry.getKey();
-
-            String recordedDatatype = r.getDataType(key);
-            if (recordedDatatype != null) {
-                String datatypeExtract = recordedDatatype.substring(recordedDatatype.lastIndexOf('#') + 1);
-                datatype = new XSDDatatype(datatypeExtract);
-            } else {
-                datatype = XSDDatatype.XSDstring;
-            }
-
-
-            String value = entry.getValue();
-            if (value == null) {
-                map.put(key, null);
-            } else {
-                map.put(key, new LiteralNode(value, datatype));
-            }
-        }
-
-        return map;
     }
 
     @Override
     public boolean hasNext() {
+        if (!this.isReady()) {
+            try {
+                this.init();
+            } catch (SQLException | IOException | ParserConfigurationException | TransformerException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         return this.isReady() && this.iterator != null && this.iterator.hasNext();
     }
 
@@ -142,13 +83,21 @@ public class CSVSourceOperator extends DataIOSourceOperator {
     protected MappingTuple nextEffective() {
         MappingTuple tuple = new MappingTuple();
         CSVRecord r = (CSVRecord) this.iterator.next();
-        SolutionMapping map = consumeRecord(r);
-        tuple.addSolutionMap(this.defaultFragment, map);
+
+        String obj = processRecord(r);
+
+        List<SolutionMapping> mappings = applySubfields(obj, this.iterator.getIndex());
+
+        tuple.setSolutionMaps(this.defaultFragment, mappings);
         return tuple;
     }
 
     @Override
     public void init() throws SQLException, IOException, ParserConfigurationException, TransformerException {
+        if (this.isReady()) {
+            return;
+        }
+
         try {
             this.iterator = new CSVSourceIterator(this.access);
             this.setReady(true);
