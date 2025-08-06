@@ -46,7 +46,6 @@ public class XMLSourceOperator extends DataIOSourceOperator {
     @Override
     @NonNull
     protected MappingTuple nextEffective() {
-
         if (!this.hasNext()) {
             throw new NoSuchElementException();
         }

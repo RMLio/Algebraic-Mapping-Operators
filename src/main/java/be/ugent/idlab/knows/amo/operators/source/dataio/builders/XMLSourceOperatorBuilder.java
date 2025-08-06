@@ -1,11 +1,13 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio.builders;
 
+import be.ugent.idlab.knows.amo.operators.source.Compression;
 import be.ugent.idlab.knows.amo.operators.source.SourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.XMLSourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 
 public class XMLSourceOperatorBuilder extends SourceOperatorBuilder {
@@ -43,6 +45,11 @@ public class XMLSourceOperatorBuilder extends SourceOperatorBuilder {
         return this;
     }
 
+    public XMLSourceOperatorBuilder withFields(Collection<Field> fields) {
+        this.fields.addAll(fields);
+        return this;
+    }
+
     @Override
     public SourceOperator build() {
         if (this.rootIterator == null) {
@@ -53,5 +60,11 @@ public class XMLSourceOperatorBuilder extends SourceOperatorBuilder {
         }
 
         return new XMLSourceOperator(this.name, this.access.get(), this.fragment, this.rootIterator, this.fields);
+    }
+
+    @Override
+    public XMLSourceOperatorBuilder withCompression(Compression compression) {
+        this.compression = compression;
+        return this;
     }
 }

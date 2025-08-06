@@ -60,7 +60,7 @@ public abstract class Field implements Serializable {
         return switch (ref) {
             case CSVRows -> new CSVSourceIterator(acc);
             case JSONPath -> new JSONSourceIterator(acc, iterator);
-            case XPath -> new XMLSourceIterator(acc, iterator);
+            case XMLPath -> new XMLSourceIterator(acc, iterator);
         };
     }
 

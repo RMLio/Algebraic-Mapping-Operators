@@ -40,7 +40,7 @@ public class RenameTest {
     class AliasTests {
         @Test
         public void aliasSolutionMappingTest() {
-            RenameOperator operator = new RenameOperator("RenameOp", "f_default", "aliased_");
+            RenameOperator operator = new RenameOperator("RenameOp", "f_default", "aliased");
             SolutionMapping input = BlocksIO.readSolutionMapping("operators/rename/aliasSolutionMapping/input.json");
             SolutionMapping expected = BlocksIO.readSolutionMapping("operators/rename/aliasSolutionMapping/output.json");
             SolutionMapping actual = operator.apply(input);
@@ -50,7 +50,7 @@ public class RenameTest {
 
         @Test
         public void aliasMappingTupleTest() {
-            RenameOperator operator = new RenameOperator("RenameOp", "f_default", "aliased_");
+            RenameOperator operator = new RenameOperator("RenameOp", "f_default", "aliased");
             MappingTuple input = BlocksIO.readMappingTuple("operators/rename/aliasMappingTuple/input.json");
             MappingTuple expected = BlocksIO.readMappingTuple("operators/rename/aliasMappingTuple/output.json");
             MappingTuple actual = operator.apply(input);

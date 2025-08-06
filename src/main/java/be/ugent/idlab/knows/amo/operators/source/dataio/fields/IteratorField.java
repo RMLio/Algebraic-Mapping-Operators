@@ -25,6 +25,11 @@ public class IteratorField extends Field {
 
     public IteratorField(String name, Collection<Field> subfields, ReferenceFormulation referenceFormulation, String iterator) {
         super(name, subfields, referenceFormulation);
+
+        if (iterator != null && !iterator.startsWith("[") && iterator.contains(" ")) {
+            iterator = "['%s']".formatted(iterator);
+        }
+
         this.iterator = iterator;
     }
 
@@ -33,7 +38,7 @@ public class IteratorField extends Field {
         List<SolutionMapping> applied = switch (this.referenceFormulation) {
             case CSVRows -> processCSV(obj);
             case JSONPath -> processJSON(obj);
-            case XPath -> processXML(obj);
+            case XMLPath -> processXML(obj);
         };
 
         for (SolutionMapping sm : applied) {
@@ -76,24 +81,39 @@ public class IteratorField extends Field {
     }
 
     private List<SolutionMapping> processJSON(String obj) {
-        Object value = JsonPath.read(obj, this.iterator);
+        Object readObject = JsonPath.read(obj, this.iterator);
 
         String sub;
-        if (value instanceof LinkedHashMap<?, ?> map) {
-            sub = new JSONObject((Map<String, Object>) map).toJSONString();
-        } else if (value instanceof JSONArray arr) {
-            List<SolutionMapping> result = new ArrayList<>();
-            for (Object o : arr) {
-                JSONObject jsonObject = new JSONObject((Map<String, Object>) o);
-                result.addAll(applySubfields(jsonObject.toJSONString()));
-            }
 
-            return result;
-        } else {
-            sub = value.toString();
+        List<SolutionMapping> out = new ArrayList<>();
+
+        if (readObject instanceof JSONArray array) {
+            for (int i = 0; i < array.size(); i++) {
+                Object value = array.get(i);
+                if (value instanceof LinkedHashMap<?, ?> map) {
+                    sub = new JSONObject((Map<String, Object>) map).toJSONString();
+                } /*else if (value instanceof JSONArray arr) {
+                List<SolutionMapping> result = new ArrayList<>();
+                for (Object o : arr) {
+                    JSONObject jsonObject = new JSONObject((Map<String, Object>) o);
+                    result.addAll(applySubfields(jsonObject.toJSONString()));
+                }
+
+                return result;
+            } */ else {
+                    sub = value.toString();
+                }
+
+                out.addAll(applySubfields(sub));
+
+//            return new ArrayList<>(applySubfields(sub));
+            }
+        } else if (readObject instanceof LinkedHashMap<?, ?> map) {
+            sub = new JSONObject((Map<String, Object>) map).toJSONString();
+            out.addAll(applySubfields(sub));
         }
 
-        return new ArrayList<>(applySubfields(sub));
+        return out;
     }
 
     private List<SolutionMapping> processCSV(String obj) {

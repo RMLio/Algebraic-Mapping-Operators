@@ -4,20 +4,52 @@ import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.dataio.access.VirtualAccess;
 import be.ugent.idlab.knows.dataio.iterators.XMLSourceIterator;
 import be.ugent.idlab.knows.dataio.record.XMLRecord;
+import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.PathNotFoundException;
+import com.jayway.jsonpath.spi.json.JsonProvider;
+import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import com.opencsv.CSVReader;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import org.apache.jena.atlas.json.JSON;
 
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.*;
 
 public class ReferenceField extends Field {
+
+    static {
+        Configuration.setDefaults(new Configuration.Defaults() {
+            private final JsonProvider jsonProvider = Configuration.defaultConfiguration().jsonProvider();
+            private final MappingProvider mappingProvider = Configuration.defaultConfiguration().mappingProvider();
+
+            @Override
+            public JsonProvider jsonProvider() {
+                return jsonProvider;
+            }
+
+            @Override
+            public Set<Option> options() {
+                return Set.of(Option.DEFAULT_PATH_LEAF_TO_NULL, Option.REQUIRE_PROPERTIES);
+            }
+
+            @Override
+            public MappingProvider mappingProvider() {
+                return mappingProvider;
+            }
+        });
+    }
+
     private final String reference;
 
     public ReferenceField(String name, Collection<Field> subfields, ReferenceFormulation referenceFormulation, String reference) {
         super(name, subfields, referenceFormulation);
+        if ((!reference.startsWith("[") && !reference.startsWith("$")) && reference.contains(" ")) {
+            reference = "['%s']".formatted(reference);
+        }
         this.reference = reference;
     }
 
@@ -26,7 +58,7 @@ public class ReferenceField extends Field {
         List<Object> values = switch (this.referenceFormulation) {
             case CSVRows -> processCSV(obj);
             case JSONPath -> processJSON(obj);
-            case XPath -> processXML(obj);
+            case XMLPath -> processXML(obj);
         };
 
         List<SolutionMapping> out = new ArrayList<>();
@@ -82,7 +114,7 @@ public class ReferenceField extends Field {
 
         XMLSourceIterator iterator;
         try {
-             iterator = new XMLSourceIterator(access, this.reference);
+             iterator = new XMLSourceIterator(access, "//" + this.reference);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -90,23 +122,42 @@ public class ReferenceField extends Field {
         List<Object> out = new ArrayList<>();
         while (iterator.hasNext()) {
             XMLRecord r = (XMLRecord) iterator.next();
-            out.add(r.get("."));
+//            out.add(r.get("."));
+            List<String> value = (List<String>) r.get(".").getValue();
+            out.add(value.getFirst());
+//            System.out.println(value);
         }
         return out;
     }
 
-
     private List<Object> processJSON(String obj) {
-
         Object read;
         try {
-            read = JsonPath.read(obj, this.reference);
+            Object readObject = JsonPath.read(obj, this.reference);
+
+            if (readObject instanceof JSONArray arr) {
+                if (!arr.isEmpty() && arr.getFirst() instanceof JSONArray && !this.reference.endsWith("[*]")) {
+                    throw new IllegalArgumentException("Reference field reading an array without iteration");
+                }
+                if (!this.reference.endsWith("[*]")) {
+                    read = arr.getFirst();
+                } else {
+                    read = arr;
+                }
+            } else {
+                read = readObject;
+            }
+
         } catch (PathNotFoundException ex) {
-            // the value not being found results in a null node
-            return List.of();
+            throw new IllegalStateException(ex.getMessage(), ex);
         }
 
         if (read == null) {
+            // check if the value is actually a field
+            Map<String, Object> jsonObject = JsonPath.read(obj, "$");
+            if (!jsonObject.containsKey(this.reference)) {
+                throw new IllegalStateException("No such reference: %s".formatted(this.reference));
+            }
             return List.of();
         }
 

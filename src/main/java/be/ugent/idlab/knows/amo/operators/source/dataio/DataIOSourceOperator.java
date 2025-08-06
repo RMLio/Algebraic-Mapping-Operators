@@ -68,14 +68,10 @@ public abstract class DataIOSourceOperator extends SourceOperator {
 
     public MappingTuple consumeSource() {
         MappingTuple tuple = new MappingTuple();
-        try {
             while (this.hasNext()) {
                 MappingTuple nextTuple = this.nextEffective();
                 tuple = tuple.union(nextTuple);
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
         return tuple;
     }
 }

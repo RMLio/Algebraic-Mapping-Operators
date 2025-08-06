@@ -1,5 +1,7 @@
 package be.ugent.idlab.knows.amo.blocks.nodes;
 
+import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.jena.datatypes.TypeMapper;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.ext.xerces.impl.dv.XSSimpleType;
 import org.apache.jena.graph.Node;
@@ -18,6 +20,7 @@ public class LiteralNode extends RDFNode {
 
     private final String datatype;
     private final String language;
+    private boolean isDatatypeURL = false;
 
     public LiteralNode(Object value) {
         this(value, "string", "");
@@ -27,8 +30,25 @@ public class LiteralNode extends RDFNode {
         this(value, datatype, "");
     }
 
+    /**
+     * @param value    value of the node
+     * @param datatype datatype of the node. This must either be a valid XSDDatatype name or a fully qualified URL
+     * @param language language of the node.
+     */
     public LiteralNode(Object value, String datatype, String language) {
         super(value);
+
+        try {
+            // we only store String representation of the type, if we know a valid XSDDatatype can be constructed, that's all we need
+            new XSDDatatype(datatype);
+        } catch (NullPointerException e) {
+            if (!UrlValidator.getInstance().isValid(datatype)) {
+                throw new IllegalArgumentException("Invalid datatype: must be either XSDDatatype name or a valid URL");
+            } else {
+                this.isDatatypeURL = true;
+            }
+        }
+
         this.datatype = datatype;
         this.language = language;
     }
@@ -53,7 +73,18 @@ public class LiteralNode extends RDFNode {
     }
 
     public XSDDatatype getDatatype() {
+        if (this.isDatatypeURL) {
+            throw new IllegalStateException("Datatype is not an XSDDatatype");
+        }
         return new XSDDatatype(this.datatype);
+    }
+
+    public String getDatatypeAsString() {
+        if (this.isDatatypeURL) {
+            return this.datatype;
+        }
+
+        return TypeMapper.getInstance().getTypeByName(this.datatype).getURI();
     }
 
     public String getLanguage() {
@@ -61,6 +92,10 @@ public class LiteralNode extends RDFNode {
     }
 
     public Object getValue() {
+        if (this.isDatatypeURL) {
+            return "\"%s\"^^<%s>".formatted(this.value.toString(), this.datatype);
+        }
+
         return getDatatype().parse(this.value.toString());
     }
 
@@ -118,7 +153,12 @@ public class LiteralNode extends RDFNode {
         if (!this.language.isEmpty()) {
             out += "@" + this.language;
         } else if (!this.datatype.equals("string")) {
-            out += "^^<" + XSDDatatype.XSD + "#" + this.datatype + ">";
+            if (this.isDatatypeURL) {
+                out += "^^<%s>".formatted(this.datatype);
+            } else {
+                XSDDatatype datatype =  new XSDDatatype(this.datatype);
+                out += "^^<%s>".formatted(datatype.getURI());
+            }
         }
         return out;
     }

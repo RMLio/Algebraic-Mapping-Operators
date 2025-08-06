@@ -31,7 +31,7 @@ public class FieldBuilder {
     }
 
     public FieldBuilder XML() {
-        this.referenceFormulation = ReferenceFormulation.XPath;
+        this.referenceFormulation = ReferenceFormulation.XMLPath;
         return this;
     }
 
@@ -72,7 +72,7 @@ public class FieldBuilder {
         return switch (referenceFormulation) {
             case CSVRows -> this.CSV();
             case JSONPath -> this.JSON();
-            case XPath -> this.XML();
+            case XMLPath -> this.XML();
         };
     }
 

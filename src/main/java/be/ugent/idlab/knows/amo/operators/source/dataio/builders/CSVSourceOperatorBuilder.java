@@ -1,5 +1,6 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio.builders;
 
+import be.ugent.idlab.knows.amo.operators.source.Compression;
 import be.ugent.idlab.knows.amo.operators.source.SourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.CSVSourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
@@ -47,5 +48,11 @@ public class CSVSourceOperatorBuilder extends SourceOperatorBuilder {
         }
 
         return new CSVSourceOperator(this.name, this.access.get(), this.fragment, this.fields);
+    }
+
+    @Override
+    public CSVSourceOperatorBuilder withCompression(Compression compression) {
+        this.compression = compression;
+        return this;
     }
 }

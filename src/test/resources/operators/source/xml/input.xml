@@ -1,6 +1,8 @@
-<people>
-    <person>
-        <name>John Doe</name>
-        <age>23</age>
-    </person>
-</people>
+<?xml version="1.0"?>
+
+<students>
+    <student>
+        <ID>10</ID>
+        <Name>Venus</Name>
+    </student>
+</students>

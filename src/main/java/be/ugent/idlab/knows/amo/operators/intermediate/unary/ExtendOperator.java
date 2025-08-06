@@ -73,9 +73,15 @@ public class ExtendOperator extends UnaryOperator {
         Collection<SolutionMapping> mappings = tuple.getSolutionMappings(this.fragment);
 
         List<SolutionMapping> processedMappings = new ArrayList<>();
-        for (SolutionMapping m : mappings) {
-            SolutionMapping processed = apply(m);
-            processedMappings.add(processed);
+
+        // if there is no mappings to process, apply the function to an empty map, in case the replacements contain constant values
+        if (mappings.isEmpty()) {
+            processedMappings.add(this.apply(new SolutionMapping()));
+        } else {
+            for (SolutionMapping m : mappings) {
+                SolutionMapping processed = apply(m);
+                processedMappings.add(processed);
+            }
         }
 
         out.setSolutionMaps(this.fragment, processedMappings);

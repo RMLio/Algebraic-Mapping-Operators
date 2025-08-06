@@ -1,6 +1,6 @@
 {
   "f_default": {
-    "aliased_?name": {
+    "aliased.?name": {
       "value": "John Doe",
       "type": "literal"
     }

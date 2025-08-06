@@ -1,5 +1,5 @@
 {
-  "aliased_?name": {
+  "aliased.?name": {
     "value": "John Doe",
     "type": "literal"
   }
