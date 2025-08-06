@@ -1,13 +1,10 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio.builders;
 
-import be.ugent.idlab.knows.amo.operators.source.Compression;
 import be.ugent.idlab.knows.amo.operators.source.SourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
-import net.snowflake.client.jdbc.internal.amazonaws.services.s3.model.CompressionType;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +17,6 @@ public abstract class SourceOperatorBuilder {
     protected Optional<Access> access = Optional.empty();
     protected String fragment = "default";
     protected List<Field> fields = new ArrayList<>();
-    protected Compression compression = Compression.None;
 
     /**
      * @return the specific builder for a CSVSourceOperatorBuilder
@@ -55,6 +51,4 @@ public abstract class SourceOperatorBuilder {
     public abstract <T extends SourceOperatorBuilder> T withField(Field field);
 
     public abstract <T extends SourceOperatorBuilder> T withFields(Field... fields);
-
-    public abstract <T extends SourceOperatorBuilder> T withCompression(Compression compression);
 }

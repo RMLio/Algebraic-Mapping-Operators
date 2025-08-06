@@ -1,6 +1,5 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio.builders;
 
-import be.ugent.idlab.knows.amo.operators.source.Compression;
 import be.ugent.idlab.knows.amo.operators.source.SourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.JSONSourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
@@ -60,11 +59,5 @@ public class JSONSourceOperatorBuilder extends SourceOperatorBuilder {
         }
 
         return new JSONSourceOperator(this.name, this.access.get(), this.fragment, this.rootIterator, this.fields);
-    }
-
-    @Override
-    public JSONSourceOperatorBuilder withCompression(Compression compression) {
-        this.compression = compression;
-        return this;
     }
 }
