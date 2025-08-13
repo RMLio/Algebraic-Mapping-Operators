@@ -17,6 +17,7 @@ public abstract class SourceOperatorBuilder {
     protected Optional<Access> access = Optional.empty();
     protected String fragment = "default";
     protected List<Field> fields = new ArrayList<>();
+    protected List<String> nulls = new ArrayList<>();
 
     /**
      * @return the specific builder for a CSVSourceOperatorBuilder
@@ -41,7 +42,10 @@ public abstract class SourceOperatorBuilder {
 
     public abstract SourceOperator build();
 
-    // a construct to force each builder to implement these methods without losing the specific builder type
+    /*
+     * A construct to force each builder to implement these methods without losing the specific builder type
+     */
+
     public abstract <T extends SourceOperatorBuilder> T withName(String name);
 
     public abstract <T extends SourceOperatorBuilder> T withAccess(Access access);
@@ -51,4 +55,6 @@ public abstract class SourceOperatorBuilder {
     public abstract <T extends SourceOperatorBuilder> T withField(Field field);
 
     public abstract <T extends SourceOperatorBuilder> T withFields(Field... fields);
+
+    public abstract <T extends SourceOperatorBuilder> T withNulls(String... nulls);
 }

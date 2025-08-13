@@ -22,7 +22,7 @@ public class CSVSourceOperator extends DataIOSourceOperator {
     private transient CSVSourceIterator iterator;
 
     public CSVSourceOperator(String operatorName, Access access) {
-        this(operatorName, access, "default", List.of());
+        this(operatorName, access, "default", List.of(), List.of());
     }
 
     /**
@@ -36,8 +36,9 @@ public class CSVSourceOperator extends DataIOSourceOperator {
     public CSVSourceOperator(String operatorName,
                              Access access,
                              String defaultFragment,
-                             List<Field> fields) {
-        super(operatorName, access, defaultFragment, fields);
+                             List<Field> fields,
+                             List<String> nulls) {
+        super(operatorName, access, defaultFragment, fields, nulls);
         this.iterator = null;
     }
 
@@ -57,9 +58,7 @@ public class CSVSourceOperator extends DataIOSourceOperator {
         }
 
         StringWriter sw = new StringWriter();
-
         CSVWriter writer = new CSVWriter(sw);
-
         writer.writeAll(List.of(header, items));
 
         return sw.toString();
@@ -99,7 +98,7 @@ public class CSVSourceOperator extends DataIOSourceOperator {
         }
 
         try {
-            this.iterator = new CSVSourceIterator(this.access);
+            this.iterator = new CSVSourceIterator(this.access, this.nulls);
             this.setReady(true);
         } catch (Exception e) {
             this.setReady(false);

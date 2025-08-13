@@ -2,13 +2,16 @@ package be.ugent.idlab.knows.amo.operators.source.dataio;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.operators.source.dataio.fields.ConstantField;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
+import be.ugent.idlab.knows.amo.operators.source.dataio.fields.IteratorField;
+import be.ugent.idlab.knows.amo.operators.source.dataio.fields.ReferenceField;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.XMLSourceIterator;
-import be.ugent.idlab.knows.dataio.record.Record;
 import be.ugent.idlab.knows.dataio.record.XMLRecord;
 import org.jspecify.annotations.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -17,30 +20,67 @@ public class XMLSourceOperator extends DataIOSourceOperator {
     private transient XMLSourceIterator sourceIterator;
 
     public XMLSourceOperator(String operatorName, Access access, String defaultFragment,
-                             String rootIterator, List<Field> fields) {
-        super(operatorName, access, defaultFragment, fields);
+                             String rootIterator,
+                             List<Field> fields,
+                             List<String> nulls) {
+        super(operatorName, access, defaultFragment, fields, nulls);
         this.rootIterator = rootIterator;
         this.sourceIterator = null;
+
+        // prepend the root iterator to all fields
+//        this.fields = prepareFields(fields, this.rootIterator);
+        this.fields = fields;
+        this.nulls = nulls;
     }
 
-    private List<SolutionMapping> consumeRecord(Record r) {
-//        for (String it : iterators) {
-//            RecordValue recordValue = r.get(it);
-//
-//            if (recordValue.isOk()) {
-//                // when RecordValue is ok, the result of the iterator is a list
-//                //noinspection unchecked
-//                List<String> value = (List<String>) recordValue.getValue();
-//                if (value.size() == 1) {
-//                    mapping.put(it, new LiteralNode(value.getFirst(), XSDDatatype.XSDstring));
-//                } else {
-//                    mapping.put(it, new LiteralNode(recordValue.getValue().toString(), XSDDatatype.XSDstring));
+    private List<Field> prepareFields(List<Field> fields, String rootIterator) {
+        List<Field> out = new ArrayList<>();
+
+        boolean containsParentReference = false;
+        for (Field f : fields) {
+            containsParentReference = switch (f) {
+                case IteratorField it -> it.getIterator().startsWith("..");
+                case ReferenceField rf -> rf.getReference().startsWith("..");
+                case ConstantField cf -> false;
+                default -> throw new IllegalStateException("Unexpected field type: " + f);
+            };
+
+            if (containsParentReference) {
+                break;
+            }
+        }
+
+        if (containsParentReference) {
+            // adjust all fields by one element
+            String[] rootIteratorParts = rootIterator.split("/");
+
+        }
+
+        return out;
+
+
+
+
+//        List<Field> out = new ArrayList<>();
+//        for (Field f : fields) {
+//            switch (f) {
+//                case IteratorField it -> {
+//                    String currentIterator = rootIterator + (it.getIterator() == null ? "" : "/" + it.getIterator());
+//                    List<Field> subfields = prepareFields((List<Field>) f.getSubfields(), currentIterator);
+//                    out.add(new IteratorField(it.name(), subfields, it.getReferenceFormulation(), currentIterator));
 //                }
-//            } else {
-//                mapping.put(it, new NullNode());
+//                case ReferenceField ref -> {
+//                    String currentIterator = rootIterator + "/" + ref.getReference();
+//                    List<Field> subfields = prepareFields((List<Field>) f.getSubfields(), currentIterator);
+//
+//                    out.add(new ReferenceField(ref.name(), subfields, ref.getReferenceFormulation(), currentIterator));
+//                }
+//                case ConstantField ignored -> out.add(f);
+//                case null, default -> throw new IllegalStateException("Unknown / unsupported field type");
 //            }
 //        }
-        return null;
+//
+//        return out;
     }
 
     @Override

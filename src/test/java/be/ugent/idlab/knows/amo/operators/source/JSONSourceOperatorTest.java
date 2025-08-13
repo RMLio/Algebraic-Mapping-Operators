@@ -3,28 +3,21 @@ package be.ugent.idlab.knows.amo.operators.source;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
-import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
 import be.ugent.idlab.knows.amo.operators.source.dataio.JSONSourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.builders.SourceOperatorBuilder;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
-import be.ugent.idlab.knows.amo.operators.source.dataio.fields.FieldBuilder;
-import be.ugent.idlab.knows.amo.operators.source.dataio.fields.ReferenceField;
-import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.access.LocalFileAccess;
-import be.ugent.idlab.knows.dataio.access.compression.Compression;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class JSONSourceOperatorTest {
@@ -287,36 +280,36 @@ public class JSONSourceOperatorTest {
     }
 
     @Test
-    public void gzipCompression() {
-        Access access = new LocalFileAccess("operators/source/json/Friends.json.gz", "src/test/resources", "gzip", Charset.defaultCharset(), Compression.GZip);
-
+    public void complexJSONArray() {
+        Access access = new LocalFileAccess("operators/source/json/complex_array.json", "src/test/resources", "json");
+        Field departmentName = Field.builder().JSON().withName("dep_name").withReference("$.departments[*].name").build();
         Field name = Field.builder().JSON().withName("name").withReference("$.name").build();
-        SourceOperator op = SourceOperatorBuilder.JSON()
-                .withRootIterator("$.[*]")
-                .withFields(name)
+        JSONSourceOperator operator = (JSONSourceOperator) SourceOperatorBuilder.JSON()
                 .withAccess(access)
+                .withRootIterator("$.companies[*]")
+                .withFields(List.of(departmentName, name))
                 .build();
+
+        MappingTuple actual = operator.consumeSource();
 
         MappingTuple expected = new MappingTuple();
         expected.setSolutionMaps("default", List.of(
                 new SolutionMapping(Map.of(
-                        "name", new LiteralNode("Monica Geller")
+                        "name", new LiteralNode("TechCorp"),
+                        "dep_name", new LiteralNode("Engineering")
+                )), new SolutionMapping(Map.of(
+                        "name", new LiteralNode("TechCorp"),
+                        "dep_name", new LiteralNode("Marketing")
                 )),
                 new SolutionMapping(Map.of(
-                        "name", new LiteralNode("Rachel Green")
+                        "name", new LiteralNode("InnovateX"),
+                        "dep_name", new LiteralNode("Research & Development")
                 )),
                 new SolutionMapping(Map.of(
-                        "name", new LiteralNode("Joey Tribbiani")
-                )),
-                new SolutionMapping(Map.of(
-                        "name", new LiteralNode("Chandler Bing")
-                )),
-                new SolutionMapping(Map.of(
-                        "name", new LiteralNode("Ross Geller")
+                        "name", new LiteralNode("InnovateX"),
+                        "dep_name", new LiteralNode("Sales")
                 ))
         ));
-
-        MappingTuple actual = op.consumeSource();
 
         assertEquals(expected, actual);
     }

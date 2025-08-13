@@ -58,6 +58,17 @@ public class XMLSourceOperatorBuilder extends SourceOperatorBuilder {
             throw new IllegalArgumentException("Access field must be set");
         }
 
-        return new XMLSourceOperator(this.name, this.access.get(), this.fragment, this.rootIterator, this.fields);
+        return new XMLSourceOperator(this.name, this.access.get(), this.fragment, this.rootIterator, this.fields, this.nulls);
+    }
+
+    @Override
+    public XMLSourceOperatorBuilder withNulls(String... nulls) {
+        this.nulls.addAll(Arrays.asList(nulls));
+        return this;
+    }
+
+    public XMLSourceOperatorBuilder withNulls(Collection<String> nulls) {
+        this.nulls.addAll(nulls);
+        return this;
     }
 }

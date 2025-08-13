@@ -46,6 +46,17 @@ public class CSVSourceOperatorBuilder extends SourceOperatorBuilder {
             throw new IllegalArgumentException("Access field must be set");
         }
 
-        return new CSVSourceOperator(this.name, this.access.get(), this.fragment, this.fields);
+        return new CSVSourceOperator(this.name, this.access.get(), this.fragment, this.fields, this.nulls);
+    }
+
+    @Override
+    public CSVSourceOperatorBuilder withNulls(String... nulls) {
+        this.nulls.addAll(Arrays.asList(nulls));
+        return this;
+    }
+
+    public CSVSourceOperatorBuilder withNulls(Collection<String> nulls) {
+        this.nulls.addAll(nulls);
+        return this;
     }
 }

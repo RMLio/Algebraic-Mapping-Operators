@@ -24,8 +24,9 @@ public class JSONSourceOperator extends DataIOSourceOperator {
 
     public JSONSourceOperator(String operatorName, Access access, String defaultFragment,
                               String rootIterator,
-                              List<Field> fields) {
-        super(operatorName, access, defaultFragment, fields);
+                              List<Field> fields,
+                              List<String> nulls) {
+        super(operatorName, access, defaultFragment, fields, nulls);
         this.rootIterator = rootIterator;
         this.sourceIterator = null;
     }
@@ -41,9 +42,6 @@ public class JSONSourceOperator extends DataIOSourceOperator {
 
         JSONArray outputArray = (JSONArray) r.get("$").getValue();
         JSONObject json = new JSONObject((Map<String, ?>) outputArray.getFirst());
-
-//        JSONObject json = new JSONObject((Map<String, ?>) r.get("$").getValue());
-
         List<SolutionMapping> mappings = applySubfields(json.toJSONString(), r.getIndex());
 
         MappingTuple out = new MappingTuple();

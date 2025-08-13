@@ -21,12 +21,14 @@ public abstract class DataIOSourceOperator extends SourceOperator {
     protected Access access;
     protected String defaultFragment;
     protected List<Field> fields;
+    protected List<String> nulls;
 
-    public DataIOSourceOperator(String operatorName, Access access, String defaultFragment, List<Field> fields) {
+    public DataIOSourceOperator(String operatorName, Access access, String defaultFragment, List<Field> fields, List<String> nulls) {
         super(operatorName);
         this.access = access;
         this.defaultFragment = defaultFragment;
         this.fields = fields;
+        this.nulls = new ArrayList<>(nulls);
     }
 
     public Access getAccess() {

@@ -3,6 +3,7 @@ package be.ugent.idlab.knows.amo.operators.source;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
 import be.ugent.idlab.knows.amo.operators.source.dataio.builders.SourceOperatorBuilder;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
@@ -185,19 +186,53 @@ public class CSVSourceOperatorTest {
     }
 
     @Test
-    public void testNextEffective() {
-        Field type = Field.builder().CSV().withName("type").withReference("type").build();
-        Field weight = Field.builder().CSV().withName("weight").withReference("weight").build();
-        Field items = Field.builder().CSV().withName("item").withSubfields(type, weight).build();
+    public void emptyValues() {
+        Field id = Field.builder().CSV().withName("id").withReference("id").build();
+        Field name = Field.builder().CSV().withName("age").withReference("age").build();
+        Field age = Field.builder().CSV().withName("name").withReference("name").build();
+        Field items = Field.builder().CSV().withName("item").withSubfields(id, name, age).build();
 
-        Access access = new LocalFileAccess("operators/source/csv/indexes.csv", "src/test/resources", "csv");
+        Access access = new LocalFileAccess("operators/source/csv/empty_values.csv", "src/test/resources", "csv");
         SourceOperator op = SourceOperatorBuilder.CSV()
                 .withAccess(access)
                 .withFields(items)
                 .build();
 
-        assertTrue(op.hasNext());
-        MappingTuple n = op.next();
+        MappingTuple actual = op.consumeSource();
 
+        MappingTuple expected = new MappingTuple();
+        expected.addSolutionMap("default", new SolutionMapping(Map.of(
+                "item.id", new LiteralNode("5"),
+                "item.name", new NullNode(),
+                "item.age", new NullNode()
+        )));
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void nullValues() {
+        Field id = Field.builder().CSV().withName("id").withReference("id").build();
+        Field name = Field.builder().CSV().withName("age").withReference("age").build();
+        Field age = Field.builder().CSV().withName("name").withReference("name").build();
+        Field items = Field.builder().CSV().withName("item").withSubfields(id, name, age).build();
+
+        Access access = new LocalFileAccess("operators/source/csv/null_values.csv", "src/test/resources", "csv");
+        SourceOperator op = SourceOperatorBuilder.CSV()
+                .withAccess(access)
+                .withNulls("NULL")
+                .withFields(items)
+                .build();
+
+        MappingTuple actual = op.consumeSource();
+
+        MappingTuple expected = new MappingTuple();
+        expected.addSolutionMap("default", new SolutionMapping(Map.of(
+                "item.id", new LiteralNode("5"),
+                "item.name", new NullNode(),
+                "item.age", new NullNode()
+        )));
+
+        assertEquals(expected, actual);
     }
 }

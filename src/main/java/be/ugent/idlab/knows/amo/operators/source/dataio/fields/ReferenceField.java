@@ -2,7 +2,10 @@ package be.ugent.idlab.knows.amo.operators.source.dataio.fields;
 
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.dataio.access.VirtualAccess;
+import be.ugent.idlab.knows.dataio.iterators.CSVSourceIterator;
 import be.ugent.idlab.knows.dataio.iterators.XMLSourceIterator;
+import be.ugent.idlab.knows.dataio.record.CSVRecord;
+import be.ugent.idlab.knows.dataio.record.RecordValue;
 import be.ugent.idlab.knows.dataio.record.XMLRecord;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
@@ -13,10 +16,13 @@ import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import com.opencsv.CSVReader;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.apache.jena.atlas.json.JSON;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.Charset;
+import java.sql.SQLException;
 import java.util.*;
 
 public class ReferenceField extends Field {
@@ -78,6 +84,8 @@ public class ReferenceField extends Field {
             String sub;
             if (o instanceof Map<?, ?>) {
                 sub = new JSONObject((Map<String, Object>) o).toJSONString();
+            } else if (o == null) {
+                sub = null;
             } else {
                 sub = o.toString();
             }
@@ -136,10 +144,10 @@ public class ReferenceField extends Field {
             Object readObject = JsonPath.read(obj, this.reference);
 
             if (readObject instanceof JSONArray arr) {
-                if (!arr.isEmpty() && arr.getFirst() instanceof JSONArray && !this.reference.endsWith("[*]")) {
+                if (!arr.isEmpty() && arr.getFirst() instanceof JSONArray && !this.reference.contains("[*]")) {
                     throw new IllegalArgumentException("Reference field reading an array without iteration");
                 }
-                if (!this.reference.endsWith("[*]")) {
+                if (!this.reference.contains("[*]")) {
                     read = arr.getFirst();
                 } else {
                     read = arr;
@@ -175,30 +183,26 @@ public class ReferenceField extends Field {
     }
 
     private List<Object> processCSV(String obj) {
-        CSVReader reader = new CSVReader(new StringReader(obj));
-        // assume first line always contains the header
-        Iterator<String[]> readerIterator = reader.iterator();
+        VirtualAccess access = new VirtualAccess(obj.getBytes(Charset.defaultCharset()));
+        List<Object> out = new ArrayList<>();
+        try {
+            CSVSourceIterator iterator = new CSVSourceIterator(access);
 
-        String[] header = readerIterator.next();
-        int iteratorIndex = -1;
-        for (int i = 0; i < header.length; i++) {
-            if (header[i].equals(this.reference)) {
-                iteratorIndex = i;
-                break;
+            while (iterator.hasNext()) {
+                CSVRecord r = (CSVRecord) iterator.next();
+                RecordValue rv = r.get(this.reference);
+                if (rv.isOk()) {
+                    out.add(rv.getValue());
+                } else {
+                    out.add(null);
+                }
+//                out.add(r.get(this.reference).getValue());
             }
-        }
 
-        if (iteratorIndex < 0) {
-            throw new IllegalStateException("Iterator %s not part of data %s".formatted(this.reference, obj));
+            return out;
+        } catch (SQLException | IOException | ParserConfigurationException | TransformerException e) {
+            throw new RuntimeException(e);
         }
-
-        List<Object> objects = new ArrayList<>();
-        while (readerIterator.hasNext()) {
-            String[] data = readerIterator.next();
-            objects.add(data[iteratorIndex]);
-        }
-
-        return objects;
     }
 
     @Override

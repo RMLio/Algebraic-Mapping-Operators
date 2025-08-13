@@ -87,5 +87,8 @@ public abstract class Field implements Serializable {
         return out;
     }
 
+    public Collection<Field> getSubfields() {
+        return subfields;
+    }
 }
 

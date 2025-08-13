@@ -8,6 +8,7 @@ import be.ugent.idlab.knows.amo.operators.source.dataio.builders.SourceOperatorB
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.access.LocalFileAccess;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -41,5 +42,45 @@ public class XMLSourceOperatorTest {
         ));
 
         assertEquals(expected, actual);
+    }
+
+    @Disabled("Parent references are not supported, implementation pending (see issues on Gitlab)")
+    @Test
+    public void complexSource() {
+        Access access = new LocalFileAccess("operators/source/xml/complex_source.xml", "src/test/resources", "xml");
+
+        Field managerName = Field.builder().XML().withName("manager/name").withReference("manager/name").build();
+        Field id = Field.builder().XML().withName("id").withReference("../../@id").build();
+
+        XMLSourceOperator operator = (XMLSourceOperator) SourceOperatorBuilder.XML()
+                .withAccess(access)
+                .withFields(managerName, id)
+                .withRootIterator("/companies/company/departments/department")
+                .build();
+
+        MappingTuple actual = operator.consumeSource();
+
+        MappingTuple expected = new MappingTuple();
+        expected.setSolutionMaps("default", List.of(
+                new SolutionMapping(Map.of(
+                    "manager/name", new LiteralNode("Alice Johnson"),
+                        "id", new LiteralNode("25")
+                )),new SolutionMapping(Map.of(
+                        "manager/name", new LiteralNode("John Doe"),
+                        "id", new LiteralNode("25")
+                )),
+                new SolutionMapping(Map.of(
+                        "manager/name", new LiteralNode("Emma Wilson"),
+                        "id", new LiteralNode("35")
+                )),
+                new SolutionMapping(Map.of(
+                        "manager/name", new LiteralNode("Michael Green"),
+                        "id", new LiteralNode("35")
+                ))
+
+                ));
+
+        assertEquals(expected, actual);
+        assertEquals(4, actual.getSolutionMappings("default").size());
     }
 }

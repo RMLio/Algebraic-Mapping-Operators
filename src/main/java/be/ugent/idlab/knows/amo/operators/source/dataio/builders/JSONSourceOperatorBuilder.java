@@ -11,7 +11,6 @@ import java.util.*;
 public class JSONSourceOperatorBuilder extends SourceOperatorBuilder {
 
     private String rootIterator = null;
-    private List<Field> fields = new ArrayList<>();
 
     public JSONSourceOperatorBuilder withName(String name) {
         this.name = name;
@@ -58,6 +57,17 @@ public class JSONSourceOperatorBuilder extends SourceOperatorBuilder {
             throw new IllegalArgumentException("Root iterator must be set");
         }
 
-        return new JSONSourceOperator(this.name, this.access.get(), this.fragment, this.rootIterator, this.fields);
+        return new JSONSourceOperator(this.name, this.access.get(), this.fragment, this.rootIterator, this.fields, this.nulls);
+    }
+
+    @Override
+    public JSONSourceOperatorBuilder withNulls(String... nulls) {
+        this.nulls.addAll(Arrays.asList(nulls));
+        return this;
+    }
+
+    public JSONSourceOperatorBuilder withNulls(Collection<String> nulls) {
+        this.nulls.addAll(nulls);
+        return this;
     }
 }

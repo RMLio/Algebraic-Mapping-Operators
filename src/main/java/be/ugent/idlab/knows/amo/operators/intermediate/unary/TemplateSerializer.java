@@ -73,7 +73,7 @@ public class TemplateSerializer extends UnaryOperator {
                     String unpreprended = variable.substring(1);
                     solutionValue = mapping.get(unpreprended);
                     if (solutionValue != null) {
-                        template = template.replaceAll("\\" + variable, solutionValue.getStringRepr());
+                        template = template.replaceAll("\\%s".formatted(variable), solutionValue.getStringRepr());
                     } else {
                         nullFound = true;
                         break;
