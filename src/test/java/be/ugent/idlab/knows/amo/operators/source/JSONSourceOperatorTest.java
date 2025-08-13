@@ -3,6 +3,7 @@ package be.ugent.idlab.knows.amo.operators.source;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
 import be.ugent.idlab.knows.amo.operators.source.dataio.JSONSourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.builders.SourceOperatorBuilder;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
@@ -312,5 +313,37 @@ public class JSONSourceOperatorTest {
         ));
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    public void null_node() {
+        Access access = new LocalFileAccess("operators/source/json/null_value.json", "src/test/resources", "json");
+        Field id = Field.builder().JSON().withName("ID").withReference("ID").build();
+        Field name = Field.builder().JSON().withName("Name").withReference("Name").build();
+        Field dob = Field.builder().JSON().withName("DateOfBirth").withReference("DateOfBirth").build();
+        JSONSourceOperator operator = (JSONSourceOperator) SourceOperatorBuilder.JSON()
+                .withAccess(access)
+                .withRootIterator("$.persons[*]")
+                .withFields(id, name, dob)
+                .build();
+
+        MappingTuple actual = operator.consumeSource();
+
+        MappingTuple expected = new MappingTuple();
+        expected.setSolutionMaps("default", List.of(
+                new SolutionMapping(Map.of(
+                        "ID", new LiteralNode("1"),
+                        "Name", new LiteralNode("Alice"),
+                        "DateOfBirth", new NullNode()
+                )),
+                new SolutionMapping(Map.of(
+                        "ID", new LiteralNode("2"),
+                        "Name", new LiteralNode("Bob"),
+                        "DateOfBirth", new LiteralNode("September, 2010")
+                ))
+        ));
+
+        assertEquals(expected, actual);
+
     }
 }
