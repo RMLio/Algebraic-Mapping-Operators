@@ -121,8 +121,9 @@ public class ReferenceField extends Field {
         VirtualAccess access = new VirtualAccess(obj.getBytes(Charset.defaultCharset()));
 
         XMLSourceIterator iterator;
+
         try {
-             iterator = new XMLSourceIterator(access, "//" + this.reference);
+             iterator = new XMLSourceIterator(access, this.reference);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -130,10 +131,8 @@ public class ReferenceField extends Field {
         List<Object> out = new ArrayList<>();
         while (iterator.hasNext()) {
             XMLRecord r = (XMLRecord) iterator.next();
-//            out.add(r.get("."));
             List<String> value = (List<String>) r.get(".").getValue();
             out.add(value.getFirst());
-//            System.out.println(value);
         }
         return out;
     }
@@ -161,7 +160,6 @@ public class ReferenceField extends Field {
         }
 
         if (read == null) {
-            // check if the value is actually a field
             Map<String, Object> jsonObject = JsonPath.read(obj, "$");
             if (!jsonObject.containsKey(this.reference)) {
                 throw new IllegalStateException("No such reference: %s".formatted(this.reference));
@@ -174,8 +172,6 @@ public class ReferenceField extends Field {
         }
 
         return List.of(read);
-
-//        return JsonPath.read(obj, this.reference);
     }
 
     public String getReference() {
@@ -196,7 +192,6 @@ public class ReferenceField extends Field {
                 } else {
                     out.add(null);
                 }
-//                out.add(r.get(this.reference).getValue());
             }
 
             return out;
