@@ -344,6 +344,37 @@ public class JSONSourceOperatorTest {
         ));
 
         assertEquals(expected, actual);
+    }
 
+    @Test
+    public void missingFields() {
+        Access access = new LocalFileAccess("operators/source/json/missing_values.json", "src/test/resources", "json");
+
+        Field id = Field.builder().JSON().withName("ID").withReference("ID").build();
+        Field sport = Field.builder().JSON().withName("Sport").withReference("Sport").build();
+        Field name = Field.builder().JSON().withName("Name").withReference("Name").build();
+
+        JSONSourceOperator operator = (JSONSourceOperator) SourceOperatorBuilder.JSON()
+                .withAccess(access)
+                .withRootIterator("$.students[*]")
+                .withFields(id, sport, name)
+                .build();
+
+        MappingTuple actual = operator.consumeSource();
+        MappingTuple expected = new MappingTuple();
+        expected.setSolutionMaps("default", List.of(
+                new SolutionMapping(Map.of(
+                        "ID", new LiteralNode(10, XSDDatatype.XSDinteger),
+                        "Sport", new LiteralNode(100, XSDDatatype.XSDinteger),
+                        "Name", new LiteralNode("Venus Williams")
+                )),
+                new SolutionMapping(Map.of(
+                        "ID", new LiteralNode(20, XSDDatatype.XSDinteger),
+                        "Sport", new NullNode(),
+                        "Name", new LiteralNode("Demi Moore")
+                ))
+        ));
+
+        assertEquals(expected, actual);
     }
 }

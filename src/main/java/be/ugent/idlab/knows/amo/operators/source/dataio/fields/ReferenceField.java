@@ -160,10 +160,6 @@ public class ReferenceField extends Field {
         }
 
         if (read == null) {
-            Map<String, Object> jsonObject = (Map<String, Object>) ((JSONArray) JsonPath.read(obj, "$")).getFirst();
-            if (!jsonObject.containsKey(this.reference)) {
-                throw new IllegalStateException("No such reference: %s".formatted(this.reference));
-            }
             return List.of();
         }
 
