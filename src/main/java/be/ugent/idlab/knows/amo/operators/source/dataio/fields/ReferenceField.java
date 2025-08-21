@@ -13,14 +13,12 @@ import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
-import com.opencsv.CSVReader;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
-import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.sql.SQLException;
 import java.util.*;
@@ -53,8 +51,10 @@ public class ReferenceField extends Field {
 
     public ReferenceField(String name, Collection<Field> subfields, ReferenceFormulation referenceFormulation, String reference) {
         super(name, subfields, referenceFormulation);
-        if ((!reference.startsWith("[") && !reference.startsWith("$")) && reference.contains(" ")) {
-            reference = "['%s']".formatted(reference);
+        if (referenceFormulation == ReferenceFormulation.JSONPath) {
+            if ((!reference.startsWith("[") && !reference.startsWith("$")) && reference.contains(" ")) {
+                reference = "['%s']".formatted(reference);
+            }
         }
         this.reference = reference;
     }
@@ -123,7 +123,7 @@ public class ReferenceField extends Field {
         XMLSourceIterator iterator;
 
         try {
-             iterator = new XMLSourceIterator(access, this.reference);
+            iterator = new XMLSourceIterator(access, this.reference);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
