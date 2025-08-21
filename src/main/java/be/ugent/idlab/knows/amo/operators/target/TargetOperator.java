@@ -2,10 +2,13 @@ package be.ugent.idlab.knows.amo.operators.target;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.functions.TargetSink;
 import be.ugent.idlab.knows.amo.operators.Operator;
 import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
+import be.ugent.idlab.knows.amo.operators.target.postprocessing.RMLFormatter;
+import org.apache.jena.riot.Lang;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
@@ -22,12 +25,18 @@ public class TargetOperator extends Operator {
     private final String targetFragment;
     private final String targetVariable;
     private final TargetSink<RDFNode> sink;
+    private final RMLFormatter formatter;
 
     public TargetOperator(String operatorName, String targetFragment, String targetVariable, TargetSink<RDFNode> sink) {
+        this(operatorName, targetFragment, targetVariable, sink, null);
+    }
+
+    public TargetOperator(String operatorName, String targetFragment, String targetVariable, TargetSink<RDFNode> sink, RMLFormatter formatter) {
         super(operatorName);
         this.targetFragment = targetFragment;
         this.targetVariable = targetVariable;
         this.sink = sink;
+        this.formatter = formatter;
     }
 
     public String getTargetFragment() {
@@ -45,7 +54,15 @@ public class TargetOperator extends Operator {
     public void apply(MappingTuple mappingTuple) {
         Collection<SolutionMapping> solMappings = mappingTuple.getSolutionMappings(this.targetFragment);
         for (SolutionMapping solMapping : solMappings) {
-            this.sink.sink(solMapping.get(this.targetVariable));
+            LiteralNode node = (LiteralNode) solMapping.get(this.targetVariable);
+            if (node == null) {
+                throw new IllegalStateException("Target node " + this.targetVariable + " not found");
+            }
+            if (this.formatter != null) {
+                String value = this.formatter.from(node.toString()).output();
+                node = new LiteralNode(value, node.getDatatype(), node.getLanguage());
+            }
+            this.sink.sink(node);
         }
     }
 
