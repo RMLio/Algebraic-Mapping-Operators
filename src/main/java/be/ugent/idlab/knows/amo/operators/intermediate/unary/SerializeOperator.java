@@ -48,9 +48,6 @@ public class SerializeOperator extends UnaryOperator {
      * replaced
      *
      * @param m        MappingTuple to serialize
-     * @param language language to output the serialization in. Supported languages
-     *                 are "RDF/XML", "RDF/XML-ABBREV", "N-TRIPLE", "TURTLE", (and
-     *                 "TTL") and "N3", as supported by Jena's Model::write
      * @return a MappingTuple with the serialization contained in the variable
      *         "?serialized_output"
      */

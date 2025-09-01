@@ -1,7 +1,6 @@
 package be.ugent.idlab.knows.amo.blocks;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import be.ugent.idlab.knows.amo.util.Multimap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.jspecify.annotations.NonNull;
@@ -17,7 +16,7 @@ public class MappingTuple implements Serializable {
     private Multimap<String, @Nullable SolutionMapping> map;
 
     public MappingTuple() {
-        this.map = ArrayListMultimap.create();
+        this.map = new Multimap<>();
     }
 
     // a copy constructor

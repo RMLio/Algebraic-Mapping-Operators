@@ -57,11 +57,6 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.eclipse.rdf4j</groupId>
-            <artifactId>rdf4j-sparqlbuilder</artifactId>
-            <version>4.2.2</version>
-        </dependency>
         <!-- DataIO for handling IO  -->
         <dependency>
             <groupId>be.ugent.idlab.knows</groupId>
