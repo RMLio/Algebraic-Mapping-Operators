@@ -1,8 +1,7 @@
 package be.ugent.idlab.knows.amo.blocks;
 
 import be.ugent.idlab.knows.amo.util.Multimap;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import net.minidev.json.JSONObject;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -173,7 +172,6 @@ public class MappingTuple implements Serializable {
 
     @Override
     public String toString() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.toJson(this.map.asMap());
+        return new JSONObject(map.asMap()).toString();
     }
 }
