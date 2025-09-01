@@ -1,17 +1,10 @@
 package be.ugent.idlab.knows.amo.operators.source;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
-import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.operators.Operator;
 import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
-import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
-import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @NullMarked
 public abstract class SourceOperator extends Operator {

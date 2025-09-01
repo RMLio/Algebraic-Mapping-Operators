@@ -1,11 +1,7 @@
 package be.ugent.idlab.knows.amo.functions;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
-import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-
 import java.io.Serializable;
-import java.util.Collection;
-
 import org.jspecify.annotations.Nullable;
 
 /**

@@ -8,7 +8,6 @@ import be.ugent.idlab.knows.amo.functions.TargetSink;
 import be.ugent.idlab.knows.amo.operators.Operator;
 import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
 import be.ugent.idlab.knows.amo.operators.target.postprocessing.RMLFormatter;
-import org.apache.jena.riot.Lang;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
