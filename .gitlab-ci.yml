@@ -45,8 +45,11 @@ Tests:
         # unary operators
         ExtendTest, FragmentTest, ProjectTest, RenameTest,
         # general operators
-        DataIOSourceOperatorTest, SerializeOperatorTest, TargetOperatorTest
-
+        TemplateSerializerTest, SerializeOperatorTest, TargetOperatorTest,
+        # source operators
+        CSVSourceOperatorTest, JSONSourceOperatorTest, XMLSourceOperatorTest,
+        # performance
+        BGPReplaceTest
       ]
   except:
     - main
