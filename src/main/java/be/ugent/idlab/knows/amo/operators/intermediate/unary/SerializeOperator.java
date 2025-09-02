@@ -18,8 +18,6 @@ import java.util.Map;
 /**
  * Serialize operator will accept a Basic Graph Pattern and replace the
  * variables with the values as provided in the mapping tuple.
- *
- * @param bgp
  */
 public class SerializeOperator extends UnaryOperator {
 

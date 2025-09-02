@@ -11,14 +11,19 @@ public abstract class IntermediateOperator extends Operator {
     protected final String fragment;
 
     /**
-     *
-     * @param fragment fragment the operator should operate on
+     * Creates a new instance of a IntermediateOperator
+     * @param operatorName A name (identifier) for the operator.
+     * @param fragment     The fragment this operator works on.
      */
-    public IntermediateOperator(String operatorName, String fragment) {
+    protected IntermediateOperator(String operatorName, String fragment) {
         super(operatorName);
         this.fragment = fragment;
     }
 
+    /**
+     * Gets the fragment of this operator.
+     * @return  The name of the fragment this operator works on.
+     */
     public String getFragment() {
         return fragment;
     }

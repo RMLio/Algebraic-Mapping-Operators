@@ -19,8 +19,7 @@ public abstract class Operator implements Serializable {
         return this.operatorName;
     }
 
-    @NonNull
-    public abstract <@NonNull T> T accept(@NonNull OperatorVisitor<T> visitor);
+    public abstract <T> T accept(@NonNull OperatorVisitor<@NonNull T> visitor);
 
     @Override
     public String toString() {

@@ -14,19 +14,31 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * RenameOperator will rename the variables.
- *
- * @param pairs a collection of Pairs to rename the variables. The pairs are
- *              supplied as instances of Pair(var_to_rename, new_var_name).
  */
 public class RenameOperator extends UnaryOperator {
 
     private final RenameOperatorImpl implementation;
 
+    /**
+     * Creates a new instance of a RenameOperator with a given name, fragment and rename-pairs.
+     *
+     * @param operatorName  A name (identifier) for the operator.
+     * @param fragment      The fragment this operator works on.
+     * @param pairs         a collection of Pairs to rename the variables. The pairs are
+     *                      supplied as instances of Pair(var_to_rename, new_var_name).
+     */
     public RenameOperator(String operatorName, String fragment, Collection<Pair<String, String>> pairs) {
         super(operatorName, fragment);
         this.implementation = new RenameOperatorPairs(operatorName, fragment, pairs);
     }
 
+    /**
+     * Creates a new instance of a RenameOperator with a given name, fragment and rename alias.
+     *
+     * @param operatorName  A name (identifier) for the operator.
+     * @param fragment      The fragment this operator works on.
+     * @param alias         Every key (variable) is prefixed with alias + '.'
+     */
     public RenameOperator(String operatorName, String fragment, String alias) {
         super(operatorName, fragment);
         this.implementation = new RenameOperatorAlias(operatorName, fragment, alias);

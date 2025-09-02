@@ -17,7 +17,8 @@ import be.ugent.idlab.knows.amo.operators.intermediate.IntermediateOperator;
 public abstract class BinaryOperator extends IntermediateOperator {
 
     /**
-     * @param fragment fragment the operator should operate on
+     * @param operatorName The name (identifier) of the operator.
+     * @param fragment fragment the operator operates on
      */
     public BinaryOperator(String operatorName, String fragment) {
         super(operatorName, fragment);
@@ -34,7 +35,7 @@ public abstract class BinaryOperator extends IntermediateOperator {
 
     @Override
     @NonNull
-    public <@NonNull T> T accept(@NonNull OperatorVisitor<T> visitor) {
+    public <T> T accept(@NonNull OperatorVisitor<@NonNull T> visitor) {
         return visitor.visitBinary(this);
     }
 }

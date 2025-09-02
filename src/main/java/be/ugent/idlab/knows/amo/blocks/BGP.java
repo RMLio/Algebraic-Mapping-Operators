@@ -18,7 +18,7 @@ import java.util.List;
  * variables.
  */
 public class BGP implements Serializable {
-    public static final String DEFAULT_GRAPH_NAME = "http://www.w3.org/ns/r2rml#defaultGraph";
+    private static final String DEFAULT_GRAPH_NAME = "http://www.w3.org/ns/r2rml#defaultGraph";
     private final List<Quad> quads;
     private final List<Integer> subjectVariables = new ArrayList<>();
     private final List<Integer> predicateVariables = new ArrayList<>();
@@ -52,45 +52,20 @@ public class BGP implements Serializable {
 
         Query query = QueryFactory.create(start + end);
         this.quads = query.getConstructTemplate().getQuads();
-
-        //
-        // for (String line : lines) {
-        // String[] parts = line.split(" ");
-        // Quad q;
-        // if (parts.length == 4) { // it's a triple: sub pred obj .
-        // Node subject = getNode(parts[0]);
-        // Node predicate = getNode(parts[1]);
-        // Node object = getNode(parts[2]);
-        //
-        // q = new Quad(NodeFactory.createLiteral(DEFAULT_GRAPH_NAME), subject,
-        // predicate, object);
-        // } else if (parts.length == 5) { // it's a quad: sub pred obj graph .
-        // Node subject = getNode(parts[0]);
-        // Node predicate = getNode(parts[1]);
-        // Node object = getNode(parts[2]);
-        // Node graph = getNode(parts[3]);
-        //
-        // q = new Quad(graph, subject, predicate, object);
-        // } else {
-        // throw new IllegalArgumentException(String.format("Can't process \"%s\": it's
-        // neither a triple, nor a quad", pattern));
-        // }
-        // this.quads.add(q);
-        // }
         this.bootstrap();
     }
 
     /**
-     * Preprocess the line:
-     * - escape the language tags
+     * Preprocess the line: put quotes around string preceding a language tag
      *
-     * @param line
-     * @return
+     * @param parts Parts of the string originally separated by spaces.
+     * @return Escaped language tags
      */
     private String preprocessParts(String[] parts) {
         for (int i = 0; i < parts.length; i++) {
             String part = parts[i];
             if (part.length() >= 4) {
+                // escape the language tag: ?ob@en should become "?ob"@en
                 if (part.charAt(part.length() - 3) == '@') {
                     int atIndex = part.indexOf('@');
                     part = "\"" + part.substring(0, atIndex) + "\"" + part.substring(atIndex);
@@ -98,39 +73,7 @@ public class BGP implements Serializable {
             }
             parts[i] = part;
         }
-        // escape the language tag: ?ob@en should become "?ob"@en
-        // if (line.charAt(line.length() - 3) == '@') {
-        // int atIndex = line.indexOf('@');
-        // line = "\"" + line.substring(0, atIndex) + "\"" + line.substring(atIndex);
-        // }
-        // return line;
-
         return String.join(" ", parts);
-    }
-
-    private Node getNode(String value) {
-        if (value.startsWith("?")) {
-            // shave off the initial ?, as it will be added by Jena
-            value = value.substring(1);
-            // check for language tags
-            // language tags are at the end of the node
-            // if the @ comes after
-            // TODO: build proper grammar for parsing
-            if (value.contains("\"") && value.contains("@")) { // it could be that the @ is escaped by quotes
-                if (value.indexOf("@") > value.indexOf("\"")) { // quote come before the @
-                    value = value.substring(0, value.indexOf("@"));
-                    return NodeFactory.createLiteral(value);
-                }
-                return NodeFactory.createVariable(value.substring(1));
-            }
-            return NodeFactory.createLiteral(value); //
-        } else if (value.startsWith("<") && value.endsWith(">")) {
-            return NodeFactory.createURI(value.substring(1, value.length() - 1));
-        } else if (value.startsWith("_:")) {
-            return NodeFactory.createBlankNode(value);
-        } else {
-            return NodeFactory.createLiteral(value);
-        }
     }
 
     private void bootstrap() {
@@ -161,6 +104,12 @@ public class BGP implements Serializable {
     }
 
     // TODO: Remove warning supression when ready to handle nullness <12-09-24, Min Oo> //
+
+    /**
+     * Replace all known variables
+     * @param m The solution mappings to get the values of the variables from
+     * @return  A dataset where all BGPs are replaced with known values.
+     */
     @SuppressWarnings("null")
     public DatasetGraph apply(SolutionMapping m) {
         // replace all known variables

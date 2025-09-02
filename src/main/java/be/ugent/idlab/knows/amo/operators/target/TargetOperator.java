@@ -7,7 +7,7 @@ import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.functions.TargetSink;
 import be.ugent.idlab.knows.amo.operators.Operator;
 import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
-import be.ugent.idlab.knows.amo.operators.target.postprocessing.RMLFormatter;
+import be.ugent.idlab.knows.amo.operators.target.postprocessing.RDFFormatter;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
@@ -24,13 +24,13 @@ public class TargetOperator extends Operator {
     private final String targetFragment;
     private final String targetVariable;
     private final TargetSink<RDFNode> sink;
-    private final RMLFormatter formatter;
+    private final RDFFormatter formatter;
 
     public TargetOperator(String operatorName, String targetFragment, String targetVariable, TargetSink<RDFNode> sink) {
         this(operatorName, targetFragment, targetVariable, sink, null);
     }
 
-    public TargetOperator(String operatorName, String targetFragment, String targetVariable, TargetSink<RDFNode> sink, RMLFormatter formatter) {
+    public TargetOperator(String operatorName, String targetFragment, String targetVariable, TargetSink<RDFNode> sink, RDFFormatter formatter) {
         super(operatorName);
         this.targetFragment = targetFragment;
         this.targetVariable = targetVariable;

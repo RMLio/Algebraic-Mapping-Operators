@@ -6,7 +6,7 @@ import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.functions.TargetSink;
 import be.ugent.idlab.knows.amo.operators.target.TargetOperator;
-import be.ugent.idlab.knows.amo.operators.target.postprocessing.RMLFormatter;
+import be.ugent.idlab.knows.amo.operators.target.postprocessing.RDFFormatter;
 import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.apache.jena.riot.Lang;
 import org.junit.jupiter.api.Nested;
@@ -43,7 +43,7 @@ public class TargetOperatorTest {
             MappingTuple tuple = new MappingTuple();
             tuple.setSolutionMaps("default", new SolutionMapping(Map.of(TargetOperator.TARGET_VARIABLE, new LiteralNode(value))));
 
-            RMLFormatter formatter = new RMLFormatter(Lang.NQUADS);
+            RDFFormatter formatter = new RDFFormatter(Lang.NQUADS);
             TestSink sink = new TestSink();
 
             TargetOperator operator = new TargetOperator("targetOp", "default", TargetOperator.TARGET_VARIABLE, sink, formatter);
@@ -58,7 +58,7 @@ public class TargetOperatorTest {
             MappingTuple tuple = new MappingTuple();
             tuple.setSolutionMaps("default", new SolutionMapping(Map.of(TargetOperator.TARGET_VARIABLE, new LiteralNode(value))));
 
-            RMLFormatter formatter = new RMLFormatter(Lang.JSONLD);
+            RDFFormatter formatter = new RDFFormatter(Lang.JSONLD);
             TestSink sink = new TestSink();
 
             TargetOperator operator = new TargetOperator("targetOp", "default", TargetOperator.TARGET_VARIABLE, sink, formatter);
