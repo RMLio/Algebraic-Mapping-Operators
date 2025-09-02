@@ -2,7 +2,7 @@
 
 A library of Algebraic Mapping Operators. These operators serve the purpose of constructing a mapping language-independent mapping plan.
 
-This document contains an introduction and explanation for the operators, as first described [here](https://s-minoo.github.io/ISWC2023_paper_412.pdf) and further finalized in [the WIP paper](./wip_paper.pdf).
+This document contains an introduction and explanation for the operators, as first described [here](https://ceur-ws.org/Vol-3632/ISWC2023_paper_412.pdf) and further finalized in [this paper](http://doi.org/10.1007/978-3-031-94575-5_1).
 ## Building blocks
 ### Mapping plan
 A Mapping Plan is a graph consisting of operators that can be used to perform a mapping. This plan has a Serialize operator as its root, with Source operators as leafs.
