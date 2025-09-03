@@ -65,7 +65,13 @@ A Source operator's fields could look like following:
 - r: `$.peoples[*]`
 - I: `[$.pet.type, $.pet.name]`
 
-Applying this Source operator would produce results similar to ones found in Table 2 of the WIP paper.
+Applying this Source operator would produce results similar to ones found in Table 2 of the paper:
+
+| fragment | solution mapping | ?name     | ?age | ?email                | ?$pet.type | ?$pet.name |
+|----------|------------------|-----------|------|-----------------------|------------|------------|
+| default  | m1               | John Doe  | 23   | john.doe@example.com  | dog        | Bax        |
+| default  | m2               | Susan Sue | 25   | susan.sue@example.com |            |            |
+
 
 ### Project operator
 The Project operator will restrict the solution mappings to a set of attributes provided. This can be used to reduce the number of data that needs to be processed by later operators.
@@ -102,3 +108,15 @@ Further operators will be implemented as they're defined. The above is only a su
 
 ## Project status
 This library is currently in alpha state and under active development.
+
+## How to include
+
+### Maven
+
+```xml
+<dependency>
+    <groupId>be.ugent.idlab.knows</groupId>
+    <artifactId>algebraic-mapping-operators</artifactId>
+    <version>0.1-ALPHA</version>
+</dependency>
+```

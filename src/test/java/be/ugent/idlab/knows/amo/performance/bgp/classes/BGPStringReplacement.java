@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 /**
  * Basic Graph Pattern is a pattern to generate RDF triples by replacement of variables.\
  * Baseline implementation
+ * This class serves to try out different string replacement techniques and see how they behave performance-wise.
  */
 public class BGPStringReplacement {
 

@@ -9,7 +9,6 @@ import be.ugent.idlab.knows.amo.operators.target.TargetOperator;
 import be.ugent.idlab.knows.amo.operators.target.postprocessing.RDFFormatter;
 import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.apache.jena.riot.Lang;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -30,48 +29,42 @@ public class TargetOperatorTest {
     }
 
     /**
-     * Tests outputting in different supported
+     * A Smoke test: NQ to NQ
      */
-    @Nested
-    class OutputLanguageTest {
-        /**
-         * A Smoke test: NQ to NQ
-         */
-        @Test
-        public void nQuads() {
-            String value = "<http://example.com/10/Venus> <http://xmlns.com/foaf/0.1/name> \"Venus\" .\n";
-            MappingTuple tuple = new MappingTuple();
-            tuple.setSolutionMaps("default", new SolutionMapping(Map.of(TargetOperator.TARGET_VARIABLE, new LiteralNode(value))));
+    @Test
+    public void convertNQuadsToNQuads() {
+        String value = "<http://example.com/10/Venus> <http://xmlns.com/foaf/0.1/name> \"Venus\" .\n";
+        MappingTuple tuple = new MappingTuple();
+        tuple.setSolutionMaps("default", new SolutionMapping(Map.of(TargetOperator.TARGET_VARIABLE, new LiteralNode(value))));
 
-            RDFFormatter formatter = new RDFFormatter(Lang.NQUADS);
-            TestSink sink = new TestSink();
+        RDFFormatter formatter = new RDFFormatter(Lang.NQUADS);
+        TestSink sink = new TestSink();
 
-            TargetOperator operator = new TargetOperator("targetOp", "default", TargetOperator.TARGET_VARIABLE, sink, formatter);
-            operator.apply(tuple);
+        TargetOperator operator = new TargetOperator("targetOp", "default", TargetOperator.TARGET_VARIABLE, sink, formatter);
+        operator.apply(tuple);
 
-            assertEquals(value, sink.output);
-        }
+        assertEquals(value, sink.output);
+    }
 
-        @Test
-        public void jsonLD() {
-            String value = "<http://example.com/10/Venus> <http://xmlns.com/foaf/0.1/name> \"Venus\" .\n";
-            MappingTuple tuple = new MappingTuple();
-            tuple.setSolutionMaps("default", new SolutionMapping(Map.of(TargetOperator.TARGET_VARIABLE, new LiteralNode(value))));
+    @Test
+    public void convertNQuadsToJsonLD() {
+        String value = "<http://example.com/10/Venus> <http://xmlns.com/foaf/0.1/name> \"Venus\" .\n";
+        MappingTuple tuple = new MappingTuple();
+        tuple.setSolutionMaps("default", new SolutionMapping(Map.of(TargetOperator.TARGET_VARIABLE, new LiteralNode(value))));
 
-            RDFFormatter formatter = new RDFFormatter(Lang.JSONLD);
-            TestSink sink = new TestSink();
+        RDFFormatter formatter = new RDFFormatter(Lang.JSONLD);
+        TestSink sink = new TestSink();
 
-            TargetOperator operator = new TargetOperator("targetOp", "default", TargetOperator.TARGET_VARIABLE, sink, formatter);
-            operator.apply(tuple);
+        TargetOperator operator = new TargetOperator("targetOp", "default", TargetOperator.TARGET_VARIABLE, sink, formatter);
+        operator.apply(tuple);
 
-            String expected = """
-                    {
-                        "@id": "http://example.com/10/Venus",
-                        "http://xmlns.com/foaf/0.1/name": "Venus"
-                    }
-                    """;
-            assertEquals(expected, sink.output);
-        }
+        String expected = """
+                {
+                    "@id": "http://example.com/10/Venus",
+                    "http://xmlns.com/foaf/0.1/name": "Venus"
+                }
+                """;
+        assertEquals(expected, sink.output);
     }
 }
 
