@@ -70,40 +70,6 @@ public class MappingTuple implements Serializable {
     }
 
     /**
-     * Checks compatibility with another Mapping Tuple
-     * <p>
-     * Two MappingTuples are compatible if, for all common fragments, there is a
-     * SolutionMapping that is compatible
-     *
-     * @param that MappingTuple to compare to
-     * @return true if the MappingTuples are compatible, false otherwise
-     */
-    public boolean isCompatibleWith(@Nullable MappingTuple that) {
-        if (that == null) {
-            return true;
-        }
-
-        Set<String> commonFragments = this.commonFragments(that);
-
-        for (String fragment : commonFragments) {
-            Collection<SolutionMapping> mappings = this.map.get(fragment);
-            Collection<SolutionMapping> thatMappings = that.getSolutionMappings(fragment);
-            for (SolutionMapping mapping : mappings) {
-                // find at least one mapping that is compatible
-                boolean matching = false;
-                for (SolutionMapping mapping2 : thatMappings) {
-                    // Java's short-circuiting ensures isCompatibleWith won't be called more often
-                    // than necessary
-                    matching = matching || mapping.isCompatibleWith(mapping2);
-                }
-
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * Method to merge another MappingTuple with this MappingTuple.
      */
     public MappingTuple union(@Nullable MappingTuple that) {
