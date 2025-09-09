@@ -3,6 +3,7 @@ package be.ugent.idlab.knows.amo.operators.source.dataio;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
+import be.ugent.idlab.knows.amo.operators.source.dataio.fields.FieldBuilder;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.CSVSourceIterator;
 import be.ugent.idlab.knows.dataio.record.CSVRecord;
@@ -20,10 +21,6 @@ import java.util.Map;
 public class CSVSourceOperator extends DataIOSourceOperator {
 
     private transient CSVSourceIterator iterator;
-
-    public CSVSourceOperator(String operatorName, Access access) {
-        this(operatorName, access, "default", List.of(), List.of());
-    }
 
     /**
      * Constructs the CSV operator
@@ -55,6 +52,13 @@ public class CSVSourceOperator extends DataIOSourceOperator {
 
         for (int i = 0; i < header.length; i++) {
             items[i] = data.get(header[i]);
+        }
+
+        // derive fields
+        if (fields.isEmpty()) {
+            for (String fieldName : header) {
+                fields.add(new FieldBuilder().withName(fieldName).CSV().withReference(fieldName).build());
+            }
         }
 
         StringWriter sw = new StringWriter();

@@ -59,7 +59,7 @@ public abstract class DataIOSourceOperator extends SourceOperator {
                     }
                 }
 
-                mappings = new ArrayList<>(newMaps);
+                mappings = newMaps;
             }
         }
 
