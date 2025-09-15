@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+- Operators now each have a set of input- and output fragments.
+
+### Removed
+- Operator builders; use their constructors.
+
 ### Fixed
 - Generation of fields for CSV source, if not given.
 - Removed unused code
