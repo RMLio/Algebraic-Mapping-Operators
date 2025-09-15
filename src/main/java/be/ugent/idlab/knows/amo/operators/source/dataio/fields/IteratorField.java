@@ -101,6 +101,9 @@ public class IteratorField extends Field {
         } else if (readObject instanceof LinkedHashMap<?, ?> map) {
             sub = new JSONObject((Map<String, Object>) map).toJSONString();
             out.addAll(applySubfields(sub));
+        } else {
+            Collection<SolutionMapping> solutionMappings = applySubfields(readObject.toString());
+            out.addAll(solutionMappings);
         }
 
         return out;

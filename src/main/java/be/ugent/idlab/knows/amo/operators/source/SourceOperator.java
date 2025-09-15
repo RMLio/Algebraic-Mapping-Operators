@@ -3,15 +3,21 @@ package be.ugent.idlab.knows.amo.operators.source;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.operators.Operator;
 import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
+
+import java.util.Set;
 
 @NullMarked
 public abstract class SourceOperator extends Operator {
     private transient boolean isReady;
 
-    public SourceOperator(String operatorName) {
-        super(operatorName);
+    /**
+     * Instantiates a new Source operators.
+     * @param operatorName      The name (identifier) of the operator.
+     * @param outputFragments   The output fragments of the operator.
+     */
+    protected SourceOperator(String operatorName, Set<String> outputFragments) {
+        super(operatorName, Set.of(), outputFragments);
         this.isReady = false;
     }
 
@@ -36,8 +42,6 @@ public abstract class SourceOperator extends Operator {
      */
     public abstract MappingTuple consumeSource();
 
-    public abstract String getDefaultFragment();
-
     /**
      * Performs operator-specific operations to get it ready for consumption
      *
@@ -54,7 +58,7 @@ public abstract class SourceOperator extends Operator {
     }
 
     @Override
-    public <@NonNull T> T accept(OperatorVisitor<T> visitor) {
+    public <T> T accept(OperatorVisitor<T> visitor) {
         return visitor.visitSource(this);
     }
 }

@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.Serial;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
@@ -23,25 +24,27 @@ public class RenameOperator extends UnaryOperator {
      * Creates a new instance of a RenameOperator with a given name, fragment and rename-pairs.
      *
      * @param operatorName  A name (identifier) for the operator.
-     * @param fragment      The fragment this operator works on.
+     * @param inputFragments    The input fragments of the operator.
+     * @param outputFragments   The output fragments of the operator.
      * @param pairs         a collection of Pairs to rename the variables. The pairs are
      *                      supplied as instances of Pair(var_to_rename, new_var_name).
      */
-    public RenameOperator(String operatorName, String fragment, Collection<Pair<String, String>> pairs) {
-        super(operatorName, fragment);
-        this.implementation = new RenameOperatorPairs(operatorName, fragment, pairs);
+    public RenameOperator(String operatorName, Set<String> inputFragments, Set<String> outputFragments, Collection<Pair<String, String>> pairs) {
+        super(operatorName, inputFragments, outputFragments);
+        this.implementation = new RenameOperatorPairs(operatorName, inputFragments, outputFragments, pairs);
     }
 
     /**
      * Creates a new instance of a RenameOperator with a given name, fragment and rename alias.
      *
      * @param operatorName  A name (identifier) for the operator.
-     * @param fragment      The fragment this operator works on.
+     * @param inputFragments    The input fragments of the operator.
+     * @param outputFragments   The output fragments of the operator.
      * @param alias         Every key (variable) is prefixed with alias + '.'
      */
-    public RenameOperator(String operatorName, String fragment, String alias) {
-        super(operatorName, fragment);
-        this.implementation = new RenameOperatorAlias(operatorName, fragment, alias);
+    public RenameOperator(String operatorName, Set<String> inputFragments, Set<String> outputFragments, String alias) {
+        super(operatorName, inputFragments, outputFragments);
+        this.implementation = new RenameOperatorAlias(operatorName, inputFragments, outputFragments, alias);
     }
 
     @Serial
@@ -70,10 +73,14 @@ public class RenameOperator extends UnaryOperator {
      */
     abstract static class RenameOperatorImpl extends UnaryOperator {
         /**
-         * @param fragment fragment the operator should operate on
+         * Instantiates a class doing a rename operation.
+         *
+         * @param operatorName      A name (identifier) for the operator.
+         * @param inputFragments    The input fragments of the operator.
+         * @param outputFragments   The output fragments of the operator.
          */
-        public RenameOperatorImpl(String operatorName, String fragment) {
-            super(operatorName, fragment);
+        public RenameOperatorImpl(String operatorName, Set<String> inputFragments, Set<String> outputFragments) {
+            super(operatorName, inputFragments, outputFragments);
         }
     }
 
@@ -81,8 +88,17 @@ public class RenameOperator extends UnaryOperator {
 
         private final Collection<Pair<String, String>> pairs;
 
-        public RenameOperatorPairs(String operatorName, String fragment, Collection<Pair<String, String>> pairs) {
-            super(operatorName, fragment);
+        /**
+         * Instantiates a RenameOperator using rename-pairs.
+         * @param operatorName      A name (identifier) for the operator.
+         * @param inputFragments    The input fragments of the operator.
+         * @param outputFragments   The output fragments of the operator.
+         * @param pairs             A collection of rename-pairs. The first element in a pair is the old name of the variable,
+         *                          the second element is the new name.
+         *                          TODO: use a map old -> new instead?
+         */
+        public RenameOperatorPairs(String operatorName, Set<String> inputFragments, Set<String> outputFragments, Collection<Pair<String, String>> pairs) {
+            super(operatorName, inputFragments, outputFragments);
             this.pairs = pairs;
         }
 
@@ -113,8 +129,15 @@ public class RenameOperator extends UnaryOperator {
     static class RenameOperatorAlias extends RenameOperatorImpl {
         private final String alias;
 
-        public RenameOperatorAlias(String operatorName, String fragment, String alias) {
-            super(operatorName, fragment);
+        /**
+         * nstantiates a RenameOperator prefixing variable names with an "alias".
+         * @param operatorName      A name (identifier) for the operator.
+         * @param inputFragments    The input fragments of the operator.
+         * @param outputFragments   The output fragments of the operator.
+         * @param alias             Every key will be renamed to {@code alias + "." + key}.
+         */
+        public RenameOperatorAlias(String operatorName, Set<String> inputFragments, Set<String> outputFragments, String alias) {
+            super(operatorName, inputFragments, outputFragments);
             this.alias = alias;
         }
 

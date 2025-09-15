@@ -5,20 +5,26 @@ import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.JoinCondition;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * ThetaJoin implementing a join based on a condition.
  * This class also immediately serves as a base class for all conditional joins.
  */
 public class ThetaJoinOperator extends JoinOperator {
-    private static Logger LOG = LoggerFactory.getLogger(ThetaJoinOperator.class);
 
-    public ThetaJoinOperator(String operatorName, String inputFragment, String outputFragment, JoinCondition condition) {
-        super(operatorName, inputFragment, outputFragment, condition);
+    /**
+     * Instantiates a new theta join operator.
+     *
+     * @param operatorName      The name (identifier) of the operator.
+     * @param inputFragments    The input fragments of the operator.
+     * @param outputFragments   The output fragments of the operator.
+     * @param condition         The condition of the join
+     */
+    public ThetaJoinOperator(String operatorName, Set<String> inputFragments, Set<String> outputFragments, JoinCondition condition) {
+        super(operatorName, inputFragments, outputFragments, condition);
     }
 
     @Override
@@ -28,9 +34,10 @@ public class ThetaJoinOperator extends JoinOperator {
     }
 
     /**
-     * @param leftMapping
-     * @param rightMapping
-     * @return
+     * Applies a theta join on two solution mappings
+     * @param leftMapping  The "left" side of the join.
+     * @param rightMapping The "right" side of the join
+     * @return  The join result as a solution mapping
      */
     @Override
     @Nullable
@@ -55,13 +62,17 @@ public class ThetaJoinOperator extends JoinOperator {
 
         MappingTuple out = new MappingTuple();
 
-        Collection<SolutionMapping> mappings1 = tuple1.getSolutionMappings(this.fragment);
-        Collection<SolutionMapping> mappings2 = tuple2.getSolutionMappings(this.fragment);
+        for (String inputFragment : getInputFragments()) {
+            Collection<SolutionMapping> mappings1 = tuple1.getSolutionMappings(inputFragment);
+            Collection<SolutionMapping> mappings2 = tuple2.getSolutionMappings(inputFragment);
 
-        for (SolutionMapping mapping1 : mappings1) {
-            for (SolutionMapping mapping2 : mappings2) {
-                SolutionMapping solOut = this.apply(mapping1, mapping2);
-                out.addSolutionMap(this.outputFragment, solOut);
+            for (SolutionMapping mapping1 : mappings1) {
+                for (SolutionMapping mapping2 : mappings2) {
+                    SolutionMapping solOut = this.apply(mapping1, mapping2);
+                    for (String outputFragment : getOutputFragments()) {
+                        out.addSolutionMap(outputFragment, solOut);
+                    }
+                }
             }
         }
 

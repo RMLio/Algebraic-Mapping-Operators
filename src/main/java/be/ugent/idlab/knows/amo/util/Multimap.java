@@ -1,8 +1,9 @@
 package be.ugent.idlab.knows.amo.util;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Multimap<K, V> {
+public class Multimap<K, V> implements Serializable {
 
     private final Map<K, Collection<V>> map;
 

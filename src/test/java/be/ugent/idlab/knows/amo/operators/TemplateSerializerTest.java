@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.jena.datatypes.xsd.XSDDatatype;
@@ -24,7 +25,7 @@ public class TemplateSerializerTest {
                 ?sm ?pm_1 ?om@en.
                 ?sm <http://example.com/name/> ?om2^^<http://example.com/string>.
                 """;
-        TemplateSerializer serializer = new TemplateSerializer("Serializer", "default", template);
+        TemplateSerializer serializer = new TemplateSerializer("Serializer", Set.of("default"), Set.of("default"), template);
 
         List<Pair<List<String>, String>> pairs = serializer.getVariablesTemplatePairs()
                 .stream()
@@ -52,7 +53,7 @@ public class TemplateSerializerTest {
 
         mappingTuple.addSolutionMap("default", solutionMapping);
 
-        TemplateSerializer serializer = new TemplateSerializer("Serializer", "default", "?sm ?pm ?om@en.");
+        TemplateSerializer serializer = new TemplateSerializer("Serializer", Set.of("default"), Set.of("default"), "?sm ?pm ?om@en.");
 
         MappingTuple serializedTuple = serializer.apply(mappingTuple);
 
@@ -77,7 +78,7 @@ public class TemplateSerializerTest {
 
         mappingTuple.addSolutionMap("default", solutionMapping);
 
-        TemplateSerializer serializer = new TemplateSerializer("Serializer", "default", "?sm ?pm ?om .");
+        TemplateSerializer serializer = new TemplateSerializer("Serializer", Set.of("default"), Set.of("default"), "?sm ?pm ?om .");
 
         MappingTuple serializedTuple = serializer.apply(mappingTuple);
 
@@ -99,7 +100,7 @@ public class TemplateSerializerTest {
         solutionMapping.put("?sm_g", new IRINode("http://example.com/graph"));
 
         mappingTuple.addSolutionMap("default", solutionMapping);
-        TemplateSerializer serializer = new TemplateSerializer("Serializer", "default", "?sm ?pm ?om ?sm_g .");
+        TemplateSerializer serializer = new TemplateSerializer("Serializer", Set.of("default"), Set.of("default"), "?sm ?pm ?om ?sm_g .");
         MappingTuple serializedTuple = serializer.apply(mappingTuple);
 
         String expectedQuad = "<http://example.com/10/Venus> <http://example.com/id> \"10\"^^<http://www.w3.org/2001/XMLSchema#integer> <http://example.com/graph> .";

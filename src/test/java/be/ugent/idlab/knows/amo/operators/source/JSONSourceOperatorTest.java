@@ -5,7 +5,6 @@ import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
 import be.ugent.idlab.knows.amo.operators.source.dataio.JSONSourceOperator;
-import be.ugent.idlab.knows.amo.operators.source.dataio.builders.SourceOperatorBuilder;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.access.LocalFileAccess;
@@ -13,10 +12,7 @@ import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -44,11 +40,15 @@ public class JSONSourceOperatorTest {
     public void arrayWithoutIndexing() {
         Field items = Field.builder().JSON().withName("items").withReference("$.items").build();
         Access access = new LocalFileAccess("operators/source/json/people.json", "src/test/resources", "json");
-        JSONSourceOperator operator = (JSONSourceOperator) SourceOperatorBuilder.JSON()
-                .withAccess(access)
-                .withRootIterator("$.people[*]")
-                .withFields(List.of(items))
-                .build();
+        JSONSourceOperator operator = new JSONSourceOperator(
+                "source operator",
+                access, Set.of("default"),
+                "$.people[*]",
+                List.of(items),
+                List.of());
+
+        /*operator.init();
+        MappingTuple actual = operator.consumeSource();*/
 
         Assertions.assertThrows(IllegalArgumentException.class, operator::consumeSource);
     }
@@ -85,11 +85,12 @@ public class JSONSourceOperatorTest {
 
         Field item = Field.builder().JSON().withName("item").withIterator("$.items[*]").withSubfields(type, weight).build();
 
-        JSONSourceOperator operator = (JSONSourceOperator) SourceOperatorBuilder.JSON()
-                .withAccess(access)
-                .withRootIterator("$.people[*]")
-                .withFields(List.of(name, item))
-                .build();
+        JSONSourceOperator operator = new JSONSourceOperator(
+                "source operator",
+                access, Set.of("default"),
+                "$.people[*]",
+                List.of(name, item),
+                List.of());
 
         operator.init();
 
@@ -129,11 +130,12 @@ public class JSONSourceOperatorTest {
         Field item = Field.builder().JSON().withName("item").withIterator("$.items[*]").withSubfields(type, weight).build();
 
         Access access = new LocalFileAccess("operators/source/json/people.json", "src/test/resources", "json");
-        JSONSourceOperator operator = (JSONSourceOperator) SourceOperatorBuilder.JSON()
-                .withAccess(access)
-                .withRootIterator("$.people[*]")
-                .withFields(List.of(name, item))
-                .build();
+        JSONSourceOperator operator = new JSONSourceOperator(
+                "source operator",
+                access, Set.of("default"),
+                "$.people[*]",
+                List.of(name, item),
+                List.of());
 
         MappingTuple actual = operator.consumeSource();
 
@@ -173,11 +175,12 @@ public class JSONSourceOperatorTest {
         Field items = Field.builder().JSON().withName("item").withIterator("$.items[*]").withSubfields(type, measures).build();
         Field name = Field.builder().JSON().withName("name").withReference("$.name").build();
 
-        SourceOperator operator = SourceOperatorBuilder.JSON()
-                .withAccess(access)
-                .withRootIterator("$.people[*]")
-                .withFields(name, items)
-                .build();
+        SourceOperator operator = new JSONSourceOperator(
+                "source operator",
+                access, Set.of("default"),
+                "$.people[*]",
+                List.of(name, items),
+                List.of());
 
         MappingTuple expected = new MappingTuple();
         expected.setSolutionMaps("default", List.of(
@@ -210,11 +213,12 @@ public class JSONSourceOperatorTest {
         Field name = Field.builder().JSON().withName("name").withReference("$.name").build();
         Field items = Field.builder().JSON().withName("items").withReference("$.items[*]").build();
 
-        JSONSourceOperator operator = (JSONSourceOperator) SourceOperatorBuilder.JSON()
-                .withAccess(access)
-                .withRootIterator("$.people[*]")
-                .withFields(List.of(name, items))
-                .build();
+        JSONSourceOperator operator = new JSONSourceOperator(
+                "source operator",
+                access, Set.of("default"),
+                "$.people[*]",
+                List.of(name, items),
+                List.of());
 
         MappingTuple actual = operator.consumeSource();
 
@@ -250,11 +254,12 @@ public class JSONSourceOperatorTest {
         Field name = Field.builder().JSON().withName("name").withReference("$.name").build();
 
         Access access = new LocalFileAccess("operators/source/json/different_formulation.json", "src/test/resources", "json");
-        JSONSourceOperator operator = (JSONSourceOperator) SourceOperatorBuilder.JSON()
-                .withAccess(access)
-                .withRootIterator("$.people[*]")
-                .withFields(List.of(name, items))
-                .build();
+        JSONSourceOperator operator = new JSONSourceOperator(
+                "source operator",
+                access, Set.of("default"),
+                "$.people[*]",
+                List.of(name, items),
+                List.of());
 
         MappingTuple actual = operator.consumeSource();
 
@@ -285,11 +290,13 @@ public class JSONSourceOperatorTest {
         Access access = new LocalFileAccess("operators/source/json/complex_array.json", "src/test/resources", "json");
         Field departmentName = Field.builder().JSON().withName("dep_name").withReference("$.departments[*].name").build();
         Field name = Field.builder().JSON().withName("name").withReference("$.name").build();
-        JSONSourceOperator operator = (JSONSourceOperator) SourceOperatorBuilder.JSON()
-                .withAccess(access)
-                .withRootIterator("$.companies[*]")
-                .withFields(List.of(departmentName, name))
-                .build();
+        JSONSourceOperator operator = new JSONSourceOperator(
+                "source operator",
+                access,
+                Set.of("default"),
+                "$.companies[*]",
+                List.of(departmentName, name),
+                List.of());
 
         MappingTuple actual = operator.consumeSource();
 
@@ -321,11 +328,13 @@ public class JSONSourceOperatorTest {
         Field id = Field.builder().JSON().withName("ID").withReference("ID").build();
         Field name = Field.builder().JSON().withName("Name").withReference("Name").build();
         Field dob = Field.builder().JSON().withName("DateOfBirth").withReference("DateOfBirth").build();
-        JSONSourceOperator operator = (JSONSourceOperator) SourceOperatorBuilder.JSON()
-                .withAccess(access)
-                .withRootIterator("$.persons[*]")
-                .withFields(id, name, dob)
-                .build();
+        JSONSourceOperator operator = new JSONSourceOperator(
+                "source operator",
+                access,
+                Set.of("default"),
+                "$.persons[*]",
+                List.of(id, name, dob),
+                List.of());
 
         MappingTuple actual = operator.consumeSource();
 
@@ -354,11 +363,13 @@ public class JSONSourceOperatorTest {
         Field sport = Field.builder().JSON().withName("Sport").withReference("Sport").build();
         Field name = Field.builder().JSON().withName("Name").withReference("Name").build();
 
-        JSONSourceOperator operator = (JSONSourceOperator) SourceOperatorBuilder.JSON()
-                .withAccess(access)
-                .withRootIterator("$.students[*]")
-                .withFields(id, sport, name)
-                .build();
+        JSONSourceOperator operator =  new JSONSourceOperator(
+                "source operator",
+                access,
+                Set.of("default"),
+                "$.students[*]",
+                List.of(id, sport, name),
+                List.of());
 
         MappingTuple actual = operator.consumeSource();
         MappingTuple expected = new MappingTuple();

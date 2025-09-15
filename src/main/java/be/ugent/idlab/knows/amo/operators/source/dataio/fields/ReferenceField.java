@@ -143,14 +143,15 @@ public class ReferenceField extends Field {
             Object readObject = JsonPath.read(obj, this.reference);
 
             if (readObject instanceof JSONArray arr) {
-                if (!arr.isEmpty() && arr.getFirst() instanceof JSONArray && !this.reference.contains("[*]")) {
+                if (!arr.isEmpty() /*&& arr.getFirst() instanceof JSONArray*/ && !this.reference.contains("[*]")) {
                     throw new IllegalArgumentException("Reference field reading an array without iteration");
                 }
-                if (!this.reference.contains("[*]")) {
-                    read = arr.getFirst();
-                } else {
-                    read = arr;
-                }
+                read = arr;
+//                if (!this.reference.contains("[*]")) {
+//                    read = arr.getFirst();
+//                } else {
+//                    read = arr;
+//                }
             } else {
                 read = readObject;
             }

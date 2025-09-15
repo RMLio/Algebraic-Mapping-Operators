@@ -7,10 +7,20 @@ import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.JoinCondition;
 
+import java.util.Set;
+
 public class CrossJoin extends JoinOperator {
 
-    public CrossJoin(String operatorName, String inputFragment, String outputFragment, JoinCondition condition) {
-        super(operatorName, inputFragment, outputFragment, condition);
+    /**
+     * Instantiates a new CrossJoin operator (i.e. Cartesian product)
+     *
+     * @param operatorName      The name (identifier) of the operator.
+     * @param inputFragments    The input fragments of the operator.
+     * @param outputFragments   The output fragments of the operator.
+     * @param condition         The condition of the join
+     */
+    public CrossJoin(String operatorName, Set<String> inputFragments, Set<String> outputFragments, JoinCondition condition) {
+        super(operatorName, inputFragments, outputFragments, condition);
     }
 
     @Override

@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.io.Serial;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Serialize operator will accept a Basic Graph Pattern and replace the
@@ -22,12 +23,20 @@ import java.util.Map;
 public class SerializeOperator extends UnaryOperator {
 
     private final BGP bgp;
-    private final String language;
+    private final Lang language;
 
-    public SerializeOperator(String operatorName, String fragment, BGP bgp, String language) {
-        super(operatorName, fragment);
+    /**
+     * Creates a new instance of a SerializeOperator.
+     * @param operatorName      A name (identifier) for the operator.
+     * @param inputFragments    The input fragments of the operator.
+     * @param outputFragments   The output fragments of the operator.
+     * @param bgp               The basic graph pattern to apply on the variables.
+     * @param language          The RDF serialization format.
+     */
+    public SerializeOperator(String operatorName, Set<String> inputFragments, Set<String> outputFragments, BGP bgp, String language) {
+        super(operatorName, inputFragments, outputFragments);
         this.bgp = bgp;
-        this.language = language;
+        this.language = RDFLanguages.nameToLang(language);
     }
 
     @Serial
@@ -62,23 +71,26 @@ public class SerializeOperator extends UnaryOperator {
 
         MappingTuple out = new MappingTuple();
 
-        Collection<SolutionMapping> solMappings = m.getSolutionMappings(this.fragment);
-        for (SolutionMapping solMapping : solMappings) {
-            DatasetGraph graph = this.bgp.apply(solMapping);
+        for (String inputFragment : getInputFragments()) {
+            Collection<SolutionMapping> solMappings = m.getSolutionMappings(inputFragment);
+            for (SolutionMapping solMapping : solMappings) {
+                DatasetGraph graph = this.bgp.apply(solMapping);
 
-            OutputStream outputStream = new ByteArrayOutputStream();
-            Lang lang = RDFLanguages.nameToLang(this.language);
+                OutputStream outputStream = new ByteArrayOutputStream();
 
-            RDFWriter.source(graph)
-                    .lang(lang)
-                    .output(outputStream);
+                RDFWriter.source(graph)
+                        .lang(language)
+                        .output(outputStream);
 
-            // Jena will prepend labels of Blank nodes with a 'B', which is not what we want
-            String serialized = outputStream.toString().replaceAll("_:B", "_:");
-            SolutionMapping solMapOut = new SolutionMapping(
-                    Map.of("?serialized_output", new LiteralNode(serialized)));
+                // Jena will prepend labels of Blank nodes with a 'B', which is not what we want
+                String serialized = outputStream.toString().replaceAll("_:B", "_:");
+                SolutionMapping solMapOut = new SolutionMapping(
+                        Map.of("?serialized_output", new LiteralNode(serialized)));
 
-            out.addSolutionMap(this.fragment, solMapOut);
+                for (String outputFragment : getOutputFragments()) {
+                    out.addSolutionMap(outputFragment, solMapOut);
+                }
+            }
         }
 
         return out;

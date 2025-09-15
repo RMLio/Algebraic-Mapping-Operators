@@ -5,6 +5,8 @@ import be.ugent.idlab.knows.amo.functions.JoinCondition;
 import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ThetaJoinTest {
@@ -18,7 +20,7 @@ public class ThetaJoinTest {
                 s2.containsKey("?type") && s2.get("?type") != null &&
                 s1.get("?$pet.type").equals(s2.get("?type")));
 
-        ThetaJoinOperator operator = new ThetaJoinOperator("ThetaJoin", "f_contacts", "f_contacts", condition);
+        ThetaJoinOperator operator = new ThetaJoinOperator("ThetaJoin", Set.of("f_contacts"), Set.of("f_contacts"), condition);
 
         MappingTuple actual = operator.apply(table6, table7);
         assertEquals(expected, actual);

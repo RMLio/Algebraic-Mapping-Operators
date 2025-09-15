@@ -6,6 +6,8 @@ import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Disabled // waiting for go-ahead
@@ -23,7 +25,7 @@ public class LeftJoinTest {
                         s2.containsKey("?type") && s2.get("?alias_type") != null &&
                         s1.get("?$pet.type").equals(s2.get("?alias_type")));
 
-        LeftJoinOperator operator = new LeftJoinOperator("LeftJoin", "f_default", condition);
+        LeftJoinOperator operator = new LeftJoinOperator("LeftJoin", Set.of("f_default"), Set.of("f_default"), condition);
 
         MappingTuple actual = operator.apply(table6, table7);
 

@@ -10,9 +10,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.jspecify.annotations.NonNull;
 
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 
 /**
@@ -22,11 +20,11 @@ public class JSONSourceOperator extends DataIOSourceOperator {
     private final String rootIterator;
     private transient JSONSourceIterator sourceIterator;
 
-    public JSONSourceOperator(String operatorName, Access access, String defaultFragment,
+    public JSONSourceOperator(String operatorName, Access access, Set<String> outputFragments,
                               String rootIterator,
-                              List<Field> fields,
-                              List<String> nulls) {
-        super(operatorName, access, defaultFragment, fields, nulls);
+                              Collection<Field> fields,
+                              Collection<String> nulls) {
+        super(operatorName, access, outputFragments, fields, nulls);
         this.rootIterator = rootIterator;
         this.sourceIterator = null;
     }
@@ -40,12 +38,14 @@ public class JSONSourceOperator extends DataIOSourceOperator {
 
         JSONRecord r = (JSONRecord) this.sourceIterator.next();
 
-        JSONArray outputArray = (JSONArray) r.get("$").getValue();
-        JSONObject json = new JSONObject((Map<String, ?>) outputArray.getFirst());
+        Map<String, ?> output = (Map<String, ?>) r.get("$").getValue();
+        JSONObject json = new JSONObject(output);
         List<SolutionMapping> mappings = applySubfields(json.toJSONString(), r.getIndex());
 
         MappingTuple out = new MappingTuple();
-        out.setSolutionMaps(this.defaultFragment, mappings);
+        for (String outputFragment : getOutputFragments()) {
+            out.setSolutionMaps(outputFragment, mappings);
+        }
 
         return out;
     }

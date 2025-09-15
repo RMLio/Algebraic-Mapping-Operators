@@ -2,29 +2,21 @@ package be.ugent.idlab.knows.amo.operators.intermediate;
 
 import be.ugent.idlab.knows.amo.operators.Operator;
 
+import java.util.Set;
+
 
 /**
  * Base class for all intermediate operators
  */
 public abstract class IntermediateOperator extends Operator {
 
-    protected final String fragment;
-
     /**
      * Creates a new instance of a IntermediateOperator
      * @param operatorName A name (identifier) for the operator.
-     * @param fragment     The fragment this operator works on.
+     * @param inputFragments    The input fragments of the operator.
+     * @param outputFragments   The output fragments of the operator.
      */
-    protected IntermediateOperator(String operatorName, String fragment) {
-        super(operatorName);
-        this.fragment = fragment;
-    }
-
-    /**
-     * Gets the fragment of this operator.
-     * @return  The name of the fragment this operator works on.
-     */
-    public String getFragment() {
-        return fragment;
+    protected IntermediateOperator(String operatorName, Set<String> inputFragments, Set<String> outputFragments) {
+        super(operatorName, inputFragments, outputFragments);
     }
 }

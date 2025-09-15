@@ -3,6 +3,7 @@ package be.ugent.idlab.knows.amo.operators.intermediate.binary;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -12,20 +13,17 @@ import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.functions.JoinCondition;
 
 public class LeftJoinOperator extends JoinOperator {
-    /**
-     * A convenience constructor with the output fragment being the same as input
-     * fragment
-     * 
-     * @param operatorname
-     * @param inputFragment
-     * @param condition
-     */
-    public LeftJoinOperator(String operatorname, String inputFragment, JoinCondition condition) {
-        this(operatorname, inputFragment, inputFragment, condition);
-    }
 
-    public LeftJoinOperator(String operatorName, String inputFragment, String outputFragment, JoinCondition condition) {
-        super(operatorName, inputFragment, outputFragment, condition);
+    /**
+     * Instantiates a new join operator.
+     *
+     * @param operatorName      The name (identifier) of the operator.
+     * @param inputFragments    The input fragments of the operator.
+     * @param outputFragments   The output fragments of the operator.
+     * @param condition         The condition of the join
+     */
+    public LeftJoinOperator(String operatorName, Set<String> inputFragments, Set<String> outputFragments, JoinCondition condition)  {
+        super(operatorName, inputFragments, outputFragments, condition);
     }
 
     @Override
@@ -44,23 +42,25 @@ public class LeftJoinOperator extends JoinOperator {
             return tuple1;
         }
 
-        MappingTuple result = tuple1;
+        for (String inputFragment : getInputFragments()) {
+            // left-join on solution mappings of the target fragment
+            Collection<SolutionMapping> leftSolMaps = tuple1.getSolutionMappings(inputFragment);
+            Collection<SolutionMapping> rightSolMaps = tuple2.getSolutionMappings(inputFragment);
+            tuple1.removeFragment(inputFragment);
+            List<SolutionMapping> joinedSolMaps = new ArrayList<>();
+            for (SolutionMapping leftSolMap : leftSolMaps) {
+                for (SolutionMapping rightSolMap : rightSolMaps) {
+                    SolutionMapping leftJoined = this.apply(leftSolMap, rightSolMap);
+                    joinedSolMaps.add(leftJoined);
+                }
+            }
 
-        // left-join on solution mappings of the target fragment
-        Collection<SolutionMapping> leftSolMaps = tuple1.getSolutionMappings(this.fragment);
-        Collection<SolutionMapping> rightSolMaps = tuple2.getSolutionMappings(this.fragment);
-        result.removeFragment(this.fragment);
-        List<SolutionMapping> joinedSolMaps = new ArrayList<>();
-        for (SolutionMapping leftSolMap : leftSolMaps) {
-            for (SolutionMapping rightSolMap : rightSolMaps) {
-                SolutionMapping leftJoined = this.apply(leftSolMap, rightSolMap);
-                joinedSolMaps.add(leftJoined);
+            for (String outputFragment : getOutputFragments()) {
+                tuple1.setSolutionMaps(outputFragment, joinedSolMaps);
             }
         }
 
-        result.setSolutionMaps(this.outputFragment, joinedSolMaps);
-
-        return result;
+        return tuple1;
     }
 
     @Override

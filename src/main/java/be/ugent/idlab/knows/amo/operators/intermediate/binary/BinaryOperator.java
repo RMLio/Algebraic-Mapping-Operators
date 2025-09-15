@@ -8,6 +8,8 @@ import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
 import be.ugent.idlab.knows.amo.operators.intermediate.IntermediateOperator;
 
+import java.util.Set;
+
 /**
  * Base interface for all binary operators
  * <p>
@@ -18,10 +20,11 @@ public abstract class BinaryOperator extends IntermediateOperator {
 
     /**
      * @param operatorName The name (identifier) of the operator.
-     * @param fragment fragment the operator operates on
+     * @param inputFragments    The input fragments of the operator.
+     * @param outputFragments   The output fragments of the operator.
      */
-    public BinaryOperator(String operatorName, String fragment) {
-        super(operatorName, fragment);
+    protected BinaryOperator(String operatorName, Set<String> inputFragments, Set<String> outputFragments) {
+        super(operatorName, inputFragments, outputFragments);
     }
 
     @NonNull

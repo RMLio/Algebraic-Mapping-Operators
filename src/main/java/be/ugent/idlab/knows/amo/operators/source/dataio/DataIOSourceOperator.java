@@ -9,8 +9,7 @@ import be.ugent.idlab.knows.dataio.access.Access;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.jspecify.annotations.NullMarked;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Operator responsible for reading input into the plan.
@@ -19,16 +18,23 @@ import java.util.List;
 public abstract class DataIOSourceOperator extends SourceOperator {
 
     protected Access access;
-    protected String defaultFragment;
-    protected List<Field> fields;
-    protected List<String> nulls;
+    protected Collection<Field> fields;
+    protected Collection<String> nulls;
 
-    public DataIOSourceOperator(String operatorName, Access access, String defaultFragment, List<Field> fields, List<String> nulls) {
-        super(operatorName);
+    /**
+     * Instantiates a new DataIOSourceOperator.
+     *
+     * @param operatorName      The name (identifier) of the operator.
+     * @param access            The data source this operator gets its data from.
+     * @param outputFragments   The output fragments of the operator.
+     * @param fields            The relevant data fields (e.g. CSV headers or JSON keys)
+     * @param nulls             The values considered a {@code null} value.
+     */
+    protected DataIOSourceOperator(String operatorName, Access access, Set<String> outputFragments, Collection<Field> fields, Collection<String> nulls) {
+        super(operatorName, outputFragments);
         this.access = access;
-        this.defaultFragment = defaultFragment;
         this.fields = fields;
-        this.nulls = new ArrayList<>(nulls);
+        this.nulls = new HashSet<>(nulls);
     }
 
     public Access getAccess() {
@@ -37,10 +43,6 @@ public abstract class DataIOSourceOperator extends SourceOperator {
 
     public void setAccess(Access access) {
         this.access = access;
-    }
-
-    public String getDefaultFragment() {
-        return this.defaultFragment;
     }
 
     protected List<SolutionMapping> applySubfields(String object, int index) {

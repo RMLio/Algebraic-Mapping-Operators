@@ -5,6 +5,7 @@ import net.minidev.json.JSONObject;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -15,7 +16,7 @@ import java.util.Set;
  * their data
  * These can be applied on a templated string
  */
-public class SolutionMapping extends HashMap<String, @Nullable RDFNode> {
+public class SolutionMapping extends HashMap<String, @Nullable RDFNode> implements Serializable {
 
     public SolutionMapping() {
         super();

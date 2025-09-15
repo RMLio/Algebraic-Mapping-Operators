@@ -12,6 +12,7 @@ import org.apache.jena.riot.Lang;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,7 +24,7 @@ public class TargetOperatorTest {
 
         MappingTuple input = BlocksIO.readMappingTuple("operators/target/input.json");
 
-        TargetOperator operator = new TargetOperator("targetOp", "f_target", "?foo", sink);
+        TargetOperator operator = new TargetOperator("targetOp", Set.of("f_target"), "?foo", sink);
         operator.apply(input);
         assertEquals("bar", sink.output);
     }
@@ -40,7 +41,7 @@ public class TargetOperatorTest {
         RDFFormatter formatter = new RDFFormatter(Lang.NQUADS);
         TestSink sink = new TestSink();
 
-        TargetOperator operator = new TargetOperator("targetOp", "default", TargetOperator.TARGET_VARIABLE, sink, formatter);
+        TargetOperator operator = new TargetOperator("targetOp", Set.of("default"), TargetOperator.TARGET_VARIABLE, sink, formatter);
         operator.apply(tuple);
 
         assertEquals(value, sink.output);
@@ -55,7 +56,7 @@ public class TargetOperatorTest {
         RDFFormatter formatter = new RDFFormatter(Lang.JSONLD);
         TestSink sink = new TestSink();
 
-        TargetOperator operator = new TargetOperator("targetOp", "default", TargetOperator.TARGET_VARIABLE, sink, formatter);
+        TargetOperator operator = new TargetOperator("targetOp", Set.of("default"), TargetOperator.TARGET_VARIABLE, sink, formatter);
         operator.apply(tuple);
 
         String expected = """

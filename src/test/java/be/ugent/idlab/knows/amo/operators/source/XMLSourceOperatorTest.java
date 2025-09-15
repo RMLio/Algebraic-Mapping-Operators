@@ -4,7 +4,6 @@ import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.operators.source.dataio.XMLSourceOperator;
-import be.ugent.idlab.knows.amo.operators.source.dataio.builders.SourceOperatorBuilder;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.access.LocalFileAccess;
@@ -12,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,11 +23,14 @@ public class XMLSourceOperatorTest {
         Field managerName = Field.builder().XML().withName("name").withReference("name").build();
         Field id = Field.builder().XML().withName("id").withReference("@id").build();
 
-        XMLSourceOperator operator = (XMLSourceOperator) SourceOperatorBuilder.XML()
-                .withAccess(access)
-                .withFields(managerName, id)
-                .withRootIterator("/companies/company")
-                .build();
+        XMLSourceOperator operator = new XMLSourceOperator(
+                "XML Source Operator",
+                access,
+                Set.of("default"),
+                "/companies/company",
+                List.of(managerName, id),
+                List.of()
+        );
 
         MappingTuple actual = operator.consumeSource();
 

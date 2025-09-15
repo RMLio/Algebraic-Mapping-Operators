@@ -4,7 +4,7 @@ import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
-import be.ugent.idlab.knows.amo.operators.source.dataio.builders.SourceOperatorBuilder;
+import be.ugent.idlab.knows.amo.operators.source.dataio.CSVSourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.access.LocalFileAccess;
@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -26,10 +27,13 @@ public class CSVSourceOperatorTest {
         Field items = Field.builder().CSV().withName("item").withSubfields(name, age).build();
 
         Access access = new LocalFileAccess("operators/source/csv/simple.csv", "src/test/resources", "csv");
-        SourceOperator op = SourceOperatorBuilder.CSV()
-                .withAccess(access)
-                .withFields(items)
-                .build();
+        SourceOperator op = new CSVSourceOperator(
+                "CSV Source Operator",
+                access,
+                Set.of("default"),
+                Set.of(items),
+                Set.of()
+        );
 
         MappingTuple actual = op.consumeSource();
 
@@ -51,10 +55,13 @@ public class CSVSourceOperatorTest {
         Field items = Field.builder().CSV().withName("item").withSubfields(type, weight).build();
 
         Access access = new LocalFileAccess("operators/source/csv/indexes.csv", "src/test/resources", "csv");
-        SourceOperator op = SourceOperatorBuilder.CSV()
-                .withAccess(access)
-                .withFields(items)
-                .build();
+        SourceOperator op = new CSVSourceOperator(
+                "CSV Source Operator",
+                access,
+                Set.of("default"),
+                Set.of(items),
+                Set.of()
+        );
 
         MappingTuple actual = op.consumeSource();
 
@@ -89,10 +96,13 @@ public class CSVSourceOperatorTest {
         Field items = Field.builder().CSV().withName("item").withSubfields(name, age).build();
 
         Access access = new LocalFileAccess("operators/source/csv/simple.csv", "src/test/resources", "csv");
-        SourceOperator op = SourceOperatorBuilder.CSV()
-                .withAccess(access)
-                .withFields(defaultValue, items)
-                .build();
+        SourceOperator op = new CSVSourceOperator(
+                "CSV Source Operator",
+                access,
+                Set.of("default"),
+                Set.of(defaultValue, items),
+                Set.of()
+        );
 
         MappingTuple actual = op.consumeSource();
 
@@ -117,10 +127,13 @@ public class CSVSourceOperatorTest {
         Field name = Field.builder().CSV().withName("name").withReference("name").build();
 
         Access access = new LocalFileAccess("operators/source/csv/nested_json_array.csv", "src/test/resources", "csv");
-        SourceOperator op = SourceOperatorBuilder.CSV()
-                .withAccess(access)
-                .withFields(name, items)
-                .build();
+        SourceOperator op = new CSVSourceOperator(
+                "CSV Source Operator",
+                access,
+                Set.of("default"),
+                Set.of(name, items),
+                Set.of()
+        );
 
         MappingTuple actual = op.consumeSource();
 
@@ -156,10 +169,13 @@ public class CSVSourceOperatorTest {
         Field name = Field.builder().CSV().withName("name").withReference("name").build();
         Access access = new LocalFileAccess("operators/source/csv/nested_json_object.csv", "src/test/resources", "csv");
 
-        SourceOperator op = SourceOperatorBuilder.CSV()
-                .withAccess(access)
-                .withFields(name, item)
-                .build();
+        SourceOperator op = new CSVSourceOperator(
+                "CSV Source Operator",
+                access,
+                Set.of("default"),
+                Set.of(name, item),
+                Set.of()
+        );
 
         MappingTuple actual = op.consumeSource();
 
@@ -192,10 +208,13 @@ public class CSVSourceOperatorTest {
         Field items = Field.builder().CSV().withName("item").withSubfields(id, name, age).build();
 
         Access access = new LocalFileAccess("operators/source/csv/empty_values.csv", "src/test/resources", "csv");
-        SourceOperator op = SourceOperatorBuilder.CSV()
-                .withAccess(access)
-                .withFields(items)
-                .build();
+        SourceOperator op = new CSVSourceOperator(
+                "CSV Source Operator",
+                access,
+                Set.of("default"),
+                Set.of(items),
+                Set.of()
+        );
 
         MappingTuple actual = op.consumeSource();
 
@@ -217,11 +236,13 @@ public class CSVSourceOperatorTest {
         Field items = Field.builder().CSV().withName("item").withSubfields(id, name, age).build();
 
         Access access = new LocalFileAccess("operators/source/csv/null_values.csv", "src/test/resources", "csv");
-        SourceOperator op = SourceOperatorBuilder.CSV()
-                .withAccess(access)
-                .withNulls("NULL")
-                .withFields(items)
-                .build();
+        SourceOperator op = new CSVSourceOperator(
+                "CSV Source Operator",
+                access,
+                Set.of("default"),
+                Set.of(items),
+                Set.of("NULL")
+        );
 
         MappingTuple actual = op.consumeSource();
 

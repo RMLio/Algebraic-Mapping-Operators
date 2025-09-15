@@ -6,13 +6,14 @@ import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProjectTest {
     @Test
     public void simpleTestSolutionMapping() {
-        ProjectOperator operator = new ProjectOperator("ProjectOp", "f_default", List.of("?age"));
+        ProjectOperator operator = new ProjectOperator("ProjectOp", Set.of("f_default"), Set.of("f_default"), List.of("?age"));
 
         SolutionMapping input = BlocksIO.readSolutionMapping("operators/project/solutionMapping/input.json");
         SolutionMapping expected = BlocksIO.readSolutionMapping("operators/project/solutionMapping/output.json");
@@ -24,7 +25,7 @@ public class ProjectTest {
 
     @Test
     public void simpleTestMappingTuple() {
-        ProjectOperator operator = new ProjectOperator("ProjectOp", "f_default", List.of("?age"));
+        ProjectOperator operator = new ProjectOperator("ProjectOp", Set.of("f_default"), Set.of("f_default"), List.of("?age"));
 
         MappingTuple input = BlocksIO.readMappingTuple("operators/project/mappingTuple/input.json");
         MappingTuple expected = BlocksIO.readMappingTuple("operators/project/mappingTuple/output.json");

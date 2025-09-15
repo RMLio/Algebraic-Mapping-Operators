@@ -10,7 +10,9 @@ import be.ugent.idlab.knows.amo.operators.OperatorVisitor;
 import be.ugent.idlab.knows.amo.operators.target.postprocessing.RDFFormatter;
 import org.jspecify.annotations.NonNull;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * TargetOperator will perform side effects on the MappingTuple.
@@ -21,25 +23,19 @@ public class TargetOperator extends Operator {
 
     public static final String TARGET_VARIABLE = "?serialized_output";
 
-    private final String targetFragment;
     private final String targetVariable;
     private final TargetSink<RDFNode> sink;
     private final RDFFormatter formatter;
 
-    public TargetOperator(String operatorName, String targetFragment, String targetVariable, TargetSink<RDFNode> sink) {
-        this(operatorName, targetFragment, targetVariable, sink, null);
+    public TargetOperator(String operatorName, Set<String> inputFragments, String targetVariable, TargetSink<RDFNode> sink) {
+        this(operatorName, inputFragments, targetVariable, sink, null);
     }
 
-    public TargetOperator(String operatorName, String targetFragment, String targetVariable, TargetSink<RDFNode> sink, RDFFormatter formatter) {
-        super(operatorName);
-        this.targetFragment = targetFragment;
+    public TargetOperator(String operatorName, Set<String> inputFragments, String targetVariable, TargetSink<RDFNode> sink, RDFFormatter formatter) {
+        super(operatorName, inputFragments, Set.of());
         this.targetVariable = targetVariable;
         this.sink = sink;
         this.formatter = formatter;
-    }
-
-    public String getTargetFragment() {
-        return this.targetFragment;
     }
 
     public String getTargetVariable() {
@@ -51,7 +47,11 @@ public class TargetOperator extends Operator {
     }
 
     public void apply(MappingTuple mappingTuple) {
-        Collection<SolutionMapping> solMappings = mappingTuple.getSolutionMappings(this.targetFragment);
+        Collection<SolutionMapping> solMappings = new ArrayList<>();
+        for (String inputFragment : getInputFragments()) {
+            solMappings.addAll(mappingTuple.getSolutionMappings(inputFragment));
+        }
+
         for (SolutionMapping solMapping : solMappings) {
             LiteralNode node = (LiteralNode) solMapping.get(this.targetVariable);
             if (node == null) {

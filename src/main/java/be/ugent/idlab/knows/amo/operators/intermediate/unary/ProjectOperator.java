@@ -5,6 +5,7 @@ import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
@@ -17,8 +18,15 @@ public class ProjectOperator extends UnaryOperator {
 
     private final Collection<String> variables;
 
-    public ProjectOperator(String operatorName, String fragment, Collection<String> variables) {
-        super(operatorName, fragment);
+    /**
+     * Creates a new instance of a ProjectOperator
+     * @param operatorName A name (identifier) for the operator.
+     * @param inputFragments    The input fragments of the operator.
+     * @param outputFragments   The output fragments of the operator.
+     * @param variables         The variables to keep in the solution mapping when applying this operator.
+     */
+    public ProjectOperator(String operatorName, Set<String> inputFragments, Set<String> outputFragments, Collection<String> variables) {
+        super(operatorName, inputFragments, outputFragments);
         this.variables = variables;
     }
 

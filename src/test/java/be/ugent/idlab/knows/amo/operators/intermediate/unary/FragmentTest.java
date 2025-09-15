@@ -6,6 +6,7 @@ import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -13,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class FragmentTest {
 
     // operator with a simple condition that renames the f_default fragment to f_contacts
-    FragmenterOperator op = new FragmenterOperator("FragmentOp", "f_default", (mappingTuple) -> {
+    FragmenterOperator op = new FragmenterOperator("FragmentOp", Set.of("f_default"), Set.of("f_default"), (mappingTuple) -> {
         MappingTuple out = new MappingTuple();
         Collection<SolutionMapping> solMappings = mappingTuple.getMap().get("f_default");
         out.setSolutionMaps("f_contacts", solMappings);
@@ -33,7 +34,7 @@ public class FragmentTest {
     @Test
     public void fragmentIntoMultiple() {
         // operator that will fragment f_default into two different fragments based on name
-        FragmenterOperator op = new FragmenterOperator("FragmentOp", "f_default", ((mappingTuple) -> {
+        FragmenterOperator op = new FragmenterOperator("FragmentOp", Set.of("f_default"), Set.of("f_default"), ((mappingTuple) -> {
             MappingTuple out = new MappingTuple();
 
             // perform a fragment of f_default into two fragments

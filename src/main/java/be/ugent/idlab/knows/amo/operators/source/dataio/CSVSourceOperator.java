@@ -15,8 +15,7 @@ import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CSVSourceOperator extends DataIOSourceOperator {
 
@@ -27,26 +26,26 @@ public class CSVSourceOperator extends DataIOSourceOperator {
      *
      * @param operatorName    name of the operator
      * @param access          access to consume
-     * @param defaultFragment default fragment to generate the solution mappings on
+     * @param outputFragments The output fragments of the operator.
      * @param fields          fields to be present in generated solution mappings
      */
     public CSVSourceOperator(String operatorName,
                              Access access,
-                             String defaultFragment,
-                             List<Field> fields,
-                             List<String> nulls) {
-        super(operatorName, access, defaultFragment, fields, nulls);
+                             Set<String> outputFragments,
+                             Collection<Field> fields,
+                             Collection<String> nulls) {
+        super(operatorName, access, outputFragments, fields, nulls);
         this.iterator = null;
     }
 
     /**
-     * Turn the record into a CSV value to be processed by the
+     * Turn the CSV record into string representation
      *
-     * @param r
-     * @return
+     * @param record    The CSV record to process
+     * @return          A String representation (CSV serialization including headers) of the record.
      */
-    private String processRecord(CSVRecord r) {
-        Map<String, String> data = r.getData();
+    private String processRecord(CSVRecord record) {
+        Map<String, String> data = record.getData();
         String[] header = data.keySet().toArray(String[]::new);
         String[] items = new String[header.length];
 
@@ -56,9 +55,11 @@ public class CSVSourceOperator extends DataIOSourceOperator {
 
         // derive fields
         if (fields.isEmpty()) {
+            Collection<Field> newFields = new ArrayList<>();
             for (String fieldName : header) {
-                fields.add(new FieldBuilder().withName(fieldName).CSV().withReference(fieldName).build());
+                newFields.add(new FieldBuilder().withName(fieldName).CSV().withReference(fieldName).build());
             }
+            fields = newFields;
         }
 
         StringWriter sw = new StringWriter();
@@ -85,13 +86,15 @@ public class CSVSourceOperator extends DataIOSourceOperator {
     @NonNull
     protected MappingTuple nextEffective() {
         MappingTuple tuple = new MappingTuple();
-        CSVRecord r = (CSVRecord) this.iterator.next();
+        CSVRecord record = (CSVRecord) this.iterator.next();
 
-        String obj = processRecord(r);
+        String obj = processRecord(record);
 
         List<SolutionMapping> mappings = applySubfields(obj, this.iterator.getIndex());
 
-        tuple.setSolutionMaps(this.defaultFragment, mappings);
+        for (String outputFragment : getOutputFragments()) {
+            tuple.setSolutionMaps(outputFragment, mappings);
+        }
         return tuple;
     }
 

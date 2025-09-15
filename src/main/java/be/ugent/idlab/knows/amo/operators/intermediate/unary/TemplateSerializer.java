@@ -8,24 +8,43 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TemplateSerializer extends UnaryOperator {
 
-    private String serializedVariable;
-    private List<Pair<List<String>, String>> variablesTemplatePairs;
-    private Pattern variablePattern;
+    private final String serializedVariable;
+    private final List<Pair<List<String>, String>> variablesTemplatePairs;
+    private final Pattern variablePattern;
 
-    public TemplateSerializer(String operatorName, String fragment, String templateString) {
-        this(operatorName, fragment, templateString, "serialized_output");
+    /**
+     * Instantiates a new TemplateSerializer. After applying this operator the resulting solution mapping will use
+     * the key {@code serialized_output} to store the serialized string.
+     *
+     * @param operatorName          A name (identifier) for the operator.
+     * @param inputFragments        The input fragments of the operator.
+     * @param outputFragments       The output fragments of the operator.
+     * @param templateString        The template to fill in the results of the mappings. E.g. {@code ?sm ?pm ?om@en.}
+     */
+    public TemplateSerializer(String operatorName, Set<String> inputFragments, Set<String> outputFragments, String templateString) {
+        this(operatorName, inputFragments, outputFragments, templateString, "serialized_output");
     }
 
-    public TemplateSerializer(String operatorName, String fragment, String templateString, String serializedVariable) {
-        super(operatorName, fragment);
+    /**
+     * Instantiates a new TemplateSerializer.
+     *
+     * @param operatorName          A name (identifier) for the operator.
+     * @param inputFragments        The input fragments of the operator.
+     * @param outputFragments       The output fragments of the operator.
+     * @param templateString        The template to fill in the results of the mappings. E.g. {@code ?sm ?pm ?om@en.}
+     * @param serializedVariable    The variable name used in the resulting solution mapping to store the serialized string when applying this operator.
+     */
+    public TemplateSerializer(String operatorName, Set<String> inputFragments, Set<String> outputFragments, String templateString, String serializedVariable) {
+        super(operatorName, inputFragments, outputFragments);
 
         this.serializedVariable = serializedVariable;
-        this.variablePattern = Pattern.compile("\\?[a-zA-Z_0-9]+[^@^^]");
+        this.variablePattern = Pattern.compile("\\?[a-zA-Z_0-9]+[^@^]");
 
         this.variablesTemplatePairs = this.extractTemplateVariables(templateString);
 

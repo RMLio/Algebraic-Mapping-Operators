@@ -8,20 +8,17 @@ import be.ugent.idlab.knows.dataio.iterators.XMLSourceIterator;
 import be.ugent.idlab.knows.dataio.record.XMLRecord;
 import org.jspecify.annotations.NonNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class XMLSourceOperator extends DataIOSourceOperator {
     private final String rootIterator;
     private transient XMLSourceIterator sourceIterator;
 
-    public XMLSourceOperator(String operatorName, Access access, String defaultFragment,
+    public XMLSourceOperator(String operatorName, Access access, Set<String> outputFragments,
                              String rootIterator,
-                             List<Field> fields,
-                             List<String> nulls) {
-        super(operatorName, access, defaultFragment, fields, nulls);
+                             Collection<Field> fields,
+                             Collection<String> nulls) {
+        super(operatorName, access, outputFragments, fields, nulls);
         this.rootIterator = rootIterator;
         this.sourceIterator = null;
 
@@ -29,11 +26,11 @@ public class XMLSourceOperator extends DataIOSourceOperator {
         this.nulls = nulls;
     }
 
-    private void prepareFields(List<Field> fields) {
+    private void prepareFields(Collection<Field> fields) {
         String[] iteratorSplit = this.rootIterator.split("/");
         String lastIteratorPart = iteratorSplit[iteratorSplit.length - 1];
 
-        this.fields = new ArrayList<>();
+        this.fields = new HashSet<>();
 
         for (Field f : fields) {
             Field newField = switch (f) {
@@ -70,8 +67,9 @@ public class XMLSourceOperator extends DataIOSourceOperator {
         List<SolutionMapping> sms = applySubfields(r.getItem().toString(), r.getIndex());
 
         MappingTuple out = new MappingTuple();
-        out.setSolutionMaps(this.defaultFragment, sms);
-
+        for (String outputFragment : getOutputFragments()) {
+            out.setSolutionMaps(outputFragment, sms);
+        }
         return out;
     }
 

@@ -10,19 +10,16 @@ import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 
 public class NaturalJoinOperator extends JoinOperator {
 
-    /**
-     * A convenience constructor where the input fragment is the same as the output
-     * fragment
-     * 
-     * @param operatorName
-     * @param inputFragment
-     */
-    public NaturalJoinOperator(String operatorName, String inputFragment) {
-        this(operatorName, inputFragment, inputFragment);
-    }
 
-    public NaturalJoinOperator(String operatorName, String inputFragment, String outputFragment) {
-        super(operatorName, inputFragment, outputFragment, SolutionMapping::isCompatibleWith);
+    /**
+     * Instantiates a new NaturalJoinOperator
+     *
+     * @param operatorName      The name (identifier) of the operator.
+     * @param inputFragments    The input fragments of the operator.
+     * @param outputFragments   The output fragments of the operator.
+     */
+    public NaturalJoinOperator(String operatorName, Set<String> inputFragments, Set<String> outputFragments) {
+        super(operatorName, inputFragments, outputFragments, SolutionMapping::isCompatibleWith);
     }
 
     @Override
@@ -60,7 +57,7 @@ public class NaturalJoinOperator extends JoinOperator {
         for (String fragment : commonFragments) {
             for (SolutionMapping leftMapping : tuple1.getSolutionMappings(fragment)) {
                 for (SolutionMapping rightMapping : tuple2.getSolutionMappings(fragment)) {
-                    result.addSolutionMap(fragment, this.apply(leftMapping, rightMapping));
+                    result.addSolutionMap(fragment, this.apply(leftMapping, rightMapping)); // TODO: write to output fragments?
                 }
             }
         }

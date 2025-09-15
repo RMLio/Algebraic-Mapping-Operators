@@ -4,11 +4,13 @@ import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NaturalJoinTest {
 
-    NaturalJoinOperator operator = new NaturalJoinOperator("NatJoin", "f_default", "f_default");
+    NaturalJoinOperator operator = new NaturalJoinOperator("NatJoin", Set.of("f_default"), Set.of("f_default"));
 
     @Test
     public void simpleTest() {

@@ -10,6 +10,7 @@ import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
@@ -20,25 +21,20 @@ import org.jspecify.annotations.Nullable;
  */
 public class ExtendOperator extends UnaryOperator {
 
-    private List<Pair<String, ExtendFunction>> replacements;
+    private final List<Pair<String, ExtendFunction>> replacements;
 
-    public ExtendOperator(String operatorName, String fragment) {
-        super(operatorName, fragment);
-        this.replacements = new ArrayList<>();
-    }
-
-    public ExtendOperator(String operatorName, String fragment, Collection<Pair<String, ExtendFunction>> replacements) {
-        super(operatorName, fragment);
+    /**
+     * Instantiates a new "Extend" operator.
+     * @param operatorName      The name (identifier) of the operator.
+     * @param inputFragments    The input fragments of the operator.
+     * @param outputFragments   The output fragments of the operator.
+     * @param replacements      A collection of replacement pairs. The first element in the pair is the variable name to replace.
+     *                          The second element is a function whose result is the replacement.
+     */
+    public ExtendOperator(String operatorName, Set<String> inputFragments, Set<String> outputFragments, Collection<Pair<String, ExtendFunction>> replacements) {
+        super(operatorName, inputFragments, outputFragments);
         this.replacements = new ArrayList<>();
         this.replacements.addAll(replacements);
-    }
-
-    public List<Pair<String, ExtendFunction>> getReplacements() {
-        return replacements;
-    }
-
-    public void setReplacements(List<Pair<String, ExtendFunction>> replacements) {
-        this.replacements = replacements;
     }
 
     @Serial
@@ -70,21 +66,27 @@ public class ExtendOperator extends UnaryOperator {
 
         MappingTuple out = new MappingTuple();
 
-        Collection<SolutionMapping> mappings = tuple.getSolutionMappings(this.fragment);
+        for (String inputFragment : getInputFragments()) {
+            Collection<SolutionMapping> mappings = tuple.getSolutionMappings(inputFragment);
 
-        List<SolutionMapping> processedMappings = new ArrayList<>();
+            List<SolutionMapping> processedMappings = new ArrayList<>();
 
-        // if there is no mappings to process, apply the function to an empty map, in case the replacements contain constant values
-        if (mappings.isEmpty()) {
-            processedMappings.add(this.apply(new SolutionMapping()));
-        } else {
-            for (SolutionMapping m : mappings) {
-                SolutionMapping processed = apply(m);
-                processedMappings.add(processed);
+            // if there is no mappings to process, apply the function to an empty map, in case the replacements contain constant values
+            if (mappings.isEmpty()) {
+                processedMappings.add(this.apply(new SolutionMapping()));
+            } else {
+                for (SolutionMapping m : mappings) {
+                    SolutionMapping processed = apply(m);
+                    processedMappings.add(processed);
+                }
             }
+
+            for (String outputFragment : getOutputFragments()) {
+                out.setSolutionMaps(outputFragment, processedMappings);
+            }
+
         }
 
-        out.setSolutionMaps(this.fragment, processedMappings);
         return out;
     }
 }
