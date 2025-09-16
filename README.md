@@ -117,6 +117,6 @@ This library is currently in alpha state and under active development.
 <dependency>
     <groupId>be.ugent.idlab.knows</groupId>
     <artifactId>algebraic-mapping-operators</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1-SNAPSHOT</version>
 </dependency>
 ```
