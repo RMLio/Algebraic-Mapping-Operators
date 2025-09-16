@@ -1,6 +1,7 @@
 package be.ugent.idlab.knows.amo.blocks;
 
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.sparql.core.DatasetGraph;
 import org.apache.jena.sparql.core.DatasetGraphFactory;
@@ -28,9 +29,9 @@ public class BGPTest {
         DatasetGraph actual = bgp.apply(mapping);
         DatasetGraph expected = DatasetGraphFactory.create();
         expected.getDefaultGraph().add(
-                NodeFactory.createLiteral("subject"),
-                NodeFactory.createLiteral("predicate"),
-                NodeFactory.createLiteral("object")
+                NodeFactory.createLiteral("subject", "", XSDDatatype.XSDstring),
+                NodeFactory.createLiteral("predicate", "", XSDDatatype.XSDstring),
+                NodeFactory.createLiteral("object", "", XSDDatatype.XSDstring)
         );
 
         List<Quad> actualQuads = actual.stream().toList();
@@ -51,10 +52,10 @@ public class BGPTest {
         ));
 
         DatasetGraph expected = DatasetGraphFactory.create();
-        expected.add(NodeFactory.createLiteral("graph"),
-                NodeFactory.createLiteral("subject"),
-                NodeFactory.createLiteral("predicate"),
-                NodeFactory.createLiteral("object")
+        expected.add(NodeFactory.createLiteral("graph", "", XSDDatatype.XSDstring),
+                NodeFactory.createLiteral("subject", "", XSDDatatype.XSDstring),
+                NodeFactory.createLiteral("predicate", "", XSDDatatype.XSDstring),
+                NodeFactory.createLiteral("object", "", XSDDatatype.XSDstring)
         );
 
         DatasetGraph actual = bgp.apply(mapping);
@@ -77,9 +78,9 @@ public class BGPTest {
 
         DatasetGraph expected = DatasetGraphFactory.create();
         expected.getDefaultGraph().add(
-                NodeFactory.createLiteral("subject"),
-                NodeFactory.createLiteral("predicate"),
-                NodeFactory.createLiteral("object", "en")
+                NodeFactory.createLiteral("subject", "", XSDDatatype.XSDstring),
+                NodeFactory.createLiteral("predicate", "", XSDDatatype.XSDstring),
+                NodeFactory.createLiteral("object", "en", null)
         );
 
         DatasetGraph actual = bgp.apply(mapping);

@@ -22,7 +22,7 @@ public class NodeTests {
         LiteralNode node = new LiteralNode("30.0", XSDDatatype.XSDdouble);
 
         String expected = "\"3.0E1\"^^<http://www.w3.org/2001/XMLSchema#double>";
-        assertEquals(expected, node.getStringRepr());
+        assertEquals(expected, node.toString());
     }
 
     @Test
@@ -31,7 +31,7 @@ public class NodeTests {
 
         String expected = "\"2\"^^<http://example.com/base/datatype#int>";
 
-        assertEquals(expected, node.getStringRepr());
+        assertEquals(expected, node.toString());
     }
 
 //    static {

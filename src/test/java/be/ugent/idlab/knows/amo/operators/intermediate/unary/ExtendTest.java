@@ -3,6 +3,7 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.functions.ExtendFunction;
 import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.junit.jupiter.api.Test;
@@ -16,10 +17,9 @@ public class ExtendTest {
     // simple condition to concatenate first and last names
     ExtendOperator op = new ExtendOperator("ExtendOp", Set.of("f_default"), Set.of("f_default"),
             List.of(new Pair<String, ExtendFunction>("?full_name", (mapping -> {
-                String first = mapping.get("?first_name").getValue().toString();
-                String last = mapping.get("?last_name").getValue().toString();
-
-                return first + " " + last;
+                LiteralNode firstNode = (LiteralNode) mapping.get("?first_name");
+                LiteralNode secondNode = (LiteralNode) mapping.get("?last_name");
+                return firstNode.getValue() + " " + secondNode.getValue();
             }))));
 
     @Test

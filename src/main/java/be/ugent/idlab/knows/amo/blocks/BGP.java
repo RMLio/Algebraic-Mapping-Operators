@@ -131,7 +131,7 @@ public class BGP implements Serializable {
                 variable = n.getLiteralValue().toString();
                 // n.getLiteral().getLexicalForm()
                 String value = m.get(variable).toString();
-                Node newNode = NodeFactory.createLiteral(value, n.getLiteralLanguage());
+                Node newNode = NodeFactory.createLiteral(value, n.getLiteralLanguage(), null);
                 // q.getsubject() m.get(variable).getJenaNode();
                 Quad newQ = Quad.create(q.getGraph(), newNode, q.getPredicate(), q.getObject());
                 newQuads.set(index, newQ);

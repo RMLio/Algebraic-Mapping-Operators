@@ -38,8 +38,6 @@ public abstract class RDFNode implements Serializable {
 
     public abstract Node getJenaNode();
     
-    public abstract String getStringRepr(); 
-
     @Override
     public boolean equals(@Nullable Object o) {
         if (this == o) return true;

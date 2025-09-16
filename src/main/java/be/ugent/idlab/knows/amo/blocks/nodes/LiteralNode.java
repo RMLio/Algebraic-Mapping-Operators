@@ -1,9 +1,9 @@
 package be.ugent.idlab.knows.amo.blocks.nodes;
 
 import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.TypeMapper;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
-import org.apache.jena.ext.xerces.impl.dv.XSSimpleType;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.jspecify.annotations.NullMarked;
@@ -20,43 +20,66 @@ public class LiteralNode extends RDFNode {
 
     private final String datatype;
     private final String language;
-    private boolean isDatatypeURL = false;
 
+    /**
+     * Creates a new LiteralNode object with a given value and no language. The data type defaults to String.
+     *
+     * @param value    value of the node, the lexical form
+     */
     public LiteralNode(Object value) {
         this(value, "string", "");
     }
 
+    /**
+     * Creates a new LiteralNode object with a given value, data type and no language.
+     *
+     * @param value    value of the node, the lexical form
+     * @param datatype datatype of the node. This must either be a valid XSDDatatype name (e.g.: @{code integer}) or a fully qualified URL
+     */
     public LiteralNode(Object value, String datatype) {
         this(value, datatype, "");
     }
 
     /**
-     * @param value    value of the node
+     * Creates a new LiteralNode object with a given value, data type and a given language.
+     *
+     * @param value    value of the node, the lexical form
      * @param datatype datatype of the node. This must either be a valid XSDDatatype name or a fully qualified URL
-     * @param language language of the node.
+     * @param language language of the node. Use an empty String to indicate no language.
      */
     public LiteralNode(Object value, String datatype, String language) {
         super(value);
 
-        try {
-            // we only store String representation of the type, if we know a valid XSDDatatype can be constructed, that's all we need
-            new XSDDatatype(datatype);
-        } catch (NullPointerException e) {
-            if (!UrlValidator.getInstance().isValid(datatype)) {
-                throw new IllegalArgumentException("Invalid datatype: must be either XSDDatatype name or a valid URL");
-            } else {
-                this.isDatatypeURL = true;
+        if (UrlValidator.getInstance().isValid(datatype)) {
+            this.datatype = datatype;
+        } else {
+            try {
+                XSDDatatype xsdDataType = new XSDDatatype(datatype);
+                this.datatype = xsdDataType.getURI();
+            } catch (NullPointerException e) {
+                throw new IllegalArgumentException("Invalid datatype: must be either XSDDatatype name or a valid URL but is \"" + datatype + "\"");
             }
         }
-
-        this.datatype = datatype;
         this.language = language;
     }
 
+    /**
+     * Creates a new LiteralNode object with a given value, data type and no language.
+     *
+     * @param value    value of the node, the lexical form
+     * @param datatype datatype of the node.
+     */
     public LiteralNode(Object value, XSDDatatype datatype) {
-        this(value, ((XSSimpleType) datatype.extendedTypeDefinition()).getName(), "");
+        this(value, datatype.getURI(), "");
     }
 
+    /**
+     * Creates a new LiteralNode object with a given value, data type and a given language.
+     *
+     * @param value    value of the node, the lexical form
+     * @param datatype datatype of the node
+     * @param language language of the node. Use an empty String to indicate no language.
+     */
     public LiteralNode(Object value, XSDDatatype datatype, String language) {
         /*
          * XSDDatatype is not serializable. Instead of writing a wrapper to enable
@@ -69,34 +92,43 @@ public class LiteralNode extends RDFNode {
          * Grab the index of the '#' after which the type follows and store that, as
          * datatype.getURI() returns a string pointing to the type in XMLSchema.
          */
-        this(value, datatype.getURI().substring(datatype.getURI().indexOf('#') + 1), language);
+        this(value, datatype.getURI(), language);
     }
 
-    public XSDDatatype getDatatype() {
-        if (this.isDatatypeURL) {
-            throw new IllegalStateException("Datatype is not an XSDDatatype");
-        }
-        return new XSDDatatype(this.datatype);
+    /**
+     * Gets the data type of this Literal node.
+     * @return  The data type of this node as a fully qualified URL
+     */
+    public String getDatatype() {
+       return this.datatype;
     }
 
-    public String getDatatypeAsString() {
-        if (this.isDatatypeURL) {
-            return this.datatype;
-        }
-
-        return TypeMapper.getInstance().getTypeByName(this.datatype).getURI();
-    }
-
+    /**
+     * Gets the language tag of this node.
+     * @return  The language tag of this node.
+     */
     public String getLanguage() {
         return language;
     }
 
-    public Object getValue() {
-        if (this.isDatatypeURL) {
-            return "\"%s\"^^<%s>".formatted(this.value.toString(), this.datatype);
-        }
+    /**
+     * Gets the value (lexical form) of this node.
+     * @return  The value of this node, rendered as a NQuads term.
+     */
+    public String getValue() {
+        //return "\"%s\"^^<%s>".formatted(this.value.toString(), this.datatype);
+        return this.value.toString();
+    }
 
-        return getDatatype().parse(this.value.toString());
+    /**
+     * Gets the value object as a Java object.
+     * @return  The value object as a Java object. E.g., if the data type is {@code http://www.w3.org/2001/XMLSchema#integer}
+     *          and the value is {@code 42}, then a Java Long object with value 42 is returned.
+     */
+    public Object getValueObject() {
+        TypeMapper typeMapper = TypeMapper.getInstance();
+        RDFDatatype type = typeMapper.getSafeTypeByName(datatype);
+        return type.parse(value.toString());
     }
 
     @Override
@@ -117,10 +149,13 @@ public class LiteralNode extends RDFNode {
 
     @Override
     public Node getJenaNode() {
-        if (this.datatype.equals("string")) {
-            return NodeFactory.createLiteral(this.value.toString(), this.language);
+        TypeMapper typeMapper = TypeMapper.getInstance();
+        RDFDatatype type = typeMapper.getSafeTypeByName(datatype);
+        if (language.isEmpty()) {
+            return NodeFactory.createLiteral(getValue(), language, type);
+        } else {
+            return NodeFactory.createLiteral(getValue(), language, null);
         }
-        return NodeFactory.createLiteral(this.value.toString(), this.language, new XSDDatatype(this.datatype));
     }
 
     @Override
@@ -132,18 +167,8 @@ public class LiteralNode extends RDFNode {
 
     @Override
     public String toString() {
-        String out = getValue().toString();
-        if (!this.language.isEmpty()) {
-            out += "@" + this.language;
-        }
-
-        return out;
-    }
-
-    @Override
-    public String getStringRepr() {
         String out;
-        if (this.datatype.equals("double")) {
+        if (this.datatype.equals("http://www.w3.org/2001/XMLSchema#double")) {
             out = '"' + formatToScientific(Double.parseDouble(this.value.toString())) + '"';
         } else {
             out = "\"" + value.toString() + "\"";
@@ -152,13 +177,8 @@ public class LiteralNode extends RDFNode {
         // We have to implement this ourselves, because the default jena implementation doesn't put <> around the datatype
         if (!this.language.isEmpty()) {
             out += "@" + this.language;
-        } else if (!this.datatype.equals("string")) {
-            if (this.isDatatypeURL) {
-                out += "^^<%s>".formatted(this.datatype);
-            } else {
-                XSDDatatype datatype =  new XSDDatatype(this.datatype);
-                out += "^^<%s>".formatted(datatype.getURI());
-            }
+        } else if (!this.datatype.equals("http://www.w3.org/2001/XMLSchema#string")) {
+            out += "^^<%s>".formatted(this.datatype);
         }
         return out;
     }
@@ -168,14 +188,11 @@ public class LiteralNode extends RDFNode {
         int precision = input.scale() < 0
                 ? input.precision() - input.scale()
                 : input.precision();
-        StringBuilder s = new StringBuilder("0.0");
-        for (int i = 2; i < precision; i++) {
-            s.append("#");
-        }
-        s.append("E0");
+        String s = "0.0" + "#".repeat(Math.max(0, precision - 2)) +
+                "E0";
         NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
         DecimalFormat df = (DecimalFormat) nf;
-        df.applyPattern(s.toString());
+        df.applyPattern(s);
         return df.format(d);
     }
 }

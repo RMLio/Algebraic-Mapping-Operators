@@ -30,7 +30,7 @@ public class BlocksIOTest {
             assertEquals("foo", sm.get("?literalString").getValue());
 
             assertTrue(sm.get("?number").isLiteral());
-            assertEquals(0, sm.get("?number").getValue());
+            assertEquals(0, ((LiteralNode)sm.get("?number")).getValueObject());
 
             assertTrue(sm.get("?blank").isBlank());
             assertEquals("blankLabel", sm.get("?blank").getValue());
@@ -86,8 +86,8 @@ public class BlocksIOTest {
             assertEquals(1, sms.size());
             SolutionMapping sm = sms.get(0);
             assertEquals(2, sm.size());
-            assertEquals("bar", sm.get("?foo").getValue());
-            assertEquals(0, sm.get("?baz").getValue());
+            assertEquals("bar", ((LiteralNode)sm.get("?foo")).getValue());
+            assertEquals(0, ((LiteralNode)sm.get("?baz")).getValueObject());
         }
 
         /**
@@ -123,8 +123,8 @@ public class BlocksIOTest {
             assertEquals(1, f_defaultSMs.size());
             SolutionMapping f_defaultSM = f_defaultSMs.get(0);
             assertEquals(2, f_defaultSM.size());
-            assertEquals("bar", f_defaultSM.get("?foo").getValue());
-            assertEquals(0, f_defaultSM.get("?baz").getValue());
+            assertEquals("bar",  f_defaultSM.get("?foo").getValue());
+            assertEquals(0, ((LiteralNode)f_defaultSM.get("?baz")).getValueObject());
 
             List<SolutionMapping> f_contactsSMs = mt.getSolutionMappings("f_contacts").stream().toList();
             assertEquals(1, f_contactsSMs.size());
@@ -153,7 +153,7 @@ public class BlocksIOTest {
             assertEquals("bar", sm1.get("?foo").getValue());
 
             assertEquals(1, sm2.size());
-            assertEquals(0, sm2.get("?baz").getValue());
+            assertEquals(0, ((LiteralNode)sm2.get("?baz")).getValueObject());
         }
 
         /**

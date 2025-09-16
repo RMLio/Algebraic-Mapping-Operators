@@ -76,6 +76,8 @@ public class SerializeOperator extends UnaryOperator {
             for (SolutionMapping solMapping : solMappings) {
                 DatasetGraph graph = this.bgp.apply(solMapping);
 
+                // TODO: this graph should be put out as a String, NOT the graph wrapped in a solution mapping
+
                 OutputStream outputStream = new ByteArrayOutputStream();
 
                 RDFWriter.source(graph)
@@ -84,6 +86,9 @@ public class SerializeOperator extends UnaryOperator {
 
                 // Jena will prepend labels of Blank nodes with a 'B', which is not what we want
                 String serialized = outputStream.toString().replaceAll("_:B", "_:");
+
+                // TODO: Here a LiteralNode gets abused to store the serialized output of this operator as a String.
+                //       The solution mapping fragment -> RDFNode doesn't make sense here, so this must be refactored.
                 SolutionMapping solMapOut = new SolutionMapping(
                         Map.of("?serialized_output", new LiteralNode(serialized)));
 

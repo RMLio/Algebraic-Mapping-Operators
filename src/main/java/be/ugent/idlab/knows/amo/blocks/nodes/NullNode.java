@@ -18,7 +18,7 @@ public class NullNode extends RDFNode {
     }
 
     @Override
-    public String getStringRepr() {
+    public String toString() {
         return "null";
     }
 }

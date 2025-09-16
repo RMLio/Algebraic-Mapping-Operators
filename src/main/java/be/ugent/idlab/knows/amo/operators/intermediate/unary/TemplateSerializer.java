@@ -86,13 +86,13 @@ public class TemplateSerializer extends UnaryOperator {
             for (String variable : variables) {
                 RDFNode solutionValue = mapping.get(variable);
                 if (solutionValue != null) {
-                    template = template.replaceAll("\\" + variable, solutionValue.getStringRepr());
+                    template = template.replaceAll("\\" + variable, solutionValue.toString());
                 } else {
                     // check if the variable maybe needs to be prepended by ?
                     String unpreprended = variable.substring(1);
                     solutionValue = mapping.get(unpreprended);
                     if (solutionValue != null) {
-                        template = template.replaceAll("\\%s".formatted(variable), solutionValue.getStringRepr());
+                        template = template.replaceAll("\\%s".formatted(variable), solutionValue.toString());
                     } else {
                         nullFound = true;
                         break;

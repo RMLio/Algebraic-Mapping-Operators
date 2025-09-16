@@ -2,6 +2,7 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.utilities.BlocksIO;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +40,7 @@ public class FragmentTest {
 
             // perform a fragment of f_default into two fragments
             for (SolutionMapping solmap : mappingTuple.getSolutionMappings("f_default")) {
-                String newName = String.format("f_%s", solmap.get("?name").getValue());
+                String newName = String.format("f_%s", ((LiteralNode)solmap.get("?name")).getValue());
                 out.addSolutionMap(newName, solmap);
             }
 

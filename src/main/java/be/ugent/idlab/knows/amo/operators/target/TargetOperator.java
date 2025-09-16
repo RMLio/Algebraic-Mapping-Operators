@@ -24,14 +24,14 @@ public class TargetOperator extends Operator {
     public static final String TARGET_VARIABLE = "?serialized_output";
 
     private final String targetVariable;
-    private final TargetSink<RDFNode> sink;
+    private final TargetSink<String> sink;
     private final RDFFormatter formatter;
 
-    public TargetOperator(String operatorName, Set<String> inputFragments, String targetVariable, TargetSink<RDFNode> sink) {
+    public TargetOperator(String operatorName, Set<String> inputFragments, String targetVariable, TargetSink<String> sink) {
         this(operatorName, inputFragments, targetVariable, sink, null);
     }
 
-    public TargetOperator(String operatorName, Set<String> inputFragments, String targetVariable, TargetSink<RDFNode> sink, RDFFormatter formatter) {
+    public TargetOperator(String operatorName, Set<String> inputFragments, String targetVariable, TargetSink<String> sink, RDFFormatter formatter) {
         super(operatorName, inputFragments, Set.of());
         this.targetVariable = targetVariable;
         this.sink = sink;
@@ -42,7 +42,7 @@ public class TargetOperator extends Operator {
         return this.targetVariable;
     }
 
-    public TargetSink<RDFNode> getSink() {
+    public TargetSink<String> getSink() {
         return this.sink;
     }
 
@@ -57,11 +57,13 @@ public class TargetOperator extends Operator {
             if (node == null) {
                 throw new IllegalStateException("Target node " + this.targetVariable + " not found");
             }
-            if (this.formatter != null) {
-                String value = this.formatter.from(node.toString()).output();
-                node = new LiteralNode(value, node.getDatatype(), node.getLanguage());
+            String serializedOutput = node.getValue();    // The literal node only contains the serialized output from de Serialize operator, so we need the lexical form.
+
+            // (re)format output
+            if (this.formatter != null) {   // TODO: is this necessary? The serializer operator also formats the output, right?
+                serializedOutput = this.formatter.from(serializedOutput).output();
             }
-            this.sink.sink(node);
+            this.sink.sink(serializedOutput);
         }
     }
 

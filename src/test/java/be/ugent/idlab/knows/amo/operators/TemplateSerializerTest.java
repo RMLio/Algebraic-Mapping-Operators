@@ -52,10 +52,9 @@ public class TemplateSerializerTest {
         solutionMapping.put("?om", new LiteralNode("Min Oo"));
 
         mappingTuple.addSolutionMap("default", solutionMapping);
-
         TemplateSerializer serializer = new TemplateSerializer("Serializer", Set.of("default"), Set.of("default"), "?sm ?pm ?om@en.");
-
         MappingTuple serializedTuple = serializer.apply(mappingTuple);
+        String result = (serializedTuple.getSolutionMappings("default").iterator().next().get("serialized_output")).getValue().toString();
 
         MappingTuple expected = new MappingTuple();
 
@@ -104,7 +103,7 @@ public class TemplateSerializerTest {
         MappingTuple serializedTuple = serializer.apply(mappingTuple);
 
         String expectedQuad = "<http://example.com/10/Venus> <http://example.com/id> \"10\"^^<http://www.w3.org/2001/XMLSchema#integer> <http://example.com/graph> .";
-        String actualQuad = serializedTuple.getSolutionMappings("default").stream().findFirst().get().get("serialized_output").toString();
+        String actualQuad = (serializedTuple.getSolutionMappings("default").stream().findFirst().get().get("serialized_output")).getValue().toString();
 
         assertEquals(expectedQuad, actualQuad);
     }

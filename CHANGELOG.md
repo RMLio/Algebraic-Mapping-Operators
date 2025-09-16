@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Operators now each have a set of input- and output fragments.
+- RDFNode: remove method `getStringRepr()`; use `toString()`.
+- TargetOperator works in `String`s now
 
 ### Removed
 - Operator builders; use their constructors.
@@ -16,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Generation of fields for CSV source, if not given.
 - Removed unused code
+- LiteralNode value - datatype - language stuff
+- Updated Jena to version 5.5.0
 
 ## [1.0.0] - 2025-09-03
 

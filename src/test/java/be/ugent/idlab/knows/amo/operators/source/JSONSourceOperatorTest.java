@@ -144,25 +144,25 @@ public class JSONSourceOperatorTest {
         List<SolutionMapping> maps = new ArrayList<>(actual.getSolutionMappings("default"));
 
         SolutionMapping first = maps.getFirst();
-        assertEquals(0, first.get("#").getValue());
-        assertEquals(0, first.get("name.#").getValue());
-        assertEquals(0, first.get("item.#").getValue());
-        assertEquals(0, first.get("item.type.#").getValue());
-        assertEquals(0, first.get("item.weight.#").getValue());
+        assertEquals(0, ((LiteralNode)first.get("#")).getValueObject());
+        assertEquals(0, ((LiteralNode)first.get("name.#")).getValueObject());
+        assertEquals(0, ((LiteralNode)first.get("item.#")).getValueObject());
+        assertEquals(0, ((LiteralNode)first.get("item.type.#")).getValueObject());
+        assertEquals(0, ((LiteralNode)first.get("item.weight.#")).getValueObject());
 
         SolutionMapping second = maps.get(1);
-        assertEquals(0, Objects.requireNonNull(second.get("#")).getValue());
-        assertEquals(0, Objects.requireNonNull(second.get("name.#")).getValue());
-        assertEquals(1, Objects.requireNonNull(second.get("item.#")).getValue());
-        assertEquals(0, Objects.requireNonNull(second.get("item.type.#")).getValue());
-        assertEquals(0, Objects.requireNonNull(second.get("item.weight.#")).getValue());
+        assertEquals(0, Objects.requireNonNull(((LiteralNode)second.get("#")).getValueObject()));
+        assertEquals(0, Objects.requireNonNull(((LiteralNode)second.get("name.#")).getValueObject()));
+        assertEquals(1, Objects.requireNonNull(((LiteralNode)second.get("item.#")).getValueObject()));
+        assertEquals(0, Objects.requireNonNull(((LiteralNode)second.get("item.type.#")).getValueObject()));
+        assertEquals(0, Objects.requireNonNull(((LiteralNode)second.get("item.weight.#")).getValueObject()));
 
         SolutionMapping third = maps.get(2);
-        assertEquals(1, Objects.requireNonNull(third.get("#")).getValue());
-        assertEquals(0, Objects.requireNonNull(third.get("name.#")).getValue());
-        assertEquals(0, Objects.requireNonNull(third.get("item.#")).getValue());
-        assertEquals(0, Objects.requireNonNull(third.get("item.type.#")).getValue());
-        assertEquals(0, Objects.requireNonNull(third.get("item.weight.#")).getValue());
+        assertEquals(1, Objects.requireNonNull(((LiteralNode)third.get("#")).getValueObject()));
+        assertEquals(0, Objects.requireNonNull(((LiteralNode)third.get("name.#")).getValueObject()));
+        assertEquals(0, Objects.requireNonNull(((LiteralNode)third.get("item.#")).getValueObject()));
+        assertEquals(0, Objects.requireNonNull(((LiteralNode)third.get("item.type.#")).getValueObject()));
+        assertEquals(0, Objects.requireNonNull(((LiteralNode)third.get("item.weight.#")).getValueObject()));
     }
 
     @Test

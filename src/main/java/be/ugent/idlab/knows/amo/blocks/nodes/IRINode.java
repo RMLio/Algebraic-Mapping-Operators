@@ -38,12 +38,6 @@ public class IRINode extends RDFNode {
 
     @Override
     public String toString() {
-        return this.value.toString();
+        return "<" + this.getJenaNode() + ">";
     }
-
-    @Override
-    public String getStringRepr() {
-        return "<" + this.getJenaNode().toString() + ">";
-    }
-
 }
