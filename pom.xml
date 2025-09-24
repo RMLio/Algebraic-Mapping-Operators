@@ -22,14 +22,19 @@
     </scm>
     <developers>
         <developer>
+            <id>s-minoo</id>
+            <name>Sitt Min Oo</name>
+            <email>X.SittMinOo@UGent.be</email>
+        </developer>
+        <developer>
             <id>jjankaj</id>
             <name>Jozef Jankaj</name>
             <email>jozef.jankaj@ugent.be</email>
         </developer>
         <developer>
-            <id>s-minoo</id>
-            <name>Sitt Min Oo</name>
-            <email>X.SittMinOo@UGent.be</email>
+            <id>DylanVanAssche</id>
+            <name>Dylan Van Assche</name>
+            <email>me@dylanvanassche.be</email>
         </developer>
         <developer>
             <id>Triver1</id>

@@ -120,21 +120,17 @@ public class ReferenceField extends Field {
     private List<Object> processXML(String obj) {
         VirtualAccess access = new VirtualAccess(obj.getBytes(Charset.defaultCharset()));
 
-        XMLSourceIterator iterator;
-
-        try {
-            iterator = new XMLSourceIterator(access, this.reference);
+        try (XMLSourceIterator iterator = new XMLSourceIterator(access, this.reference)) {
+            List<Object> out = new ArrayList<>();
+            while (iterator.hasNext()) {
+                XMLRecord r = (XMLRecord) iterator.next();
+                List<String> value = (List<String>) r.get(".").getValue();
+                out.add(value.getFirst());
+            }
+            return out;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        List<Object> out = new ArrayList<>();
-        while (iterator.hasNext()) {
-            XMLRecord r = (XMLRecord) iterator.next();
-            List<String> value = (List<String>) r.get(".").getValue();
-            out.add(value.getFirst());
-        }
-        return out;
     }
 
     private List<Object> processJSON(String obj) {
@@ -157,7 +153,7 @@ public class ReferenceField extends Field {
             }
 
         } catch (PathNotFoundException ex) {
-            throw new IllegalStateException(ex.getMessage(), ex);
+            return List.of();
         }
 
         if (read == null) {
@@ -178,9 +174,7 @@ public class ReferenceField extends Field {
     private List<Object> processCSV(String obj) {
         VirtualAccess access = new VirtualAccess(obj.getBytes(Charset.defaultCharset()));
         List<Object> out = new ArrayList<>();
-        try {
-            CSVSourceIterator iterator = new CSVSourceIterator(access);
-
+        try (CSVSourceIterator iterator = new CSVSourceIterator(access)){
             while (iterator.hasNext()) {
                 CSVRecord r = (CSVRecord) iterator.next();
                 RecordValue rv = r.get(this.reference);

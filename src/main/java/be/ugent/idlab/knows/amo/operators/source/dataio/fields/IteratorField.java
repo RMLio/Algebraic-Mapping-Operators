@@ -4,10 +4,13 @@ import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.dataio.access.VirtualAccess;
 import be.ugent.idlab.knows.dataio.iterators.CSVSourceIterator;
+import be.ugent.idlab.knows.dataio.iterators.JSONSourceIterator;
 import be.ugent.idlab.knows.dataio.iterators.XMLSourceIterator;
 import be.ugent.idlab.knows.dataio.record.CSVRecord;
+import be.ugent.idlab.knows.dataio.record.Record;
+import be.ugent.idlab.knows.dataio.record.RecordValue;
 import be.ugent.idlab.knows.dataio.record.XMLRecord;
-import com.jayway.jsonpath.JsonPath;
+import com.fasterxml.jackson.databind.node.TextNode;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
@@ -59,54 +62,65 @@ public class IteratorField extends Field {
 
     private List<SolutionMapping> processXML(String obj) {
         VirtualAccess access = new VirtualAccess(obj.getBytes(Charset.defaultCharset()));
-        XMLSourceIterator xmlIterator;
 
-        String iterator = this.iterator == null  ? "." :  this.iterator;
+        String iterator = this.iterator == null ? "." : this.iterator;
+        List<SolutionMapping> result = new ArrayList<>();
 
-        try {
-            xmlIterator = new XMLSourceIterator(access, iterator);
+        try (XMLSourceIterator xmlIterator = new XMLSourceIterator(access, iterator)) {
+            while (xmlIterator.hasNext()) {
+                XMLRecord r = (XMLRecord) xmlIterator.next();
+                String sub = r.getItem().toString();
+                result.addAll(applySubfields(sub));
+            }
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        List<SolutionMapping> result = new ArrayList<>();
-
-        while (xmlIterator.hasNext()) {
-            XMLRecord r = (XMLRecord) xmlIterator.next();
-            String sub = r.getItem().toString();
-            result.addAll(applySubfields(sub));
-        }
-
         return result;
     }
 
     private List<SolutionMapping> processJSON(String obj) {
-        Object readObject = JsonPath.read(obj, this.iterator);
-
-        String sub;
-
-        List<SolutionMapping> out = new ArrayList<>();
-
-        if (readObject instanceof JSONArray array) {
-            for (Object value : array) {
-                if (value instanceof LinkedHashMap<?, ?> map) {
-                    sub = new JSONObject((Map<String, Object>) map).toJSONString();
-                } else {
-                    sub = value.toString();
+        try (JSONSourceIterator jsonSourceIterator = new JSONSourceIterator(obj, this.iterator)) {
+            List<SolutionMapping> out = new ArrayList<>();
+            while (jsonSourceIterator.hasNext()) {
+                Record record = jsonSourceIterator.next();
+                RecordValue recordValue = record.get("$");
+                if (recordValue.isOk()) {
+                    String sub;
+                    Object readObject = recordValue.getValue();
+                    switch (readObject) {
+                        case JSONArray array -> {
+                            for (Object value : array) {
+                                if (value instanceof LinkedHashMap<?, ?> map) {
+                                    sub = new JSONObject((Map<String, Object>) map).toJSONString();
+                                } else {
+                                    sub = value.toString();
+                                }
+                                out.addAll(applySubfields(sub));
+                            }
+                        }
+                        case LinkedHashMap<?, ?> map -> {
+                            sub = new JSONObject((Map<String, Object>) map).toJSONString();
+                            out.addAll(applySubfields(sub));
+                        }
+                        case TextNode textNode -> {
+                            Collection<SolutionMapping> solutionMappings = applySubfields(textNode.asText());
+                            out.addAll(solutionMappings);
+                        }
+                        default -> {
+                            Collection<SolutionMapping> solutionMappings = applySubfields(readObject.toString());
+                            out.addAll(solutionMappings);
+                        }
+                    }
+                } else if (recordValue.isError()) {
+                    throw new RuntimeException(recordValue.getMessage());
                 }
-
-                out.addAll(applySubfields(sub));
-
             }
-        } else if (readObject instanceof LinkedHashMap<?, ?> map) {
-            sub = new JSONObject((Map<String, Object>) map).toJSONString();
-            out.addAll(applySubfields(sub));
-        } else {
-            Collection<SolutionMapping> solutionMappings = applySubfields(readObject.toString());
-            out.addAll(solutionMappings);
-        }
+            return out;
 
-        return out;
+        } catch (SQLException | IOException | ParserConfigurationException | TransformerException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private List<SolutionMapping> processCSV(String obj) {
@@ -114,8 +128,7 @@ public class IteratorField extends Field {
         VirtualAccess access = new VirtualAccess(obj.getBytes(Charset.defaultCharset()));
         List<SolutionMapping> out = new ArrayList<>();
 
-        try {
-            CSVSourceIterator iterator = new CSVSourceIterator(access);
+        try (CSVSourceIterator iterator = new CSVSourceIterator(access)){
             while (iterator.hasNext()) {
                 CSVRecord r = (CSVRecord) iterator.next();
 
