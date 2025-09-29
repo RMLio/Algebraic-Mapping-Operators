@@ -8,6 +8,7 @@ import org.apache.jena.datatypes.xsd.XSDDatatype;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class ConstantField extends Field {
     private final RDFNode constant;
@@ -22,7 +23,7 @@ public class ConstantField extends Field {
     }
 
     @Override
-    public List<SolutionMapping> apply(String obj) {
+    public List<SolutionMapping> apply(Optional<String> obj) {
         return List.of(new SolutionMapping(Map.of(
                 this.name, this.constant,
                 this.name + ".#", new LiteralNode(0, XSDDatatype.XSDinteger)

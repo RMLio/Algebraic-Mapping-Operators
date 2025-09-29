@@ -6,7 +6,6 @@ import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.JSONSourceIterator;
 import be.ugent.idlab.knows.dataio.record.JSONRecord;
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import org.jspecify.annotations.NonNull;
 
@@ -40,7 +39,7 @@ public class JSONSourceOperator extends DataIOSourceOperator {
 
         Map<String, ?> output = (Map<String, ?>) r.get("$").getValue();
         JSONObject json = new JSONObject(output);
-        List<SolutionMapping> mappings = applySubfields(json.toJSONString(), r.getIndex());
+        List<SolutionMapping> mappings = applyFields(json.toJSONString(), r.getIndex());
 
         MappingTuple out = new MappingTuple();
         for (String outputFragment : getOutputFragments()) {

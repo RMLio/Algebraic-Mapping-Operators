@@ -11,11 +11,13 @@ import be.ugent.idlab.knows.dataio.iterators.SourceIterator;
 import be.ugent.idlab.knows.dataio.iterators.XMLSourceIterator;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 
+import javax.swing.text.html.Option;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public abstract class Field implements Serializable {
     protected final String name;
@@ -48,7 +50,7 @@ public abstract class Field implements Serializable {
         return this.name;
     }
 
-    public abstract List<SolutionMapping> apply(String obj);
+    public abstract List<SolutionMapping> apply(Optional<String> obj);
 
     protected SourceIterator getSourceIterator(String obj, ReferenceFormulation ref) throws Exception {
         return this.getSourceIterator(obj, "", ref);
@@ -68,7 +70,7 @@ public abstract class Field implements Serializable {
         return this.referenceFormulation;
     }
 
-    protected Collection<SolutionMapping> applySubfields(String value) {
+    protected Collection<SolutionMapping> applySubfields(Optional<String> value) {
         List<SolutionMapping> out = new ArrayList<>();
         for (Field field : this.subfields) {
             List<SolutionMapping> sub = field.apply(value);

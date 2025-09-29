@@ -45,14 +45,14 @@ public abstract class DataIOSourceOperator extends SourceOperator {
         this.access = access;
     }
 
-    protected List<SolutionMapping> applySubfields(String object, int index) {
+    protected List<SolutionMapping> applyFields(String object, int index) {
         List<SolutionMapping> mappings = new ArrayList<>();
 
         for (Field f : this.fields) {
-            List<SolutionMapping> fieldMaps = f.apply(object);
+            List<SolutionMapping> fieldMaps = f.apply(Optional.of(object));
             if (mappings.isEmpty()) {
                 mappings.addAll(fieldMaps);
-            } else {
+            } else if (!fieldMaps.isEmpty()) {
                 List<SolutionMapping> newMaps = new ArrayList<>();
 
                 for (SolutionMapping m : mappings) {

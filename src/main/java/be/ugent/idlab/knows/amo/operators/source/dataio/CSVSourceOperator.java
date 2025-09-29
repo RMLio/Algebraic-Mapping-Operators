@@ -90,7 +90,7 @@ public class CSVSourceOperator extends DataIOSourceOperator {
 
         String obj = processRecord(record);
 
-        List<SolutionMapping> mappings = applySubfields(obj, this.iterator.getIndex());
+        List<SolutionMapping> mappings = applyFields(obj, this.iterator.getIndex());
 
         for (String outputFragment : getOutputFragments()) {
             tuple.setSolutionMaps(outputFragment, mappings);

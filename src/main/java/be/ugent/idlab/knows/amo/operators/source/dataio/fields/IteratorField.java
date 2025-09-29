@@ -19,6 +19,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.sql.Array;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -37,7 +38,7 @@ public class IteratorField extends Field {
     }
 
     @Override
-    public List<SolutionMapping> apply(String obj) {
+    public List<SolutionMapping> apply(Optional<String> obj) {
         List<SolutionMapping> applied = switch (this.referenceFormulation) {
             case CSVRows -> processCSV(obj);
             case JSONPath -> processJSON(obj);
@@ -60,7 +61,9 @@ public class IteratorField extends Field {
         return applied;
     }
 
-    private List<SolutionMapping> processXML(String obj) {
+    private List<SolutionMapping> processXML(Optional<String> input_obj) {
+        //FIXME: also check for the case where input_obj is empty!
+        String obj = input_obj.get();
         VirtualAccess access = new VirtualAccess(obj.getBytes(Charset.defaultCharset()));
 
         String iterator = this.iterator == null ? "." : this.iterator;
@@ -70,7 +73,7 @@ public class IteratorField extends Field {
             while (xmlIterator.hasNext()) {
                 XMLRecord r = (XMLRecord) xmlIterator.next();
                 String sub = r.getItem().toString();
-                result.addAll(applySubfields(sub));
+                result.addAll(applySubfields(Optional.of(sub)));
             }
 
         } catch (Exception e) {
@@ -79,7 +82,13 @@ public class IteratorField extends Field {
         return result;
     }
 
-    private List<SolutionMapping> processJSON(String obj) {
+    private List<SolutionMapping> processJSON(Optional<String> input_obj) {
+        if (input_obj.isEmpty()) {
+
+            return getSolutionMappingsForEmptyInputOrEmptyIterators(Optional.empty());
+        }
+
+        String obj = input_obj.get();
         try (JSONSourceIterator jsonSourceIterator = new JSONSourceIterator(obj, this.iterator)) {
             List<SolutionMapping> out = new ArrayList<>();
             while (jsonSourceIterator.hasNext()) {
@@ -96,19 +105,19 @@ public class IteratorField extends Field {
                                 } else {
                                     sub = value.toString();
                                 }
-                                out.addAll(applySubfields(sub));
+                                out.addAll(applySubfields(Optional.of(sub)));
                             }
                         }
                         case LinkedHashMap<?, ?> map -> {
                             sub = new JSONObject((Map<String, Object>) map).toJSONString();
-                            out.addAll(applySubfields(sub));
+                            out.addAll(applySubfields(Optional.of(sub)));
                         }
                         case TextNode textNode -> {
-                            Collection<SolutionMapping> solutionMappings = applySubfields(textNode.asText());
+                            Collection<SolutionMapping> solutionMappings = applySubfields(Optional.of(textNode.asText()));
                             out.addAll(solutionMappings);
                         }
                         default -> {
-                            Collection<SolutionMapping> solutionMappings = applySubfields(readObject.toString());
+                            Collection<SolutionMapping> solutionMappings = applySubfields(Optional.of(readObject.toString()));
                             out.addAll(solutionMappings);
                         }
                     }
@@ -116,19 +125,34 @@ public class IteratorField extends Field {
                     throw new RuntimeException(recordValue.getMessage());
                 }
             }
-            return out;
+            if (out.isEmpty()){
+
+
+                return getSolutionMappingsForEmptyInputOrEmptyIterators(Optional.empty());
+            }else {
+                return out;
+            }
+
 
         } catch (SQLException | IOException | ParserConfigurationException | TransformerException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private List<SolutionMapping> processCSV(String obj) {
+    private List<SolutionMapping> getSolutionMappingsForEmptyInputOrEmptyIterators(Optional<String> input_obj) {
+        List<SolutionMapping> result = new ArrayList();
+        Collection<SolutionMapping> subfieldsSolution = this.applySubfields(input_obj);
+        result.addAll(subfieldsSolution);
+        return result;
+    }
 
+    private List<SolutionMapping> processCSV(Optional<String> input_obj) {
+        //FIXME: also check for the case where input_obj is empty!
+        String obj = input_obj.get();
         VirtualAccess access = new VirtualAccess(obj.getBytes(Charset.defaultCharset()));
         List<SolutionMapping> out = new ArrayList<>();
 
-        try (CSVSourceIterator iterator = new CSVSourceIterator(access)){
+        try (CSVSourceIterator iterator = new CSVSourceIterator(access)) {
             while (iterator.hasNext()) {
                 CSVRecord r = (CSVRecord) iterator.next();
 
@@ -139,7 +163,7 @@ public class IteratorField extends Field {
                     // package the record
                     value = r.toCSVString();
                 }
-                out.addAll(applySubfields(value));
+                out.addAll(applySubfields(Optional.of(value)));
             }
 
             return out;

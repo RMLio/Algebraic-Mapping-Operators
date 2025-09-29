@@ -60,7 +60,7 @@ public class ReferenceField extends Field {
     }
 
     @Override
-    public List<SolutionMapping> apply(String obj) {
+    public List<SolutionMapping> apply(Optional<String> obj) {
         List<Object> values = switch (this.referenceFormulation) {
             case CSVRows -> processCSV(obj);
             case JSONPath -> processJSON(obj);
@@ -90,7 +90,7 @@ public class ReferenceField extends Field {
                 sub = o.toString();
             }
 
-            Collection<SolutionMapping> subfieldMaps = this.applySubfields(sub);
+            Collection<SolutionMapping> subfieldMaps = this.applySubfields(Optional.of(sub));
             for (SolutionMapping sm : subfieldMaps) {
                 // extend keys with field's name
                 for (String key : new HashSet<>(sm.keySet())) {
@@ -117,7 +117,11 @@ public class ReferenceField extends Field {
         return out;
     }
 
-    private List<Object> processXML(String obj) {
+    private List<Object> processXML(Optional<String> input_obj) {
+        if (input_obj.isEmpty()){
+            return List.of();
+        }
+        String obj = input_obj.get();
         VirtualAccess access = new VirtualAccess(obj.getBytes(Charset.defaultCharset()));
 
         try (XMLSourceIterator iterator = new XMLSourceIterator(access, this.reference)) {
@@ -133,8 +137,13 @@ public class ReferenceField extends Field {
         }
     }
 
-    private List<Object> processJSON(String obj) {
+    private List<Object> processJSON(Optional<String> input_obj) {
+        if (input_obj.isEmpty()){
+            return List.of();
+        }
+
         Object read;
+        String obj = input_obj.get();
         try {
             Object readObject = JsonPath.read(obj, this.reference);
 
@@ -171,7 +180,11 @@ public class ReferenceField extends Field {
         return reference;
     }
 
-    private List<Object> processCSV(String obj) {
+    private List<Object> processCSV(Optional<String> input_obj) {
+        if (input_obj.isEmpty()){
+            return List.of();
+        }
+        String obj = input_obj.get();
         VirtualAccess access = new VirtualAccess(obj.getBytes(Charset.defaultCharset()));
         List<Object> out = new ArrayList<>();
         try (CSVSourceIterator iterator = new CSVSourceIterator(access)){

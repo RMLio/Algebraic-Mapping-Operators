@@ -64,7 +64,7 @@ public class XMLSourceOperator extends DataIOSourceOperator {
         }
 
         XMLRecord r = (XMLRecord) this.sourceIterator.next();
-        List<SolutionMapping> sms = applySubfields(r.getItem().toString(), r.getIndex());
+        List<SolutionMapping> sms = applyFields(r.getItem().toString(), r.getIndex());
 
         MappingTuple out = new MappingTuple();
         for (String outputFragment : getOutputFragments()) {
