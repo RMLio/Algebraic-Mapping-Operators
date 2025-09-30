@@ -90,7 +90,7 @@ public class ReferenceField extends Field {
                 sub = o.toString();
             }
 
-            Collection<SolutionMapping> subfieldMaps = this.applySubfields(Optional.of(sub));
+            Collection<SolutionMapping> subfieldMaps = this.applySubfields(sub == null ? Optional.empty() : Optional.of(sub));
             for (SolutionMapping sm : subfieldMaps) {
                 // extend keys with field's name
                 for (String key : new HashSet<>(sm.keySet())) {
