@@ -4,5 +4,11 @@
     <student>
         <ID>10</ID>
         <Name>Venus</Name>
+        <Hobby>Tennis</Hobby>
+    </student>
+    <student>
+        <ID>20</ID>
+        <Name>Alice</Name>
+        <Hobby></Hobby>
     </student>
 </students>

@@ -127,9 +127,12 @@ public class ReferenceField extends Field {
         try (XMLSourceIterator iterator = new XMLSourceIterator(access, this.reference)) {
             List<Object> out = new ArrayList<>();
             while (iterator.hasNext()) {
-                XMLRecord r = (XMLRecord) iterator.next();
-                List<String> value = (List<String>) r.get(".").getValue();
-                out.add(value.getFirst());
+                XMLRecord record = (XMLRecord) iterator.next();
+                RecordValue recordValue = record.get(".");
+                if (recordValue.isOk()) {
+                    List<String> values = (List<String>) recordValue.getValue();
+                    out.addAll(values);
+                }
             }
             return out;
         } catch (Exception e) {

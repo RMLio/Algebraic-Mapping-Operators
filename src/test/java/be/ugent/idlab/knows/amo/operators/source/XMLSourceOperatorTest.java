@@ -3,6 +3,7 @@ package be.ugent.idlab.knows.amo.operators.source;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
 import be.ugent.idlab.knows.amo.operators.source.dataio.XMLSourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
@@ -48,5 +49,28 @@ public class XMLSourceOperatorTest {
 
         assertEquals(expected, actual);
         assertEquals(2, actual.getSolutionMappings("default").size());
+    }
+
+    @Test
+    public void emptyValues() {
+        Access access = new LocalFileAccess("operators/source/xml/input.xml", "src/test/resources", "xml");
+        Field hobby = Field.builder().XML().withName("hobby").withReference("Hobby").build();
+        XMLSourceOperator operator = new XMLSourceOperator(
+                "XML Source Operator",
+                access,
+                Set.of("default"),
+                "/students/student",
+                List.of(hobby),
+                List.of("")
+        );
+
+        MappingTuple actual = operator.consumeSource();
+
+        MappingTuple expected = new MappingTuple();
+        expected.setSolutionMaps("default", List.of(
+                new SolutionMapping(Map.of("hobby", new LiteralNode("Tennis"))),
+                new SolutionMapping(Map.of("hobby", new NullNode()))
+        ));
+        assertEquals(expected, actual);
     }
 }

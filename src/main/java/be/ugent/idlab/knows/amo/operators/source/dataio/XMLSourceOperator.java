@@ -2,9 +2,13 @@ package be.ugent.idlab.knows.amo.operators.source.dataio;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.operators.source.dataio.fields.*;
+import be.ugent.idlab.knows.amo.operators.source.dataio.fields.ConstantField;
+import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
+import be.ugent.idlab.knows.amo.operators.source.dataio.fields.IteratorField;
+import be.ugent.idlab.knows.amo.operators.source.dataio.fields.ReferenceField;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.XMLSourceIterator;
+import be.ugent.idlab.knows.dataio.record.RecordValue;
 import be.ugent.idlab.knows.dataio.record.XMLRecord;
 import org.jspecify.annotations.NonNull;
 
@@ -63,13 +67,20 @@ public class XMLSourceOperator extends DataIOSourceOperator {
             throw new NoSuchElementException();
         }
 
-        XMLRecord r = (XMLRecord) this.sourceIterator.next();
-        List<SolutionMapping> sms = applyFields(r.getItem().toString(), r.getIndex());
-
         MappingTuple out = new MappingTuple();
-        for (String outputFragment : getOutputFragments()) {
-            out.setSolutionMaps(outputFragment, sms);
+
+        XMLRecord record = (XMLRecord) this.sourceIterator.next();
+        RecordValue value = record.get("/");
+        if (value.isOk()) {
+            List<SolutionMapping> sms = applyFields(record.getItem().toString(), record.getIndex());
+            for (String outputFragment : getOutputFragments()) {
+                out.setSolutionMaps(outputFragment, sms);
+            }
+        } else if (value.isError()) {
+            throw new NoSuchElementException(value.getMessage());
         }
+        // else value is empty or not found: continue
+
         return out;
     }
 
