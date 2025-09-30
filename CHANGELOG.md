@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Fixed
-- Use DataIO's `JSONSourceIterator` instead of "manual" parsing; it already handles exceptions. 
+- Use DataIO's `JSONSourceIterator` instead of "manual" parsing; it already handles exceptions.
+- Update dependency on DataIO to 2.1.4 for fix in handling empty XML and CSV records 
 
 ## [2.0.0] - 2025-09-16
 
