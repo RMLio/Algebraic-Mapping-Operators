@@ -196,8 +196,6 @@ public class ReferenceField extends Field {
                 RecordValue rv = r.get(this.reference);
                 if (rv.isOk()) {
                     out.add(rv.getValue());
-                } else {
-                    out.add(null);
                 }
             }
 

@@ -19,7 +19,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -71,9 +70,14 @@ public class IteratorField extends Field {
 
         try (XMLSourceIterator xmlIterator = new XMLSourceIterator(access, iterator)) {
             while (xmlIterator.hasNext()) {
-                XMLRecord r = (XMLRecord) xmlIterator.next();
-                String sub = r.getItem().toString();
-                result.addAll(applySubfields(Optional.of(sub)));
+                XMLRecord record = (XMLRecord) xmlIterator.next();
+                RecordValue value = record.get(".");
+                if (value.isOk()) {
+                    String sub = record.getItem().toString();
+                    result.addAll(applySubfields(Optional.of(sub)));
+                } else if (value.isError()) {
+                    throw new RuntimeException(value.getMessage());
+                }
             }
 
         } catch (Exception e) {
@@ -140,10 +144,8 @@ public class IteratorField extends Field {
     }
 
     private List<SolutionMapping> getSolutionMappingsForEmptyInputOrEmptyIterators(Optional<String> input_obj) {
-        List<SolutionMapping> result = new ArrayList();
         Collection<SolutionMapping> subfieldsSolution = this.applySubfields(input_obj);
-        result.addAll(subfieldsSolution);
-        return result;
+        return new ArrayList<>(subfieldsSolution);
     }
 
     private List<SolutionMapping> processCSV(Optional<String> input_obj) {
