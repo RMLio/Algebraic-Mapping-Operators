@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [2.0.1] - 2025-10-01
+
 ### Fixed
 - Use DataIO's `JSONSourceIterator` instead of "manual" parsing; it already handles exceptions.
 - Update dependency on DataIO to 2.1.5 for fix in handling empty XML and CSV records and address some vulnerabilities 
@@ -32,5 +34,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - A set of operators
 
+[2.0.1]: https://github.com/RMLio/Algebraic-Mapping-Operators/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/RMLio/Algebraic-Mapping-Operators/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/RMLio/Algebraic-Mapping-Operators/releases/tag/v1.0.0
