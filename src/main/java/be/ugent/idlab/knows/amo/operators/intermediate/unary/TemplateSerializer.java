@@ -3,6 +3,7 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import org.jspecify.annotations.Nullable;
 
@@ -85,13 +86,13 @@ public class TemplateSerializer extends UnaryOperator {
             boolean nullFound = false;
             for (String variable : variables) {
                 RDFNode solutionValue = mapping.get(variable);
-                if (solutionValue != null) {
+                if (solutionValue != null && !solutionValue.isNull()) {
                     template = template.replaceAll("\\" + variable, solutionValue.toString());
                 } else {
                     // check if the variable maybe needs to be prepended by ?
                     String unpreprended = variable.substring(1);
                     solutionValue = mapping.get(unpreprended);
-                    if (solutionValue != null) {
+                    if (solutionValue != null  && !solutionValue.isNull()) {
                         template = template.replaceAll("\\%s".formatted(variable), solutionValue.toString());
                     } else {
                         nullFound = true;
@@ -106,9 +107,12 @@ public class TemplateSerializer extends UnaryOperator {
             }
         }
 
-        String serializedString = String.join("\n", serializedStringList);
-
-        result.put(this.serializedVariable, new LiteralNode(serializedString));
+        if (serializedStringList.isEmpty()) {
+            result.put(serializedVariable, new NullNode());
+        } else {
+            String serializedString = String.join("\n", serializedStringList);
+            result.put(this.serializedVariable, new LiteralNode(serializedString));
+        }
         return result;
     }
 

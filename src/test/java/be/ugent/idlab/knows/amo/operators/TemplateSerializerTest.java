@@ -1,21 +1,22 @@
 package be.ugent.idlab.knows.amo.operators;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import be.ugent.idlab.knows.amo.blocks.MappingTuple;
+import be.ugent.idlab.knows.amo.blocks.Pair;
+import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.blocks.nodes.IRINode;
+import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
+import be.ugent.idlab.knows.amo.operators.intermediate.unary.TemplateSerializer;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.jena.datatypes.xsd.XSDDatatype;
-import org.junit.jupiter.api.Test;
-
-import be.ugent.idlab.knows.amo.blocks.MappingTuple;
-import be.ugent.idlab.knows.amo.blocks.Pair;
-import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.blocks.nodes.IRINode;
-import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
-import be.ugent.idlab.knows.amo.operators.intermediate.unary.TemplateSerializer;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TemplateSerializerTest {
 
@@ -29,7 +30,7 @@ public class TemplateSerializerTest {
 
         List<Pair<List<String>, String>> pairs = serializer.getVariablesTemplatePairs()
                 .stream()
-                .map((tuple) -> new Pair<List<String>, String>(
+                .map((tuple) -> new Pair<>(
                         tuple.first().stream().sorted().collect(Collectors.toList()),
                         tuple.second()))
                 .collect(Collectors.toList());
@@ -56,13 +57,7 @@ public class TemplateSerializerTest {
         MappingTuple serializedTuple = serializer.apply(mappingTuple);
         String result = (serializedTuple.getSolutionMappings("default").iterator().next().get("serialized_output")).getValue().toString();
 
-        MappingTuple expected = new MappingTuple();
-
-        SolutionMapping expectedSolutionMapping = new SolutionMapping();
-        expectedSolutionMapping.put("serialized_output",
-                new LiteralNode("<http://example.com/1> <http://example.com/name> \"Min Oo\"@en."));
-        expected.addSolutionMap("default", expectedSolutionMapping);
-        assertEquals(expected, serializedTuple);
+        assertEquals("<http://example.com/1> <http://example.com/name> \"Min Oo\"@en.", result);
 
     }
 
@@ -106,5 +101,19 @@ public class TemplateSerializerTest {
         String actualQuad = (serializedTuple.getSolutionMappings("default").stream().findFirst().get().get("serialized_output")).getValue().toString();
 
         assertEquals(expectedQuad, actualQuad);
+    }
+
+    @Test
+    public void skipNull() {
+        MappingTuple mappingTuple = new MappingTuple();
+        SolutionMapping solutionMapping = new SolutionMapping();
+        solutionMapping.put("?sm", new IRINode("http://example.com/1"));
+        solutionMapping.put("?pm", new IRINode("http://example.com/name"));
+        solutionMapping.put("?om", new NullNode());
+
+        mappingTuple.addSolutionMap("default", solutionMapping);
+        TemplateSerializer serializer = new TemplateSerializer("Serializer", Set.of("default"), Set.of("default"), "?sm ?pm ?om@en.");
+        MappingTuple serializedTuple = serializer.apply(mappingTuple);
+        assertTrue((serializedTuple.getSolutionMappings("default").iterator().next().get("serialized_output")).isNull());
     }
 }

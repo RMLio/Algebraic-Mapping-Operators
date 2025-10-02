@@ -54,17 +54,17 @@ public class TargetOperator extends Operator {
 
         for (SolutionMapping solMapping : solMappings) {
             if (solMapping != null) {
-                LiteralNode node = (LiteralNode) solMapping.get(this.targetVariable);
-                if (node == null) {
-                    throw new IllegalStateException("Target node " + this.targetVariable + " not found");
-                }
-                String serializedOutput = node.getValue();    // The literal node only contains the serialized output from de Serialize operator, so we need the lexical form.
+                RDFNode solutionNode = solMapping.get(this.targetVariable);
+                if (solutionNode != null && !solutionNode.isNull()) {
+                    LiteralNode node = (LiteralNode) solutionNode;
+                    String serializedOutput = node.getValue();    // The literal node only contains the serialized output from de Serialize operator, so we need the lexical form.
 
-                // (re)format output
-                if (this.formatter != null) {   // TODO: is this necessary? The serializer operator also formats the output, right?
-                    serializedOutput = this.formatter.from(serializedOutput).output();
+                    // (re)format output
+                    if (this.formatter != null) {   // TODO: is this necessary? The serializer operator also formats the output, right?
+                        serializedOutput = this.formatter.from(serializedOutput).output();
+                    }
+                    this.sink.sink(serializedOutput);
                 }
-                this.sink.sink(serializedOutput);
             }
         }
     }
