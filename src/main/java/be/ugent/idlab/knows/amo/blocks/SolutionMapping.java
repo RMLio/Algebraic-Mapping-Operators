@@ -32,7 +32,7 @@ public class SolutionMapping extends HashMap<String, @Nullable RDFNode> implemen
     }
 
     /**
-     * @param that
+     * @param that The other solution mapping
      */
     public SolutionMapping union(@Nullable SolutionMapping that) {
         if (that == null) {
@@ -40,19 +40,6 @@ public class SolutionMapping extends HashMap<String, @Nullable RDFNode> implemen
         }
         SolutionMapping sol = new SolutionMapping(this);
         sol.putAll(that);
-        // find all common keys
-        Set<String> commonKeys = new HashSet<>(this.keySet());
-        commonKeys.retainAll(sol.keySet());
-
-
-        for (String key : commonKeys) {
-            RDFNode thisValue = this.get(key);
-            RDFNode solValue = sol.get(key);
-            if (thisValue != null && solValue == null) {
-                sol.put(key, thisValue);
-            }
-        }
-
         return sol;
     }
 
