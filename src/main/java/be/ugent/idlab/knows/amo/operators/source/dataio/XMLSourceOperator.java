@@ -17,12 +17,21 @@ import java.util.*;
 public class XMLSourceOperator extends DataIOSourceOperator {
     private final String rootIterator;
     private transient XMLSourceIterator sourceIterator;
+    private Map<String, String> namespaces; 
 
+    public XMLSourceOperator(String operatorName, Access access, Set<String> outputFragments,
+                             String rootIterator,
+                             Collection<Field> fields,
+                             Collection<String> nulls, Map<String, String> namespaces) {
+        this(operatorName, access, outputFragments, rootIterator, fields, nulls); 
+        this.namespaces = namespaces; 
+    }
     public XMLSourceOperator(String operatorName, Access access, Set<String> outputFragments,
                              String rootIterator,
                              Collection<Field> fields,
                              Collection<String> nulls) {
         super(operatorName, access, outputFragments, fields, nulls);
+        this.namespaces = new HashMap<>(); 
         this.rootIterator = rootIterator;
         this.sourceIterator = null;
 
@@ -100,7 +109,7 @@ public class XMLSourceOperator extends DataIOSourceOperator {
         }
 
         try {
-            this.sourceIterator = new XMLSourceIterator(this.access, this.rootIterator);
+            this.sourceIterator = new XMLSourceIterator(this.access, this.rootIterator, this.namespaces);
             this.setReady(true);
         } catch (Exception e) {
             this.setReady(false);
