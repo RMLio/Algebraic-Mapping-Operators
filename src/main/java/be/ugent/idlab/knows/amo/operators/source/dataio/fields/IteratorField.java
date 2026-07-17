@@ -2,6 +2,7 @@ package be.ugent.idlab.knows.amo.operators.source.dataio.fields;
 
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import be.ugent.idlab.knows.amo.functions.ExtendFunction;
 import be.ugent.idlab.knows.dataio.access.VirtualAccess;
 import be.ugent.idlab.knows.dataio.iterators.CSVSourceIterator;
 import be.ugent.idlab.knows.dataio.iterators.JSONSourceIterator;
@@ -25,8 +26,13 @@ import java.util.*;
 public class IteratorField extends Field {
 
     private final String iterator;
+    private final ExtendFunction expression;
 
     public IteratorField(String name, Collection<Field> subfields, ReferenceFormulation referenceFormulation, String iterator) {
+        this(name, subfields, referenceFormulation, iterator, null);
+    }
+
+    public IteratorField(String name, Collection<Field> subfields, ReferenceFormulation referenceFormulation, String iterator, ExtendFunction expression) {
         super(name, subfields, referenceFormulation);
 
         if (iterator != null && !iterator.startsWith("[") && iterator.contains(" ")) {
@@ -34,10 +40,16 @@ public class IteratorField extends Field {
         }
 
         this.iterator = iterator;
+        this.expression = expression;
     }
 
     @Override
     public List<SolutionMapping> apply(Optional<String> obj) {
+        // A computed field: apply the function to the record's columns and bind the result.
+        if (this.expression != null) {
+            return applyExpression(obj, this.expression);
+        }
+
         List<SolutionMapping> applied = switch (this.referenceFormulation) {
             case CSVRows -> processCSV(obj);
             case JSONPath -> processJSON(obj);

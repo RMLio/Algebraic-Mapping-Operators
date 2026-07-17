@@ -1,6 +1,7 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio.fields;
 
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.functions.ExtendFunction;
 import be.ugent.idlab.knows.dataio.access.VirtualAccess;
 import be.ugent.idlab.knows.dataio.iterators.CSVSourceIterator;
 import be.ugent.idlab.knows.dataio.iterators.XMLSourceIterator;
@@ -48,19 +49,30 @@ public class ReferenceField extends Field {
     }
 
     private final String reference;
+    private final ExtendFunction expression;
 
     public ReferenceField(String name, Collection<Field> subfields, ReferenceFormulation referenceFormulation, String reference) {
+        this(name, subfields, referenceFormulation, reference, null);
+    }
+
+    public ReferenceField(String name, Collection<Field> subfields, ReferenceFormulation referenceFormulation, String reference, ExtendFunction expression) {
         super(name, subfields, referenceFormulation);
-        if (referenceFormulation == ReferenceFormulation.JSONPath) {
+        if (referenceFormulation == ReferenceFormulation.JSONPath && reference != null) {
             if ((!reference.startsWith("[") && !reference.startsWith("$")) && reference.contains(" ")) {
                 reference = "['%s']".formatted(reference);
             }
         }
         this.reference = reference;
+        this.expression = expression;
     }
 
     @Override
     public List<SolutionMapping> apply(Optional<String> obj) {
+        // A computed field: apply the function to the record's columns and bind the result.
+        if (this.expression != null) {
+            return applyExpression(obj, this.expression);
+        }
+
         List<Object> values = switch (this.referenceFormulation) {
             case CSVRows -> processCSV(obj);
             case JSONPath -> processJSON(obj);

@@ -1,6 +1,7 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio.fields;
 
 import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
+import be.ugent.idlab.knows.amo.functions.ExtendFunction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +14,7 @@ public class FieldBuilder {
     private Collection<Field> subfields = new ArrayList<>();
     private Optional<String> reference = Optional.empty();
     private Optional<RDFNode> constant = Optional.empty();
+    private Optional<ExtendFunction> expression = Optional.empty();
     private String iterator;
 
     public FieldBuilder withName(String name) {
@@ -59,6 +61,20 @@ public class FieldBuilder {
         return this;
     }
 
+    /**
+     * Sets a function to compute this field's value from the record data (e.g.
+     * {@code toUpperCase(name)}). The function is applied at read time and its result
+     * becomes the field's value.
+     */
+    public FieldBuilder withExpression(ExtendFunction expression) {
+        if (expression == null) {
+            this.expression = Optional.empty();
+        } else {
+            this.expression = Optional.of(expression);
+        }
+        return this;
+    }
+
     public FieldBuilder withSubfields(Field... subfields) {
         return this.withSubfields(Arrays.asList(subfields));
     }
@@ -83,6 +99,15 @@ public class FieldBuilder {
 
         if (this.referenceFormulation == null) {
             throw new IllegalStateException("Reference formulation is required");
+        }
+
+        // a computed field carries a function applied to the record data; it produces a
+        // ReferenceField that evaluates that function instead of reading a single column
+        if (this.expression.isPresent()) {
+            if (this.reference.isPresent() || this.constant.isPresent() || this.iterator != null) {
+                throw new IllegalStateException("A field must not combine an expression with a reference, constant or iterator");
+            }
+            return new ReferenceField(this.name, this.subfields, this.referenceFormulation, null, this.expression.get());
         }
 
         // each field has either a reference or a constant (making it ExpressionField) or an iterator (making it IterableField)
