@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+- `ExtendFunction.applyMulti()`, returning all values a function produces. A Reference or a Constant yields a single value, so the default implementation wraps `apply()`; functions that produce several values override it, allowing the field they belong to to produce one record per value.
+- Source fields accept an expression (`FieldBuilder.withExpression()`): a function applied to the record data, whose result becomes the field's value. Used by logical-view fields whose value is computed, e.g. `toUpperCase(name)`.
+
 ## [2.0.3] - 2026-07-07
 
 ### Fixed
