@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+- **Breaking**: a source field is now either an `IteratorField` or an `ExpressionField`, mirroring MappingLoom's field model. `ConstantField` and `ReferenceField` are replaced by `ExpressionField`, whose expression can be a reference, a constant, or any other function. `FieldBuilder.withReference()` and `withConstant()` are kept as shorthands for the corresponding expression.
+- An `ExpressionField` whose expression produces several values produces one record per value, the way an `IteratorField` does.
+- An expression is applied to CSV, JSON and XML records alike; it used to be supported for CSV only.
+- An expression field applies its subfields to the values it produces, as a reference field already did.
+
+### Added
+- `ExtendFunction.asReference()`, telling a field that the function is a bare reference into the record. Such a reference is read straight from the record, which is what allows a path to match several values (a JSON array, an XML node list).
+
 ## [3.0.0] - 2026-07-28
 
 ### Added
