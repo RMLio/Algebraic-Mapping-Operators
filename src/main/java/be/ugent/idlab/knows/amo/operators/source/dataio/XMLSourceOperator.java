@@ -2,10 +2,9 @@ package be.ugent.idlab.knows.amo.operators.source.dataio;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
-import be.ugent.idlab.knows.amo.operators.source.dataio.fields.ConstantField;
+import be.ugent.idlab.knows.amo.operators.source.dataio.fields.ExpressionField;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.IteratorField;
-import be.ugent.idlab.knows.amo.operators.source.dataio.fields.ReferenceField;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.iterators.XMLSourceIterator;
 import be.ugent.idlab.knows.dataio.record.RecordValue;
@@ -47,13 +46,9 @@ public class XMLSourceOperator extends DataIOSourceOperator {
 
         for (Field f : fields) {
             Field newField = switch (f) {
-                case ConstantField cf -> cf;
-                case ReferenceField rf -> Field.builder()
-                        .withReferenceFormulation(rf.getReferenceFormulation())
-                        .withReference("./%s/%s".formatted(lastIteratorPart, rf.getReference()))
-                        .withName(rf.name())
-                        .withSubfields(rf.getSubfields())
-                        .build();
+                // the field reads from within the root iterator, so whatever its
+                // expression references is resolved relative to it
+                case ExpressionField ef -> ef.relativeTo("./%s".formatted(lastIteratorPart));
                 case IteratorField it -> Field.builder()
                         .withReferenceFormulation(it.getReferenceFormulation())
                         .withIterator("./%s/%s".formatted(lastIteratorPart, it.getIterator()))

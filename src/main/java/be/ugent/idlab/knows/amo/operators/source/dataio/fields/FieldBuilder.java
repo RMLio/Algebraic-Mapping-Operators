@@ -12,8 +12,6 @@ public class FieldBuilder {
     private String name;
     private ReferenceFormulation referenceFormulation;
     private Collection<Field> subfields = new ArrayList<>();
-    private Optional<String> reference = Optional.empty();
-    private Optional<RDFNode> constant = Optional.empty();
     private Optional<ExtendFunction> expression = Optional.empty();
     private String iterator;
 
@@ -37,41 +35,35 @@ public class FieldBuilder {
         return this;
     }
 
-    public FieldBuilder withReference(String reference) {
-        if (reference == null) {
-            this.reference = Optional.empty();
-        } else {
-            this.reference = Optional.of(reference);
-        }
+    /**
+     * Sets the function that produces this field's value from the record (e.g.
+     * {@code toUpperCase(name)}, a reference, a constant). The function is applied at read
+     * time and the values it produces become the field's values, one record per value.
+     */
+    public FieldBuilder withExpression(ExtendFunction expression) {
+        this.expression = Optional.ofNullable(expression);
         return this;
     }
 
+    /**
+     * Sets this field's value to an attribute of the record, read as-is. Shorthand for a
+     * {@link ReferenceExpression}.
+     */
+    public FieldBuilder withReference(String reference) {
+        return this.withExpression(reference == null ? null : new ReferenceExpression(reference));
+    }
+
+    /**
+     * Sets this field's value to the same node for every record. Shorthand for a
+     * {@link ConstantExpression}.
+     */
     public FieldBuilder withConstant(RDFNode constant) {
-        if (constant == null) {
-            this.constant = Optional.empty();
-        } else {
-            this.constant = Optional.of(constant);
-        }
-        return this;
+        return this.withExpression(constant == null ? null : new ConstantExpression(constant));
     }
 
     public FieldBuilder withIterator(String iterator) {
         // it is okay for iterator to be null and field be iterable, such as for CSV iterable fields
         this.iterator = iterator;
-        return this;
-    }
-
-    /**
-     * Sets a function to compute this field's value from the record data (e.g.
-     * {@code toUpperCase(name)}). The function is applied at read time and its result
-     * becomes the field's value.
-     */
-    public FieldBuilder withExpression(ExtendFunction expression) {
-        if (expression == null) {
-            this.expression = Optional.empty();
-        } else {
-            this.expression = Optional.of(expression);
-        }
         return this;
     }
 
@@ -101,30 +93,14 @@ public class FieldBuilder {
             throw new IllegalStateException("Reference formulation is required");
         }
 
-        // a computed field carries a function applied to the record data; it produces a
-        // ReferenceField that evaluates that function instead of reading a single column
+        // a field either iterates over the record, making it an IteratorField, or has its
+        // value produced by a function on the record, making it an ExpressionField
         if (this.expression.isPresent()) {
-            if (this.reference.isPresent() || this.constant.isPresent() || this.iterator != null) {
-                throw new IllegalStateException("A field must not combine an expression with a reference, constant or iterator");
-            }
-            return new ReferenceField(this.name, this.subfields, this.referenceFormulation, null, this.expression.get());
-        }
-
-        // each field has either a reference or a constant (making it ExpressionField) or an iterator (making it IterableField)
-        if (this.reference.isPresent()) {
-            // constant and iterator must not be present
-            if (this.constant.isPresent() || this.iterator != null) {
-                throw new IllegalStateException("A field must only have either reference, constant or iterator defined, not a combination of these");
-            }
-
-            return new ReferenceField(name, this.subfields, this.referenceFormulation, this.reference.get());
-        }
-
-        if (this.constant.isPresent()) {
             if (this.iterator != null) {
-                throw new IllegalStateException("A field must only have either reference, constant or iterator defined, not a combination of these");
+                throw new IllegalStateException("A field must only have either an expression or an iterator defined, not both");
             }
-            return new ConstantField(this.name, this.subfields, this.referenceFormulation, this.constant.get());
+
+            return new ExpressionField(this.name, this.subfields, this.referenceFormulation, this.expression.get());
         }
 
         return new IteratorField(this.name, this.subfields, this.referenceFormulation, this.iterator);
