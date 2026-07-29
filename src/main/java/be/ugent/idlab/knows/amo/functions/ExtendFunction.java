@@ -49,6 +49,23 @@ public interface ExtendFunction extends Serializable {
         return value == null ? List.of() : List.of(value);
     }
 
+    /**
+     * The attribute this function reads, if the function is a bare reference into the
+     * record (e.g. a CSV column, a JSONPath or an XPath).
+     * <p>
+     * A bare reference is evaluated by reading the attribute straight from the record
+     * rather than by evaluating the function against a solution mapping: only the reader
+     * knows how to follow a path into the raw data, and only it can return the several
+     * values a path may match (a JSON array, an XML node list). Functions that compute a
+     * value from the record's variables leave this empty and are evaluated through
+     * {@link #applyMulti(SolutionMapping)} instead.
+     *
+     * @return the referenced attribute, empty if this function is not a bare reference
+     */
+    default Optional<String> asReference() {
+        return Optional.empty();
+    }
+
     @Nullable
     String apply(@Nullable SolutionMapping mapping);
 
