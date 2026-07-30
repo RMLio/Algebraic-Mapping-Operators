@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [4.0.0] - 2026-07-30
+
 ### Changed
 - **Breaking**: a source field is now either an `IteratorField` or an `ExpressionField`, mirroring MappingLoom's field model. `ConstantField` and `ReferenceField` are replaced by `ExpressionField`, whose expression can be a reference, a constant, or any other function. `FieldBuilder.withReference()` and `withConstant()` are kept as shorthands for the corresponding expression.
 - An `ExpressionField` whose expression produces several values produces one record per value, the way an `IteratorField` does.
@@ -63,6 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - A set of operators
 
+[4.0.0]: https://github.com/RMLio/Algebraic-Mapping-Operators/compare/v3.0.0...v4.0.0
 [3.0.0]: https://github.com/RMLio/Algebraic-Mapping-Operators/compare/v2.0.3...v3.0.0
 [2.0.3]: https://github.com/RMLio/Algebraic-Mapping-Operators/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/RMLio/Algebraic-Mapping-Operators/compare/v2.0.1...v2.0.2
