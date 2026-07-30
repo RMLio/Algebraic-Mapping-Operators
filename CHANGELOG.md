@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `ExtendFunction.asReference()`, telling a field that the function is a bare reference into the record. Such a reference is read straight from the record, which is what allows a path to match several values (a JSON array, an XML node list).
 
+### Fixed
+- The subfields of an XML field read the matched element instead of its text content, the way an `IteratorField` already handed its subfields the element. An XPath cannot be applied to text, so a subfield of an XML field used to fail with a Saxon error (`SXXP0003 Content is not allowed in prolog`) whenever the field's path matched an element. The field itself still binds the element's text, so a field without subfields is unaffected.
+
 ## [3.0.0] - 2026-07-28
 
 ### Added

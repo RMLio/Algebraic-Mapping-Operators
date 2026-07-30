@@ -136,6 +136,34 @@ public class ExpressionFieldTest {
     }
 
     @Test
+    public void xmlSubfieldsReadTheMatchedElement() {
+        // a subfield's path starts at the matched element, the way the XML source operator
+        // makes a field's references relative to the record's root element
+        Field name = Field.builder().XML().withName("name").withReference("./person/name").build();
+        Field person = Field.builder().XML().withName("person").withReference("./people/person")
+                .withSubfields(name).build();
+
+        List<SolutionMapping> result = person.apply(
+                Optional.of("<people><person><name>matthieu</name></person></people>"));
+
+        assertEquals(1, result.size());
+        // an XPath applied to the element's text would fail; the subfield gets the element
+        assertEquals("matthieu", result.get(0).get("person.name").getValue().toString());
+        assertEquals("matthieu", result.get(0).get("person").getValue().toString());
+    }
+
+    @Test
+    public void xmlFieldWithoutSubfieldsStillBindsTheElementText() {
+        Field person = Field.builder().XML().withName("person").withReference("./people/person").build();
+
+        List<SolutionMapping> result = person.apply(
+                Optional.of("<people><person><name>matthieu</name><city>Ghent</city></person></people>"));
+
+        assertEquals(1, result.size());
+        assertEquals("matthieuGhent", result.get(0).get("person").getValue().toString());
+    }
+
+    @Test
     public void constantKeepsTheTermItWasDeclaredAs() {
         Field field = Field.builder()
                 .withName("Type")

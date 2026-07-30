@@ -69,7 +69,7 @@ public class ExpressionField extends Field {
 
     @Override
     public List<SolutionMapping> apply(Optional<String> obj) {
-        List<Object> values = evaluate(obj);
+        List<FieldValue> values = evaluate(obj);
 
         List<SolutionMapping> out = new ArrayList<>();
 
@@ -85,17 +85,17 @@ public class ExpressionField extends Field {
         }
 
         for (int i = 0; i < values.size(); i++) {
-            Object value = values.get(i);
+            FieldValue value = values.get(i);
 
-            Collection<SolutionMapping> subfieldMaps = applySubfieldsTo(value);
+            Collection<SolutionMapping> subfieldMaps = applySubfieldsTo(value.subRecord());
             if (subfieldMaps.isEmpty()) {
                 out.add(new SolutionMapping(Map.of(
-                        this.name, toNode(value),
+                        this.name, toNode(value.value()),
                         this.name + ".#", getLiteralNode(i)
                 )));
             } else {
                 for (SolutionMapping sm : subfieldMaps) {
-                    sm.put(this.name, toNode(value));
+                    sm.put(this.name, toNode(value.value()));
                     sm.put(this.name + ".#", getLiteralNode(i));
                 }
 
@@ -107,6 +107,17 @@ public class ExpressionField extends Field {
     }
 
     /**
+     * One value this field produced, and the record its subfields read to produce theirs.
+     * The two differ for XML, where the field binds an element's text while its subfields
+     * read the element itself.
+     *
+     * @param value     the value bound to this field's variable
+     * @param subRecord the record handed to the subfields, {@code null} if there is none
+     */
+    private record FieldValue(Object value, String subRecord) {
+    }
+
+    /**
      * Produces the values this field's expression yields for the given record: a bare
      * reference is read straight from the record, since only the reader can follow a path
      * and return the several values it may match; any other function is evaluated against
@@ -115,36 +126,52 @@ public class ExpressionField extends Field {
      * @param obj the raw record
      * @return the values produced, empty if the expression produced no value
      */
-    private List<Object> evaluate(Optional<String> obj) {
+    private List<FieldValue> evaluate(Optional<String> obj) {
         if (this.expression == null) {
             return List.of();
         }
 
         Optional<String> reference = this.expression.asReference();
         if (reference.isPresent()) {
-            return RecordReader.read(obj, reference.get(), this.referenceFormulation, this.referencePrefix);
+            // an XPath cannot be applied to an element's text, so subfields of an XML
+            // field read the element itself
+            if (this.referenceFormulation == ReferenceFormulation.XMLPath && !this.subfields.isEmpty()) {
+                return RecordReader.readXMLValues(obj, reference.get(), this.referencePrefix).stream()
+                        .map(matched -> new FieldValue(matched.text(), matched.element()))
+                        .toList();
+            }
+
+            return RecordReader.read(obj, reference.get(), this.referenceFormulation, this.referencePrefix)
+                    .stream()
+                    .map(value -> new FieldValue(value, serialize(value)))
+                    .toList();
         }
 
         // the variables a computed expression reads are references into the same record,
         // so they are resolved relative to the same path
         RecordBinding binding = new RecordBinding(obj, this.referenceFormulation, this.referencePrefix);
-        return new ArrayList<>(this.expression.applyMulti(binding));
+        return this.expression.applyMulti(binding).stream()
+                .map(value -> new FieldValue(value, serialize(value)))
+                .toList();
     }
 
     /**
-     * Applies the subfields to a value read by this field, naming their variables after
-     * this field.
+     * Renders a value as the record its subfields read: a JSON object keeps its JSON
+     * form, anything else is taken as it reads.
      */
-    private Collection<SolutionMapping> applySubfieldsTo(Object value) {
-        String sub;
+    private static String serialize(Object value) {
         if (value instanceof Map<?, ?> map) {
-            sub = new JSONObject((Map<String, Object>) map).toJSONString();
-        } else if (value == null) {
-            sub = null;
-        } else {
-            sub = value.toString();
+            return new JSONObject((Map<String, Object>) map).toJSONString();
         }
 
+        return value == null ? null : value.toString();
+    }
+
+    /**
+     * Applies the subfields to the record a value of this field yielded, naming their
+     * variables after this field.
+     */
+    private Collection<SolutionMapping> applySubfieldsTo(String sub) {
         Collection<SolutionMapping> subfieldMaps =
                 this.applySubfields(sub == null ? Optional.empty() : Optional.of(sub));
 

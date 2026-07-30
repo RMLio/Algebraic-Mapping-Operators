@@ -86,13 +86,48 @@ final class RecordReader {
             return List.of();
         }
 
-        String path = prefix == null ? reference : "%s/%s".formatted(prefix, reference);
+        String path = resolve(reference, prefix);
 
         return switch (referenceFormulation) {
             case CSVRows -> readCSV(record.get(), path);
             case JSONPath -> readJSON(record.get(), normalize(path, referenceFormulation));
-            case XMLPath -> readXML(record.get(), path);
+            case XMLPath -> readXML(record.get(), path).stream().map(XMLValue::text).map(Object.class::cast).toList();
         };
+    }
+
+    /**
+     * An XML element the reference matched: its text, which is the field's value, and its
+     * markup, which is what subfields read.
+     *
+     * @param text    the element's text content
+     * @param element the element as XML, so that an XPath can be applied to it again
+     */
+    record XMLValue(String text, String element) {
+    }
+
+    /**
+     * Reads the elements the given reference matches, keeping each element's markup next
+     * to its text.
+     * <p>
+     * A field binds an element's text, but its subfields have to read the element itself:
+     * an XPath cannot be applied to text content. This mirrors what
+     * {@link IteratorField} hands its subfields.
+     *
+     * @param record    the raw record, empty if there is no record to read
+     * @param reference the attribute to read
+     * @param prefix    the path the reference is relative to, {@code null} if it is absolute
+     * @return the elements matched, empty if the reference matches nothing
+     */
+    static List<XMLValue> readXMLValues(Optional<String> record, String reference, String prefix) {
+        if (record.isEmpty() || reference == null) {
+            return List.of();
+        }
+
+        return readXML(record.get(), resolve(reference, prefix));
+    }
+
+    private static String resolve(String reference, String prefix) {
+        return prefix == null ? reference : "%s/%s".formatted(prefix, reference);
     }
 
     private static List<Object> readCSV(String record, String reference) {
@@ -142,16 +177,19 @@ final class RecordReader {
         return List.of(read);
     }
 
-    private static List<Object> readXML(String record, String reference) {
+    private static List<XMLValue> readXML(String record, String reference) {
         VirtualAccess access = new VirtualAccess(record.getBytes(Charset.defaultCharset()));
 
         try (XMLSourceIterator iterator = new XMLSourceIterator(access, reference)) {
-            List<Object> out = new ArrayList<>();
+            List<XMLValue> out = new ArrayList<>();
             while (iterator.hasNext()) {
                 XMLRecord r = (XMLRecord) iterator.next();
                 RecordValue recordValue = r.get(".");
                 if (recordValue.isOk()) {
-                    out.addAll((List<String>) recordValue.getValue());
+                    String element = r.getItem().toString();
+                    for (String text : (List<String>) recordValue.getValue()) {
+                        out.add(new XMLValue(text, element));
+                    }
                 }
             }
             return out;
