@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+- An `IteratorField` builds one source iterator and points it at each object it reads, instead of building one per object: its reference formulation and iterator expression never change, so the iterator's expression is compiled once. Reading 300 objects of 10 records measured ~2x faster for XML and ~6x faster for JSON. Requires the `SourceIterator.reset(Access)` added in dataio 2.3.1.
+- A field is stateful while it reads, as it now keeps a parser over the object being read. Fields were already applied one object at a time by the source operators, but a `Field` instance must no longer be shared between operators running concurrently.
+
 ## [4.0.0] - 2026-07-30
 
 ### Changed
