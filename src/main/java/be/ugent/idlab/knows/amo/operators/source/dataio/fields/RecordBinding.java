@@ -27,13 +27,13 @@ import java.util.Optional;
 class RecordBinding extends SolutionMapping {
 
     private final transient Optional<String> record;
+    private final transient RecordReader reader;
     private final ReferenceFormulation referenceFormulation;
-    private final String referencePrefix;
 
-    RecordBinding(Optional<String> record, ReferenceFormulation referenceFormulation, String referencePrefix) {
+    RecordBinding(Optional<String> record, RecordReader reader) {
         this.record = record;
-        this.referenceFormulation = referenceFormulation;
-        this.referencePrefix = referencePrefix;
+        this.reader = reader;
+        this.referenceFormulation = reader.referenceFormulation();
 
         bindRecordAttributes();
     }
@@ -125,7 +125,7 @@ class RecordBinding extends SolutionMapping {
      * when the record holds no such attribute so that it is read only once.
      */
     private void resolve(String key) {
-        List<Object> values = RecordReader.read(this.record, key, this.referenceFormulation, this.referencePrefix);
+        List<Object> values = this.reader.read(this.record, key);
         super.put(key, values.isEmpty() ? null : Field.getLiteralNode(values.get(0)));
     }
 }

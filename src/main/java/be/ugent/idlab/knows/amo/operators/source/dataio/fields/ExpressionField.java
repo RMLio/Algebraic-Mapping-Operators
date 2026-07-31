@@ -31,6 +31,15 @@ public class ExpressionField extends Field {
      */
     private final String referencePrefix;
 
+    /**
+     * Reads this field's records, keeping its parsers and compiled paths between them.
+     * <p>
+     * It is transient because it holds parsers over the record being read; after
+     * deserialization it is built again on first use. It also makes this field stateful
+     * while it reads, so a field cannot be applied from two threads at once.
+     */
+    private transient RecordReader reader;
+
     public ExpressionField(String name, Collection<Field> subfields, ReferenceFormulation referenceFormulation,
                            ExtendFunction expression) {
         this(name, subfields, referenceFormulation, expression, null);
@@ -136,23 +145,35 @@ public class ExpressionField extends Field {
             // an XPath cannot be applied to an element's text, so subfields of an XML
             // field read the element itself
             if (this.referenceFormulation == ReferenceFormulation.XMLPath && !this.subfields.isEmpty()) {
-                return RecordReader.readXMLValues(obj, reference.get(), this.referencePrefix).stream()
+                return reader().readXMLValues(obj, reference.get()).stream()
                         .map(matched -> new FieldValue(matched.text(), matched.element()))
                         .toList();
             }
 
-            return RecordReader.read(obj, reference.get(), this.referenceFormulation, this.referencePrefix)
+            return reader().read(obj, reference.get())
                     .stream()
                     .map(value -> new FieldValue(value, serialize(value)))
                     .toList();
         }
 
         // the variables a computed expression reads are references into the same record,
-        // so they are resolved relative to the same path
-        RecordBinding binding = new RecordBinding(obj, this.referenceFormulation, this.referencePrefix);
+        // so they are read the same way, relative to the same path
+        RecordBinding binding = new RecordBinding(obj, reader());
         return this.expression.applyMulti(binding).stream()
                 .map(value -> new FieldValue(value, serialize(value)))
                 .toList();
+    }
+
+    /**
+     * This field's reader, built on first use and kept so that its parsers and compiled
+     * paths outlive a single record.
+     */
+    private RecordReader reader() {
+        if (this.reader == null) {
+            this.reader = new RecordReader(this.referenceFormulation, this.referencePrefix);
+        }
+
+        return this.reader;
     }
 
     /**

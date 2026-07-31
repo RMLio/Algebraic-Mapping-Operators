@@ -2,6 +2,7 @@ package be.ugent.idlab.knows.amo.operators.source.dataio.fields;
 
 import be.ugent.idlab.knows.dataio.access.VirtualAccess;
 import be.ugent.idlab.knows.dataio.iterators.CSVSourceIterator;
+import be.ugent.idlab.knows.dataio.iterators.SourceIterator;
 import be.ugent.idlab.knows.dataio.iterators.XMLSourceIterator;
 import be.ugent.idlab.knows.dataio.record.CSVRecord;
 import be.ugent.idlab.knows.dataio.record.RecordValue;
@@ -16,18 +17,25 @@ import net.minidev.json.JSONArray;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 /**
- * Reads an attribute out of a single raw record, following the record's reference
+ * Reads attributes out of the records of one field, following the field's reference
  * formulation: a column for CSV, a JSONPath for JSON, an XPath for XML.
  * <p>
  * A path may match several values (a JSON array, an XML node list), so reading always
  * yields a list. This is the only place that knows how to follow a path into raw data;
  * both {@link ExpressionField} (for a bare reference) and {@link RecordBinding} (for the
  * variables a computed expression reads) go through it.
+ * <p>
+ * A reader belongs to a single field and keeps the source iterators it reads with between
+ * records. Reading a record is cheaper than setting one up, so a field that reads many
+ * records would otherwise spend most of its time building parsers it already had. This
+ * makes a reader stateful, so it cannot be shared between threads.
  */
 final class RecordReader {
 
@@ -53,7 +61,16 @@ final class RecordReader {
         });
     }
 
-    private RecordReader() {
+    /** The key under which the CSV iterator is kept: it reads rows whatever the reference. */
+    private static final String CSV_ITERATOR = "";
+
+    private final ReferenceFormulation referenceFormulation;
+    private final String prefix;
+    private final Map<String, SourceIterator> iterators = new HashMap<>();
+
+    RecordReader(ReferenceFormulation referenceFormulation, String prefix) {
+        this.referenceFormulation = referenceFormulation;
+        this.prefix = prefix;
     }
 
     /**
@@ -71,26 +88,27 @@ final class RecordReader {
         return reference;
     }
 
+    ReferenceFormulation referenceFormulation() {
+        return this.referenceFormulation;
+    }
+
     /**
      * Reads the given reference out of the record.
      *
-     * @param record                 the raw record, empty if there is no record to read
-     * @param reference              the attribute to read
-     * @param referenceFormulation   how the record, and hence the reference, is to be read
-     * @param prefix                 the path the reference is relative to, {@code null} if it is absolute
+     * @param record    the raw record, empty if there is no record to read
+     * @param reference the attribute to read
      * @return the values the reference matches, empty if it matches nothing
      */
-    static List<Object> read(Optional<String> record, String reference,
-                             ReferenceFormulation referenceFormulation, String prefix) {
+    List<Object> read(Optional<String> record, String reference) {
         if (record.isEmpty() || reference == null) {
             return List.of();
         }
 
-        String path = resolve(reference, prefix);
+        String path = resolve(reference);
 
-        return switch (referenceFormulation) {
+        return switch (this.referenceFormulation) {
             case CSVRows -> readCSV(record.get(), path);
-            case JSONPath -> readJSON(record.get(), normalize(path, referenceFormulation));
+            case JSONPath -> readJSON(record.get(), normalize(path, this.referenceFormulation));
             case XMLPath -> readXML(record.get(), path).stream().map(XMLValue::text).map(Object.class::cast).toList();
         };
     }
@@ -115,43 +133,61 @@ final class RecordReader {
      *
      * @param record    the raw record, empty if there is no record to read
      * @param reference the attribute to read
-     * @param prefix    the path the reference is relative to, {@code null} if it is absolute
      * @return the elements matched, empty if the reference matches nothing
      */
-    static List<XMLValue> readXMLValues(Optional<String> record, String reference, String prefix) {
+    List<XMLValue> readXMLValues(Optional<String> record, String reference) {
         if (record.isEmpty() || reference == null) {
             return List.of();
         }
 
-        return readXML(record.get(), resolve(reference, prefix));
+        return readXML(record.get(), resolve(reference));
     }
 
-    private static String resolve(String reference, String prefix) {
-        return prefix == null ? reference : "%s/%s".formatted(prefix, reference);
+    private String resolve(String reference) {
+        return this.prefix == null ? reference : "%s/%s".formatted(this.prefix, reference);
     }
 
-    private static List<Object> readCSV(String record, String reference) {
-        VirtualAccess access = new VirtualAccess(record.getBytes(Charset.defaultCharset()));
-        List<Object> out = new ArrayList<>();
-
-        try (CSVSourceIterator iterator = new CSVSourceIterator(access)) {
-            while (iterator.hasNext()) {
-                CSVRecord r = (CSVRecord) iterator.next();
-                RecordValue rv = r.get(reference);
-                if (rv.isOk()) {
-                    out.add(rv.getValue());
-                }
+    /**
+     * The iterator reading the given path, built on first use and pointed at every record
+     * read after that.
+     */
+    private SourceIterator iteratorFor(String key, VirtualAccess access, IteratorBuilder builder) {
+        try {
+            SourceIterator iterator = this.iterators.get(key);
+            if (iterator == null) {
+                iterator = builder.build(access);
+                this.iterators.put(key, iterator);
+            } else {
+                iterator.reset(access);
             }
 
-            return out;
+            return iterator;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static List<Object> readJSON(String record, String reference) {
+    private List<Object> readCSV(String record, String reference) {
+        VirtualAccess access = new VirtualAccess(record.getBytes(Charset.defaultCharset()));
+        List<Object> out = new ArrayList<>();
+
+        SourceIterator iterator = iteratorFor(CSV_ITERATOR, access, CSVSourceIterator::new);
+        while (iterator.hasNext()) {
+            CSVRecord r = (CSVRecord) iterator.next();
+            RecordValue rv = r.get(reference);
+            if (rv.isOk()) {
+                out.add(rv.getValue());
+            }
+        }
+
+        return out;
+    }
+
+    private List<Object> readJSON(String record, String reference) {
         Object read;
         try {
+            // no path caching here on purpose: JsonPath compiles through its own cache
+            // (CacheProvider), and caching again measured slightly slower
             Object readObject = JsonPath.read(record, reference);
 
             if (readObject instanceof JSONArray arr) {
@@ -177,24 +213,27 @@ final class RecordReader {
         return List.of(read);
     }
 
-    private static List<XMLValue> readXML(String record, String reference) {
+    private List<XMLValue> readXML(String record, String reference) {
         VirtualAccess access = new VirtualAccess(record.getBytes(Charset.defaultCharset()));
 
-        try (XMLSourceIterator iterator = new XMLSourceIterator(access, reference)) {
-            List<XMLValue> out = new ArrayList<>();
-            while (iterator.hasNext()) {
-                XMLRecord r = (XMLRecord) iterator.next();
-                RecordValue recordValue = r.get(".");
-                if (recordValue.isOk()) {
-                    String element = r.getItem().toString();
-                    for (String text : (List<String>) recordValue.getValue()) {
-                        out.add(new XMLValue(text, element));
-                    }
+        SourceIterator iterator = iteratorFor(reference, access, a -> new XMLSourceIterator(a, reference));
+        List<XMLValue> out = new ArrayList<>();
+        while (iterator.hasNext()) {
+            XMLRecord r = (XMLRecord) iterator.next();
+            RecordValue recordValue = r.get(".");
+            if (recordValue.isOk()) {
+                String element = r.getItem().toString();
+                for (String text : (List<String>) recordValue.getValue()) {
+                    out.add(new XMLValue(text, element));
                 }
             }
-            return out;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
+
+        return out;
+    }
+
+    @FunctionalInterface
+    private interface IteratorBuilder {
+        SourceIterator build(VirtualAccess access) throws Exception;
     }
 }
