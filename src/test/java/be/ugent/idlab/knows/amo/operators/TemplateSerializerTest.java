@@ -43,6 +43,41 @@ public class TemplateSerializerTest {
 
     }
 
+    /**
+     * Serializes a template with one variable bound to the given value.
+     */
+    private String serialize(String template, String value) {
+        MappingTuple mappingTuple = new MappingTuple();
+        SolutionMapping solutionMapping = new SolutionMapping();
+        solutionMapping.put("?sm", new IRINode("http://example.com/1"));
+        solutionMapping.put("?pm", new IRINode("http://example.com/name"));
+        solutionMapping.put("?om", new LiteralNode(value));
+        mappingTuple.addSolutionMap("default", solutionMapping);
+
+        TemplateSerializer serializer =
+                new TemplateSerializer("Serializer", Set.of("default"), Set.of("default"), template);
+
+        return serializer.apply(mappingTuple).getSolutionMappings("default").iterator().next()
+                .get("serialized_output").getValue().toString();
+    }
+
+    @Test
+    public void valueContainingADollarIsTakenLiterally() {
+        // a value is data, not a replacement pattern: '$' used to be read as a group
+        // reference and threw, taking the whole mapping down
+        assertEquals("<http://example.com/1> <http://example.com/name> \"costs $5\"@en.",
+                serialize("?sm ?pm ?om@en.", "costs $5"));
+        assertEquals("<http://example.com/1> <http://example.com/name> \"a$1b\"@en.",
+                serialize("?sm ?pm ?om@en.", "a$1b"));
+    }
+
+    @Test
+    public void valueContainingABackslashKeepsIt() {
+        // '\' used to be read as an escape and was dropped silently
+        assertEquals("<http://example.com/1> <http://example.com/name> \"back\\slash\"@en.",
+                serialize("?sm ?pm ?om@en.", "back\\slash"));
+    }
+
     @Test
     public void simpleTemplateSerialization() {
 
