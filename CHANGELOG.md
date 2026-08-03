@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+- Tests covering a reference that matches nothing, for both a field and its subfields. A JSONPath is read with `REQUIRE_PROPERTIES`, so a missing property throws rather than returning nothing; the field binds no value and the rest of the record is still read.
+
 ## [4.0.0] - 2026-07-30
 
 ### Changed
