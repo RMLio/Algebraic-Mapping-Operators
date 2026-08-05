@@ -3,12 +3,14 @@ package be.ugent.idlab.knows.amo.operators.intermediate.unary;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.functions.ExtendFunction;
 
 import java.io.ObjectInputStream;
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -46,16 +48,64 @@ public class ExtendOperator extends UnaryOperator {
     @Nullable
     public SolutionMapping apply(@Nullable SolutionMapping mapping) {
         if (mapping == null){
-            return null; 
+            return null;
         }
+
+        List<SolutionMapping> extended = applyMulti(mapping);
+
+        return extended.isEmpty() ? mapping : extended.get(0);
+    }
+
+    /**
+     * Extends the mapping, giving a mapping per value the variables were extended with.
+     * <p>
+     * A function normally produces one value, and then one mapping comes back out. One
+     * that produces several, a split for instance, stands for several records: the
+     * mapping is repeated for each of its values, so that the rule using the variable is
+     * applied to every one of them. Several such variables multiply out.
+     *
+     * @param mapping the mapping to extend
+     * @return the extended mappings, never empty
+     */
+    public List<SolutionMapping> applyMulti(@Nullable SolutionMapping mapping) {
+        if (mapping == null) {
+            // a mapping that is not there stays not there, as it did before
+            return Collections.singletonList(null);
+        }
+
+        List<SolutionMapping> extended = new ArrayList<>();
+        extended.add(mapping);
 
         for (Pair<String, ExtendFunction> functionPair : this.replacements) {
-            if (!mapping.containsKey(functionPair.first())) {
-                mapping.put(functionPair.first(), functionPair.second().applyToNode(mapping));
+            String variable = functionPair.first();
+            List<SolutionMapping> next = new ArrayList<>();
+
+            for (SolutionMapping current : extended) {
+                if (current.containsKey(variable)) {
+                    next.add(current);
+                    continue;
+                }
+
+                List<RDFNode> nodes = functionPair.second().applyMultiToNode(current);
+                if (nodes.size() <= 1) {
+                    // a variable that stays unbound is still put, as it was before: the
+                    // rules using it decide what an absent value means
+                    current.put(variable, nodes.isEmpty() ? null : nodes.get(0));
+                    next.add(current);
+                    continue;
+                }
+
+                for (RDFNode node : nodes) {
+                    SolutionMapping perValue = new SolutionMapping(current);
+                    perValue.put(variable, node);
+                    next.add(perValue);
+                }
             }
+
+            extended = next;
         }
 
-        return mapping;
+        return extended;
     }
 
     @Override
@@ -73,11 +123,10 @@ public class ExtendOperator extends UnaryOperator {
 
             // if there is no mappings to process, apply the function to an empty map, in case the replacements contain constant values
             if (mappings.isEmpty()) {
-                processedMappings.add(this.apply(new SolutionMapping()));
+                processedMappings.addAll(this.applyMulti(new SolutionMapping()));
             } else {
                 for (SolutionMapping m : mappings) {
-                    SolutionMapping processed = apply(m);
-                    processedMappings.add(processed);
+                    processedMappings.addAll(applyMulti(m));
                 }
             }
 

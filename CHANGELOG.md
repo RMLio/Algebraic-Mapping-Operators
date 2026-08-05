@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+- `ExtendFunction.applyMultiToNode()`, giving a node per value a function produces. The counterpart of `applyMulti()` for the places that build terms rather than read values.
+
+### Changed
+- An `ExtendOperator` extending a variable with a function that produces several values now gives a mapping per value, through the new `applyMulti()`. A rule using that variable is applied to every value instead of only the first, which is what a split in an object map needs. Several such variables multiply out.
+
 ## [4.0.0] - 2026-07-30
 
 ### Changed
