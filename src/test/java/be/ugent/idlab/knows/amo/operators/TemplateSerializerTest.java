@@ -62,6 +62,42 @@ public class TemplateSerializerTest {
     }
 
     @Test
+    public void aVariableUsedTwiceIsFilledInBothTimes() {
+        MappingTuple mappingTuple = new MappingTuple();
+        SolutionMapping solutionMapping = new SolutionMapping();
+        solutionMapping.put("?sm", new IRINode("http://example.com/1"));
+        solutionMapping.put("?pm", new IRINode("http://example.com/knows"));
+        mappingTuple.addSolutionMap("default", solutionMapping);
+
+        TemplateSerializer serializer = new TemplateSerializer("Serializer", Set.of("default"),
+                Set.of("default"), "?sm ?pm ?sm .");
+
+        String result = serializer.apply(mappingTuple).getSolutionMappings("default").iterator().next()
+                .get("serialized_output").getValue().toString();
+
+        assertEquals("<http://example.com/1> <http://example.com/knows> <http://example.com/1> .", result);
+    }
+
+    @Test
+    public void aVariableIsNotFilledInsideALongerVariablesName() {
+        // ?om is a prefix of ?om2, so filling ?om in first would leave "<...>2"
+        MappingTuple mappingTuple = new MappingTuple();
+        SolutionMapping solutionMapping = new SolutionMapping();
+        solutionMapping.put("?sm", new IRINode("http://example.com/1"));
+        solutionMapping.put("?om", new LiteralNode("first"));
+        solutionMapping.put("?om2", new LiteralNode("second"));
+        mappingTuple.addSolutionMap("default", solutionMapping);
+
+        TemplateSerializer serializer = new TemplateSerializer("Serializer", Set.of("default"),
+                Set.of("default"), "?sm <http://example.com/p> ?om2 ?om .");
+
+        String result = serializer.apply(mappingTuple).getSolutionMappings("default").iterator().next()
+                .get("serialized_output").getValue().toString();
+
+        assertEquals("<http://example.com/1> <http://example.com/p> \"second\" \"first\" .", result);
+    }
+
+    @Test
     public void valueContainingADollarIsTakenLiterally() {
         // a value is data, not a replacement pattern: '$' used to be read as a group
         // reference and threw, taking the whole mapping down
