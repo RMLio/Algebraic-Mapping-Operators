@@ -11,10 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tests covering a reference that matches nothing, for both a field and its subfields. A JSONPath is read with `REQUIRE_PROPERTIES`, so a missing property throws rather than returning nothing; the field binds no value and the rest of the record is still read.
 
 ### Fixed
-- A value containing a `$` no longer aborts the mapping, and a value containing a `\` is no longer silently dropped. `TemplateSerializer` filled a template with `String.replaceAll()`, which reads its replacement as a pattern: `$` was taken as a group reference and threw, `\` as an escape and disappeared. The value is data, so it is now substituted literally.
-
-### Changed
-- `TemplateSerializer` and `SerializeOperator` substitute literally (`String.replace`) instead of compiling a regular expression per variable and per record. Filling a template of three variables 200 000 times measured ~230 ms before and ~38 ms after.
+- A value containing a `$` no longer aborts the mapping
+- A value containing a `\` is no longer silently dropped
 
 ## [4.0.0] - 2026-07-30
 
