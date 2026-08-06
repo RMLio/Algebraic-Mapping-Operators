@@ -45,7 +45,9 @@ public class TemplateSerializer extends UnaryOperator {
         super(operatorName, inputFragments, outputFragments);
 
         this.serializedVariable = serializedVariable;
-        this.variablePattern = Pattern.compile("\\?[a-zA-Z_0-9]+[^@^]");
+        // a variable name is matched as far as it goes, so that ?om2 is one variable and
+        // not ?om followed by a 2
+        this.variablePattern = Pattern.compile("\\?[a-zA-Z_0-9]+");
 
         this.variablesTemplatePairs = this.extractTemplateVariables(templateString);
 
@@ -80,30 +82,38 @@ public class TemplateSerializer extends UnaryOperator {
         List<String> serializedStringList = new ArrayList<>();
         for (Pair<List<String>, String> tuple : this.variablesTemplatePairs) {
 
-            List<String> variables = tuple.first();
             String template = tuple.second();
 
-            boolean nullFound = false;
-            for (String variable : variables) {
-                RDFNode solutionValue = mapping.get(variable);
-                if (solutionValue != null && !solutionValue.isNull()) {
-                    template = template.replace(variable, solutionValue.toString());
-                } else {
-                    // check if the variable maybe needs to be prepended by ?
-                    String unpreprended = variable.substring(1);
-                    solutionValue = mapping.get(unpreprended);
-                    if (solutionValue != null  && !solutionValue.isNull()) {
-                        template = template.replace(variable, solutionValue.toString());
-                    } else {
-                        nullFound = true;
-                        break;
-                    }
+            // One pass over the template, looking each variable up where it occurs. Filling
+            // the variables in one at a time instead would substitute into the values
+            // already filled in: a value containing "?pm" would have the value of ?pm put
+            // inside it by a later round.
+            Matcher matcher = this.variablePattern.matcher(template);
+            StringBuilder filledIn = new StringBuilder();
 
+            boolean nullFound = false;
+            while (matcher.find()) {
+                String variable = matcher.group();
+
+                RDFNode solutionValue = mapping.get(variable);
+                if (solutionValue == null || solutionValue.isNull()) {
+                    // check if the variable maybe needs to be prepended by ?
+                    solutionValue = mapping.get(variable.substring(1));
                 }
+
+                if (solutionValue == null || solutionValue.isNull()) {
+                    nullFound = true;
+                    break;
+                }
+
+                // the value is data, not a replacement pattern: a '$' in it is a dollar and
+                // a '\' is a backslash
+                matcher.appendReplacement(filledIn, Matcher.quoteReplacement(solutionValue.toString()));
             }
 
             if (!nullFound) {
-                serializedStringList.add(template);
+                matcher.appendTail(filledIn);
+                serializedStringList.add(filledIn.toString());
             }
         }
 

@@ -79,6 +79,26 @@ public class TemplateSerializerTest {
     }
 
     @Test
+    public void aValueThatLooksLikeAVariableIsNotFilledInAgain() {
+        // the template is walked once, so a value containing "?pm" keeps it: filling the
+        // variables in one at a time would substitute into the value already filled in
+        MappingTuple mappingTuple = new MappingTuple();
+        SolutionMapping solutionMapping = new SolutionMapping();
+        solutionMapping.put("?sm", new IRINode("http://example.com/?pm"));
+        solutionMapping.put("?pm", new IRINode("http://example.com/knows"));
+        solutionMapping.put("?om", new LiteralNode("x"));
+        mappingTuple.addSolutionMap("default", solutionMapping);
+
+        TemplateSerializer serializer = new TemplateSerializer("Serializer", Set.of("default"),
+                Set.of("default"), "?sm ?pm ?om .");
+
+        String result = serializer.apply(mappingTuple).getSolutionMappings("default").iterator().next()
+                .get("serialized_output").getValue().toString();
+
+        assertEquals("<http://example.com/?pm> <http://example.com/knows> \"x\" .", result);
+    }
+
+    @Test
     public void aVariableIsNotFilledInsideALongerVariablesName() {
         // ?om is a prefix of ?om2, so filling ?om in first would leave "<...>2"
         MappingTuple mappingTuple = new MappingTuple();
