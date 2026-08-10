@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - An `ExtendOperator` extending a variable with a function that produces several values now gives a mapping per value, through the new `applyMulti()`. A rule using that variable is applied to every value instead of only the first, which is what a split in an object map needs. Several such variables multiply out.
+- Tests covering a reference that matches nothing, for both a field and its subfields. A JSONPath is read with `REQUIRE_PROPERTIES`, so a missing property throws rather than returning nothing; the field binds no value and the rest of the record is still read.
+
+### Fixed
+- A value containing a `$` no longer aborts the mapping
+- A value containing a `\` is no longer silently dropped
 
 ## [4.0.0] - 2026-07-30
 
