@@ -85,7 +85,7 @@ public class SerializeOperator extends UnaryOperator {
                         .output(outputStream);
 
                 // Jena will prepend labels of Blank nodes with a 'B', which is not what we want
-                String serialized = outputStream.toString().replaceAll("_:B", "_:");
+                String serialized = outputStream.toString().replace("_:B", "_:");
 
                 // TODO: Here a LiteralNode gets abused to store the serialized output of this operator as a String.
                 //       The solution mapping fragment -> RDFNode doesn't make sense here, so this must be refactored.

@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - An `IteratorField` builds one source iterator and points it at each object it reads, instead of building one per object: its reference formulation and iterator expression never change, so the iterator's expression is compiled once. Reading 300 objects of 10 records measured ~2x faster for XML and ~6x faster for JSON. Requires the `SourceIterator.reset(Access)` added in dataio 2.3.1.
 - An `ExpressionField` reads its records through a reader of its own, which keeps its source iterators between records rather than building one per value read. A field's subfields are read once per matched record, so this is where an XML field spent most of its time: reading 300 objects of 10 records with one subfield measured ~2x faster again, on top of the above. JSON is unaffected, as its reads never went through a source iterator.
 - A field is stateful while it reads, as it now keeps a parser over the object being read. Fields were already applied one object at a time by the source operators, but a `Field` instance must no longer be shared between operators running concurrently.
+### Added
+- Tests covering a reference that matches nothing, for both a field and its subfields. A JSONPath is read with `REQUIRE_PROPERTIES`, so a missing property throws rather than returning nothing; the field binds no value and the rest of the record is still read.
+
+### Fixed
+- A value containing a `$` no longer aborts the mapping
+- A value containing a `\` is no longer silently dropped
 
 ## [4.0.0] - 2026-07-30
 
