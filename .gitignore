@@ -12,3 +12,4 @@ pom-oracle.xml
 dependency-reduced-pom.xml
 .classpath
 .project
+pom.xml.versionsBackup
