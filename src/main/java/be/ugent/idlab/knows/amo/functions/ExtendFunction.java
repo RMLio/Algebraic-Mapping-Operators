@@ -50,6 +50,23 @@ public interface ExtendFunction extends Serializable {
     }
 
     /**
+     * Applies the function and returns a node for every value it produces.
+     * <p>
+     * The counterpart of {@link #applyMulti(SolutionMapping)} for the places that build
+     * terms rather than read values: a function producing several values makes the
+     * operator using it produce a record per value. A function producing a single value,
+     * which is most of them, needs nothing beyond {@link #applyToNode(SolutionMapping)},
+     * which is what the default returns.
+     *
+     * @param mapping the solution mapping to evaluate against
+     * @return a node per value produced, empty if the function produced none
+     */
+    default List<RDFNode> applyMultiToNode(@Nullable SolutionMapping mapping) {
+        RDFNode node = this.applyToNode(mapping);
+        return node == null ? List.of() : List.of(node);
+    }
+
+    /**
      * The attribute this function reads, if the function is a bare reference into the
      * record (e.g. a CSV column, a JSONPath or an XPath).
      * <p>
