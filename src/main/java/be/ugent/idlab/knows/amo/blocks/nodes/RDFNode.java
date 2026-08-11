@@ -36,6 +36,13 @@ public abstract class RDFNode implements Serializable {
 
     public boolean isNull() { return false;}
 
+    /**
+     * Whether this value stands for several terms rather than one.
+     */
+    public boolean isCollection() {
+        return false;
+    }
+
     public abstract Node getJenaNode();
     
     @Override
