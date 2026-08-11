@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Git ignore `pom.xml.versionsBackup`
 
+### Changed
+- `bump-version.sh`: added option to also commit changes and tag (necessary to make a release)
+
 ## [4.1.0] - 2026-08-11
 
 ### Changed
