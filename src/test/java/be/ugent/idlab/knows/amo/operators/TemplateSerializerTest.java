@@ -3,9 +3,11 @@ package be.ugent.idlab.knows.amo.operators;
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.blocks.nodes.CollectionNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.IRINode;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
+import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.operators.intermediate.unary.TemplateSerializer;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.junit.jupiter.api.Test;
@@ -206,5 +208,113 @@ public class TemplateSerializerTest {
         TemplateSerializer serializer = new TemplateSerializer("Serializer", Set.of("default"), Set.of("default"), "?sm ?pm ?om@en.");
         MappingTuple serializedTuple = serializer.apply(mappingTuple);
         assertTrue((serializedTuple.getSolutionMappings("default").iterator().next().get("serialized_output")).isNull());
+    }
+
+    /**
+     * A collection of literals, as a function producing several values returns.
+     */
+    private static CollectionNode collectionOf(String... values) {
+        return new CollectionNode(List.of(values).stream().map(v -> (RDFNode) new LiteralNode(v)).toList());
+    }
+
+    /**
+     * Serializes "?sm ?pm ?om ." with the given values, ?om holding a collection.
+     */
+    private String serializeCollection(String... values) {
+        MappingTuple mappingTuple = new MappingTuple();
+        SolutionMapping solutionMapping = new SolutionMapping();
+        solutionMapping.put("?sm", new IRINode("http://example.com/1"));
+        solutionMapping.put("?pm", new IRINode("http://example.com/name"));
+        solutionMapping.put("?om", collectionOf(values));
+        mappingTuple.addSolutionMap("default", solutionMapping);
+
+        TemplateSerializer serializer = new TemplateSerializer("Serializer", Set.of("default"),
+                Set.of("default"), "?sm ?pm ?om .");
+
+        return serializer.apply(mappingTuple).getSolutionMappings("default").iterator().next()
+                .get("serialized_output").getValue().toString();
+    }
+
+    @Test
+    public void aCollectionGivesAStatementPerMember() {
+        assertEquals("""
+                        <http://example.com/1> <http://example.com/name> "read" .
+                        <http://example.com/1> <http://example.com/name> "write" .""",
+                serializeCollection("read", "write"));
+    }
+
+    @Test
+    public void aCollectionOfOneGivesTheStatementItsMemberDoes() {
+        assertEquals("<http://example.com/1> <http://example.com/name> \"read\" .",
+                serializeCollection("read"));
+    }
+
+    @Test
+    public void anEmptyCollectionStatesNothing() {
+        MappingTuple mappingTuple = new MappingTuple();
+        SolutionMapping solutionMapping = new SolutionMapping();
+        solutionMapping.put("?sm", new IRINode("http://example.com/1"));
+        solutionMapping.put("?pm", new IRINode("http://example.com/name"));
+        solutionMapping.put("?om", new CollectionNode(List.of()));
+        mappingTuple.addSolutionMap("default", solutionMapping);
+
+        TemplateSerializer serializer = new TemplateSerializer("Serializer", Set.of("default"),
+                Set.of("default"), "?sm ?pm ?om .");
+
+        assertTrue(serializer.apply(mappingTuple).getSolutionMappings("default").iterator().next()
+                .get("serialized_output").isNull());
+    }
+
+    @Test
+    public void twoCollectionsMultiplyOut() {
+        // both variables stand for several terms, so every pairing of them is stated
+        MappingTuple mappingTuple = new MappingTuple();
+        SolutionMapping solutionMapping = new SolutionMapping();
+        solutionMapping.put("?sm", new IRINode("http://example.com/1"));
+        solutionMapping.put("?pm", collectionOf("read", "write"));
+        solutionMapping.put("?om", collectionOf("a", "b"));
+        mappingTuple.addSolutionMap("default", solutionMapping);
+
+        TemplateSerializer serializer = new TemplateSerializer("Serializer", Set.of("default"),
+                Set.of("default"), "?sm ?pm ?om .");
+
+        String result = serializer.apply(mappingTuple).getSolutionMappings("default").iterator().next()
+                .get("serialized_output").getValue().toString();
+
+        assertEquals("""
+                <http://example.com/1> "read" "a" .
+                <http://example.com/1> "read" "b" .
+                <http://example.com/1> "write" "a" .
+                <http://example.com/1> "write" "b" .""", result);
+    }
+
+    @Test
+    public void aCollectionVariableUsedTwiceTakesTheSameMemberBothTimes() {
+        // the variable stands for one term at a time, so a statement pairs a member with
+        // itself rather than with every other member
+        MappingTuple mappingTuple = new MappingTuple();
+        SolutionMapping solutionMapping = new SolutionMapping();
+        solutionMapping.put("?sm", new IRINode("http://example.com/1"));
+        solutionMapping.put("?om", collectionOf("a", "b"));
+        mappingTuple.addSolutionMap("default", solutionMapping);
+
+        TemplateSerializer serializer = new TemplateSerializer("Serializer", Set.of("default"),
+                Set.of("default"), "?sm ?om ?om .");
+
+        String result = serializer.apply(mappingTuple).getSolutionMappings("default").iterator().next()
+                .get("serialized_output").getValue().toString();
+
+        assertEquals("""
+                <http://example.com/1> "a" "a" .
+                <http://example.com/1> "b" "b" .""", result);
+    }
+
+    @Test
+    public void aCollectionMemberContainingADollarIsTakenLiterally() {
+        // every member goes through the same quoting a single value does
+        assertEquals("""
+                        <http://example.com/1> <http://example.com/name> "costs $5" .
+                        <http://example.com/1> <http://example.com/name> "back\\slash" .""",
+                serializeCollection("costs $5", "back\\slash"));
     }
 }

@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+- `CollectionNode`, a value standing for several RDF terms. A function producing more than one value, as a split does, returns them as one value, so that a function taking the result as an argument sees all of them. A collection is not an RDF term itself and has no Jena node.
+
 ### Fixed
 - Git ignore `pom.xml.versionsBackup`
 
 ### Changed
+- A `TemplateSerializer` fills a template in once for every combination of the terms its variables stand for: a variable holding a collection gives a statement per member, and several such variables multiply out. A variable used twice takes the same term both times, and an empty collection states nothing.
 - `bump-version.sh`: added option to also commit changes and tag (necessary to make a release)
 
 ## [4.1.0] - 2026-08-11
