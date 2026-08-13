@@ -2,7 +2,9 @@ package be.ugent.idlab.knows.amo.utilities;
 
 import be.ugent.idlab.knows.amo.blocks.MappingTuple;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.blocks.nodes.CollectionNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +26,7 @@ public class BlocksIOTest {
             String filepath = "serialization/solution_map/solMap.json";
             SolutionMapping sm = BlocksIO.readSolutionMapping(filepath);
 
-            assertEquals(5, sm.keySet().size());
+            assertEquals(6, sm.keySet().size());
 
             assertTrue(sm.get("?literalString").isLiteral());
             assertEquals("foo", sm.get("?literalString").getValue());
@@ -39,6 +41,15 @@ public class BlocksIOTest {
             assertEquals("http://example.com", sm.get("?iri").getValue());
 
             assertTrue(sm.get("?null").isNull());
+
+            // a collection's members are terms themselves, of any type
+            assertTrue(sm.get("?collection").isCollection());
+            List<RDFNode> members = ((CollectionNode) sm.get("?collection")).members();
+            assertEquals(2, members.size());
+            assertTrue(members.get(0).isLiteral());
+            assertEquals("read", members.get(0).getValue());
+            assertTrue(members.get(1).isIRI());
+            assertEquals("http://example.com/write", members.get(1).getValue());
         }
 
         @Nested

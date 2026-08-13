@@ -1,0 +1,25 @@
+{
+  "f_default": {
+    "?owner": {
+      "value": "John",
+      "type": "literal"
+    },
+    "?tag": {
+      "type": "collection",
+      "value": [
+        {
+          "value": "read",
+          "type": "literal"
+        },
+        {
+          "value": "write",
+          "type": "literal"
+        }
+      ]
+    },
+    "?level": {
+      "value": "full",
+      "type": "literal"
+    }
+  }
+}

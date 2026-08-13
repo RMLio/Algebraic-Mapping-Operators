@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
+- A solution mapping read from JSON may hold a collection, written as `{"type": "collection", "value": [<term>, ...]}`, so that the operator test fixtures can carry one. Its members are terms themselves and may be of any type.
 - `CollectionNode`, a value standing for several RDF terms. A function producing more than one value, as a split does, returns them as one value, so that a function taking the result as an argument sees all of them. A collection is not an RDF term itself and has no Jena node.
 
 ### Fixed

@@ -10,6 +10,8 @@ import org.json.JSONObject;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,14 +28,15 @@ public class BlocksIO {
             "iri", BlocksIO::parseIRI,
             "blank", BlocksIO::parseBlank,
             "literal", BlocksIO::parseLiteral,
-            "null", BlocksIO::parseNull
+            "null", BlocksIO::parseNull,
+            "collection", BlocksIO::parseCollection
     );
 
     private static RDFNode parseNull(JSONObject jsonObject) {
         return new NullNode();
     }
 
-    private static final Set<String> ALLOWED_TYPES = Set.of("iri", "blank", "literal", "null");
+    private static final Set<String> ALLOWED_TYPES = Set.of("iri", "blank", "literal", "null", "collection");
 
     /**
      * @param filepath filepath with respect to src/test/resources/
@@ -139,5 +142,29 @@ public class BlocksIO {
 
     private static RDFNode parseBlank(JSONObject json) {
         return new BlankNode(json.getString("value"));
+    }
+
+    /**
+     * A value standing for several terms, written as an array of terms:
+     * {@code {"type": "collection", "value": [{"type": "literal", "value": "read"}, ...]}}.
+     * The members are terms themselves, so a collection may hold any of the other types.
+     */
+    private static RDFNode parseCollection(JSONObject json) {
+        JSONArray members = json.optJSONArray("value");
+        if (members == null) {
+            throw new IllegalArgumentException(
+                    String.format("A collection's 'value' must be an array of terms, found %s", json));
+        }
+
+        List<RDFNode> terms = new ArrayList<>(members.length());
+        for (Object member : members) {
+            if (!(member instanceof JSONObject term)) {
+                throw new IllegalArgumentException(
+                        String.format("Unexpected member %s in collection %s, expected a JSON object", member, json));
+            }
+            terms.add(parseTerm(term));
+        }
+
+        return new CollectionNode(terms);
     }
 }
