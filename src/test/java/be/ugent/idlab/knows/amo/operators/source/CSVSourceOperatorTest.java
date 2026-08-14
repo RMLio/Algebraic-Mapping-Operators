@@ -8,6 +8,7 @@ import be.ugent.idlab.knows.amo.operators.source.dataio.CSVSourceOperator;
 import be.ugent.idlab.knows.amo.operators.source.dataio.fields.Field;
 import be.ugent.idlab.knows.dataio.access.Access;
 import be.ugent.idlab.knows.dataio.access.LocalFileAccess;
+import be.ugent.idlab.knows.dataio.iterators.csvw.CSVWConfiguration;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.junit.jupiter.api.Test;
 
@@ -252,6 +253,48 @@ public class CSVSourceOperatorTest {
                 "item.name", new NullNode(),
                 "item.age", new NullNode()
         )));
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void aDialectSaysHowTheRowsAreWritten() {
+        // the rows are not written the way a plain CSV is: the columns are separated by a
+        // semicolon, a value is quoted with ' rather than ", and "NULL" stands for no value
+        Field name = Field.builder().withName("name").CSV().withReference("name").build();
+        Field age = Field.builder().CSV().withName("age").withReference("age").build();
+        Field items = Field.builder().CSV().withName("item").withSubfields(name, age).build();
+
+        CSVWConfiguration dialect = CSVWConfiguration.builder()
+                .withDelimiter(';')
+                .withQuoteCharacter('\'')
+                .withNulls(Set.of("NULL"))
+                .build();
+
+        Access access = new LocalFileAccess("operators/source/csv/dialect.csv", "src/test/resources", "csv");
+        SourceOperator op = new CSVSourceOperator(
+                "CSV Source Operator",
+                access,
+                Set.of("default"),
+                Set.of(items),
+                Set.of(),
+                dialect
+        );
+
+        MappingTuple actual = op.consumeSource();
+
+        MappingTuple expected = new MappingTuple();
+        expected.setSolutionMaps("default", List.of(
+                new SolutionMapping(Map.of(
+                        // the semicolon inside the quotes is part of the value, not a separator
+                        "item.name", new LiteralNode("John;Doe"),
+                        "item.age", new LiteralNode("20")
+                )),
+                new SolutionMapping(Map.of(
+                        "item.name", new LiteralNode("Jane"),
+                        "item.age", new NullNode()
+                ))
+        ));
 
         assertEquals(expected, actual);
     }

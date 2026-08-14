@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+- A `CSVSourceOperator` may be given a `CSVWConfiguration`, the dialect its rows are written in, and reads the source through a `CSVWSourceIterator` instead of the plain one. A source that says how it is written — a CSV on the Web table naming its delimiter, quote character, encoding or null values — is read the way it says. Without a dialect nothing changes: a plain CSV is a CSVW read with the defaults, which is what dataio's `CSVSourceIterator` already is.
+
 ### Fixed
 - Git ignore `pom.xml.versionsBackup`
 
