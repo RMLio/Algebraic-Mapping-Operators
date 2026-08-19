@@ -8,12 +8,7 @@ import be.ugent.idlab.knows.amo.blocks.nodes.NullNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,7 +16,7 @@ public class TemplateSerializer extends UnaryOperator {
 
     private final String serializedVariable;
     private final List<Pair<List<String>, String>> variablesTemplatePairs;
-    private final Pattern variablePattern;
+    private final static Pattern variablePattern = Pattern.compile("\\?[a-zA-Z_0-9]+");
 
     /**
      * Instantiates a new TemplateSerializer. After applying this operator the resulting solution mapping will use
@@ -47,14 +42,8 @@ public class TemplateSerializer extends UnaryOperator {
      */
     public TemplateSerializer(String operatorName, Set<String> inputFragments, Set<String> outputFragments, String templateString, String serializedVariable) {
         super(operatorName, inputFragments, outputFragments);
-
         this.serializedVariable = serializedVariable;
-        // a variable name is matched as far as it goes, so that ?om2 is one variable and
-        // not ?om followed by a 2
-        this.variablePattern = Pattern.compile("\\?[a-zA-Z_0-9]+");
-
         this.variablesTemplatePairs = this.extractTemplateVariables(templateString);
-
     }
 
     private List<Pair<List<String>, String>> extractTemplateVariables(String template) {
@@ -63,7 +52,7 @@ public class TemplateSerializer extends UnaryOperator {
         String[] newlinedTemplates = template.split("\n");
 
         for (String line : newlinedTemplates) {
-            Matcher matcher = this.variablePattern.matcher(line);
+            Matcher matcher = variablePattern.matcher(line);
             List<String> variables = new ArrayList<>();
             while (matcher.find()) {
                 variables.add(matcher.group().trim());
@@ -117,7 +106,7 @@ public class TemplateSerializer extends UnaryOperator {
     private Map<String, List<RDFNode>> termsPerVariable(String template, SolutionMapping mapping) {
         Map<String, List<RDFNode>> terms = new LinkedHashMap<>();
 
-        Matcher matcher = this.variablePattern.matcher(template);
+        Matcher matcher = variablePattern.matcher(template);
         while (matcher.find()) {
             String variable = matcher.group();
             if (terms.containsKey(variable)) {
@@ -179,7 +168,7 @@ public class TemplateSerializer extends UnaryOperator {
      * inside it by a later round.
      */
     private String fillInOnce(String template, Map<String, RDFNode> terms) {
-        Matcher matcher = this.variablePattern.matcher(template);
+        Matcher matcher = variablePattern.matcher(template);
         StringBuilder filledIn = new StringBuilder();
 
         while (matcher.find()) {
