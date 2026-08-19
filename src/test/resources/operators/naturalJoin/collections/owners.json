@@ -1,0 +1,33 @@
+{
+  "f_default": [
+    {
+      "?owner": {
+        "value": "John",
+        "type": "literal"
+      },
+      "?tag": {
+        "type": "collection",
+        "value": [
+          {
+            "value": "read",
+            "type": "literal"
+          },
+          {
+            "value": "write",
+            "type": "literal"
+          }
+        ]
+      }
+    },
+    {
+      "?owner": {
+        "value": "Susan",
+        "type": "literal"
+      },
+      "?tag": {
+        "value": "read",
+        "type": "literal"
+      }
+    }
+  ]
+}

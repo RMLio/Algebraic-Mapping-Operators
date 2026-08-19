@@ -19,5 +19,18 @@
   },
   "?null": {
     "type": "null"
+  },
+  "?collection": {
+    "type": "collection",
+    "value": [
+      {
+        "value": "read",
+        "type": "literal"
+      },
+      {
+        "value": "http://example.com/write",
+        "type": "iri"
+      }
+    ]
   }
 }
