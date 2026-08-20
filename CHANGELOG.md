@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [4.2.0] - 2026-08-20
+
 ### Added
 - A `CSVSourceOperator` may be given a `CSVWConfiguration`, the dialect its rows are written in, and reads the source through a `CSVWSourceIterator` instead of the plain one. A source that says how it is written — a CSV on the Web table naming its delimiter, quote character, encoding or null values — is read the way it says. Without a dialect nothing changes: a plain CSV is a CSVW read with the defaults, which is what dataio's `CSVSourceIterator` already is.
 - A solution mapping read from JSON may hold a collection, written as `{"type": "collection", "value": [<term>, ...]}`, so that the operator test fixtures can carry one. Its members are terms themselves and may be of any type.
@@ -93,6 +95,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - A set of operators
 
+[4.2.0]: https://github.com/RMLio/Algebraic-Mapping-Operators/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/RMLio/Algebraic-Mapping-Operators/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/RMLio/Algebraic-Mapping-Operators/compare/v3.0.0...v4.0.0
 [3.0.0]: https://github.com/RMLio/Algebraic-Mapping-Operators/compare/v2.0.3...v3.0.0

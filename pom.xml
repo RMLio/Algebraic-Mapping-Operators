@@ -6,7 +6,7 @@
     <name>Algebraic Mapping Operators</name>
     <groupId>be.ugent.idlab.knows</groupId>
     <artifactId>algebraic-mapping-operators</artifactId>
-    <version>4.1.1-SNAPSHOT</version>
+    <version>4.2.0</version>
     <url>https://github.com/RMLio/Algebraic-Mapping-Operators</url>
     <description>A library of Algebraic Mapping Operators. These operators serve the purpose of constructing a mapping language-independent mapping plan.</description>
     <licenses>
