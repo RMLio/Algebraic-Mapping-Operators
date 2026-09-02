@@ -19,7 +19,7 @@ public class ExtendTest {
             List.of(new Pair<String, ExtendFunction>("?full_name", (mapping -> {
                 LiteralNode firstNode = (LiteralNode) mapping.get("?first_name");
                 LiteralNode secondNode = (LiteralNode) mapping.get("?last_name");
-                return firstNode.getValue() + " " + secondNode.getValue();
+                return List.of(new LiteralNode(firstNode.getValue() + " " + secondNode.getValue()));
             }))));
 
     @Test

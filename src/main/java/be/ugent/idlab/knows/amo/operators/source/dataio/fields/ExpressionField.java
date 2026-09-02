@@ -5,12 +5,7 @@ import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.functions.ExtendFunction;
 import net.minidev.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * A field whose value is produced by a function on the record.
@@ -159,7 +154,7 @@ public class ExpressionField extends Field {
         // the variables a computed expression reads are references into the same record,
         // so they are read the same way, relative to the same path
         RecordBinding binding = new RecordBinding(obj, reader());
-        return this.expression.applyMulti(binding).stream()
+        return this.expression.apply(binding).stream()
                 .map(value -> new FieldValue(value, serialize(value)))
                 .toList();
     }

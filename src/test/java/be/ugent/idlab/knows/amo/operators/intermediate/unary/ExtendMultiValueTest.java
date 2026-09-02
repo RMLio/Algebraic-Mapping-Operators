@@ -6,12 +6,10 @@ import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.functions.ExtendFunction;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -27,22 +25,17 @@ public class ExtendMultiValueTest {
     /** Splits the record's {@code scope} on spaces, the way grel:string_split does. */
     private static final ExtendFunction SPLIT_SCOPE = new ExtendFunction() {
         @Override
-        public String apply(SolutionMapping mapping) {
-            List<String> values = this.applyMulti(mapping);
-            return values.isEmpty() ? null : values.get(0);
-        }
-
-        @Override
-        public List<String> applyMulti(SolutionMapping mapping) {
-            if (mapping == null || mapping.get("scope") == null) {
-                return List.of();
+        public List<RDFNode> apply(SolutionMapping mapping) {
+            if (mapping == null || !mapping.containsKey("scope")) {
+                return null;
             }
-            return Arrays.asList(mapping.get("scope").getValue().toString().split(" "));
-        }
-
-        @Override
-        public List<RDFNode> applyMultiToNode(SolutionMapping mapping) {
-            return this.applyMulti(mapping).stream().map(v -> (RDFNode) new LiteralNode(v)).toList();
+            RDFNode scopeNode = mapping.get("scope");
+            assert scopeNode != null;
+            if (scopeNode.isNull()) {
+                return null;
+            }
+            String[] scopes = scopeNode.getValue().toString().split(" ");
+            return new ArrayList<>(Arrays.stream(scopes).map(LiteralNode::new).toList());
         }
     };
 
@@ -62,8 +55,8 @@ public class ExtendMultiValueTest {
         List<SolutionMapping> extended = operator("?value", SPLIT_SCOPE).applyMulti(record("read write"));
 
         assertEquals(2, extended.size());
-        assertEquals("read", extended.get(0).get("?value").getValue().toString());
-        assertEquals("write", extended.get(1).get("?value").getValue().toString());
+        assertEquals("read", Objects.requireNonNull(extended.get(0).get("?value")).getValue().toString());
+        assertEquals("write", Objects.requireNonNull(extended.get(1).get("?value")).getValue().toString());
         // the record's own variables travel with every value
         assertTrue(extended.stream().allMatch(m -> m.get("scope") != null));
     }
@@ -73,7 +66,7 @@ public class ExtendMultiValueTest {
         List<SolutionMapping> extended = operator("?value", SPLIT_SCOPE).applyMulti(record("read"));
 
         assertEquals(1, extended.size());
-        assertEquals("read", extended.get(0).get("?value").getValue().toString());
+        assertEquals("read", Objects.requireNonNull(extended.getFirst().get("?value")).getValue().toString());
     }
 
     @Test
@@ -81,7 +74,7 @@ public class ExtendMultiValueTest {
         List<SolutionMapping> extended = operator("?value", SPLIT_SCOPE).applyMulti(new SolutionMapping());
 
         assertEquals(1, extended.size());
-        assertTrue(extended.get(0).containsKey("?value"));
+        assertTrue(extended.getFirst().containsKey("?value"));
     }
 
     @Test
@@ -91,6 +84,7 @@ public class ExtendMultiValueTest {
 
         MappingTuple out = operator("?value", SPLIT_SCOPE).apply(tuple);
 
+        Assertions.assertNotNull(out);
         Collection<SolutionMapping> mappings = out.getSolutionMappings(FRAGMENT);
         assertEquals(2, mappings.size());
     }

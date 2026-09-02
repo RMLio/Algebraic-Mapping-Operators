@@ -3,8 +3,11 @@ package be.ugent.idlab.knows.amo.operators.source.dataio.fields;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.functions.ExtendFunction;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -18,13 +21,12 @@ public record ReferenceExpression(String reference) implements ExtendFunction {
 
     @Override
     @Nullable
-    public String apply(@Nullable SolutionMapping mapping) {
-        if (mapping == null) {
+    public List<RDFNode> apply(@Nullable SolutionMapping mapping) {
+        if (mapping == null || !mapping.containsKey(this.reference)) {
             return null;
         }
 
-        RDFNode value = mapping.get(this.reference);
-        return value == null || value.isNull() ? null : value.getValue().toString();
+        return Collections.singletonList(mapping.get(this.reference));
     }
 
     @Override
@@ -33,6 +35,7 @@ public record ReferenceExpression(String reference) implements ExtendFunction {
     }
 
     @Override
+    @NonNull
     public String toString() {
         return "Reference[%s]".formatted(this.reference);
     }

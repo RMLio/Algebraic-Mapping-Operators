@@ -16,7 +16,7 @@ import java.util.Locale;
 
 
 @NullMarked
-public class LiteralNode extends RDFNode {
+public class LiteralNode extends AbstractRDFNode {
 
     private final String datatype;
     private final String language;

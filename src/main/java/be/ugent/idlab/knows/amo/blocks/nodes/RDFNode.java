@@ -1,65 +1,23 @@
 package be.ugent.idlab.knows.amo.blocks.nodes;
 
 import org.apache.jena.graph.Node;
-import org.jspecify.annotations.Nullable;
 
 import java.io.Serializable;
 
-public abstract class RDFNode implements Serializable {
+public interface RDFNode extends Serializable {
+    Object getValue();
 
-    protected final Object value;
+    void setValue(Object value);
 
-    public RDFNode(Object value) {
-        // Some JSON libraries will parse numbers as Longs: allow the user to freely specify integers and cast them to long under the hood
-        if (value instanceof Integer integer) {
-            this.value = integer.longValue();
-        } else {
-            this.value = value;
-        }
-    }
+    boolean isLiteral();
 
-    public Object getValue() {
-        return value;
-    }
+    boolean isIRI();
 
-    public boolean isLiteral() {
-        return false;
-    }
+    boolean isBlank();
 
-    public boolean isIRI() {
-        return false;
-    }
+    boolean isNull();
 
-    public boolean isBlank() {
-        return false;
-    }
+    boolean isCollection();
 
-    public boolean isNull() { return false;}
-
-    /**
-     * Whether this value stands for several terms rather than one.
-     */
-    public boolean isCollection() {
-        return false;
-    }
-
-    public abstract Node getJenaNode();
-    
-    @Override
-    public boolean equals(@Nullable Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        RDFNode rdfNode = (RDFNode) o;
-
-        if (this.isNull() && rdfNode.isNull()) return true;
-
-        return this.value.equals(rdfNode.value);
-    }
-
-
-    @Override
-    public int hashCode() {
-        return value.hashCode();
-    }
+    Node getJenaNode();
 }

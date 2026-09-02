@@ -2,7 +2,7 @@ package be.ugent.idlab.knows.amo.blocks.nodes;
 
 import org.apache.jena.graph.Node;
 
-public class NullNode extends RDFNode {
+public class NullNode extends AbstractRDFNode {
     public NullNode() {
         super(null);
     }

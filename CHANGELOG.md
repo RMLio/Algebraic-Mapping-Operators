@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+- Refactored ExtendOperator and Extend to only have a method `apply` that returns a collection of solution mappings, replacing `applyMulti`, `applyToNode`, and `applyMultiToNode`.
+
 ## [4.2.0] - 2026-08-20
 
 ### Added

@@ -5,16 +5,11 @@ import be.ugent.idlab.knows.amo.blocks.Pair;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.functions.ExtendFunction;
+import org.jspecify.annotations.Nullable;
 
 import java.io.ObjectInputStream;
 import java.io.Serial;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-import org.jspecify.annotations.Nullable;
+import java.util.*;
 
 /**
  * ExtendOperator will generate new variables (potentially from existing
@@ -86,7 +81,15 @@ public class ExtendOperator extends UnaryOperator {
                     continue;
                 }
 
-                List<RDFNode> nodes = functionPair.second().applyMultiToNode(current);
+                List<RDFNode> nodes = functionPair.second().apply(current);
+                if (nodes == null) {
+                    // a function that produced no value is treated as if it produced one
+                    // null value, so that the variable is still bound and the rule using it
+                    // can decide what an absent value means
+                    current.put(variable, null);
+                    next.add(current);
+                    continue;
+                }
                 if (nodes.size() <= 1) {
                     // a variable that stays unbound is still put, as it was before: the
                     // rules using it decide what an absent value means

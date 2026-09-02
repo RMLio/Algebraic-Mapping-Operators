@@ -3,17 +3,13 @@ package be.ugent.idlab.knows.amo.operators.source.dataio.fields;
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
 import be.ugent.idlab.knows.amo.blocks.nodes.IRINode;
 import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
+import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.functions.ExtendFunction;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Verifies the field whose value is produced by a function on the record: a reference, a
@@ -24,26 +20,27 @@ public class ExpressionFieldTest {
 
     /** toUpperCase(name) */
     private static final ExtendFunction TO_UPPER_CASE = solutionMapping -> {
-        if (solutionMapping == null || solutionMapping.get("name") == null) {
+        assert solutionMapping != null;
+        RDFNode node = solutionMapping.get("name");
+        if (node == null || node.isNull()) {
             return null;
         }
-        return solutionMapping.get("name").getValue().toString().toUpperCase();
+        String uppercased = node.getValue().toString().toUpperCase();
+        node.setValue(uppercased);
+        return Collections.singletonList(node);
     };
 
     /** split(hobbies, ';'), a function producing a value per element. */
     private static final ExtendFunction SPLIT_HOBBIES = new ExtendFunction() {
         @Override
-        public String apply(SolutionMapping solutionMapping) {
-            List<String> values = this.applyMulti(solutionMapping);
-            return values.isEmpty() ? null : values.get(0);
-        }
-
-        @Override
-        public List<String> applyMulti(SolutionMapping solutionMapping) {
-            if (solutionMapping == null || solutionMapping.get("hobbies") == null) {
+        public List<RDFNode> apply(SolutionMapping solutionMapping) {
+            assert solutionMapping != null;
+            RDFNode hobbiesNode = solutionMapping.get("hobbies");
+            if (hobbiesNode == null) {
                 return List.of();
             }
-            return Arrays.asList(solutionMapping.get("hobbies").getValue().toString().split(";"));
+            String[] hobbies = hobbiesNode.getValue().toString().split(";");
+            return new ArrayList<>(Arrays.stream(hobbies).map(LiteralNode::new).toList());
         }
     };
 
@@ -58,9 +55,9 @@ public class ExpressionFieldTest {
         List<SolutionMapping> result = field.apply(Optional.of("name\nmatthieu\n"));
 
         assertEquals(1, result.size());
-        assertEquals("MATTHIEU", result.get(0).get("Name").getValue().toString());
+        assertEquals("\"MATTHIEU\"", Objects.requireNonNull(result.getFirst().get("Name")).getValue().toString());
         // the raw column is not leaked as a variable, only the computed field
-        assertNull(result.get(0).get("name"));
+        assertNull(result.getFirst().get("name"));
     }
 
     @Test
@@ -74,7 +71,7 @@ public class ExpressionFieldTest {
         List<SolutionMapping> result = field.apply(Optional.of("name\nmatthieu\n"));
 
         assertEquals(1, result.size());
-        assertEquals("matthieu", result.get(0).get("Name").getValue().toString());
+        assertEquals("matthieu", Objects.requireNonNull(result.getFirst().get("Name")).getValue().toString());
     }
 
     @Test
@@ -100,12 +97,12 @@ public class ExpressionFieldTest {
         List<SolutionMapping> result = field.apply(Optional.of("name,hobbies\nmatthieu,chess;running;cooking\n"));
 
         assertEquals(3, result.size());
-        assertEquals("chess", result.get(0).get("Hobby").getValue().toString());
-        assertEquals("running", result.get(1).get("Hobby").getValue().toString());
-        assertEquals("cooking", result.get(2).get("Hobby").getValue().toString());
+        assertEquals("\"chess\"", Objects.requireNonNull(result.get(0).get("Hobby")).getValue().toString());
+        assertEquals("\"running\"", Objects.requireNonNull(result.get(1).get("Hobby")).getValue().toString());
+        assertEquals("\"cooking\"", Objects.requireNonNull(result.get(2).get("Hobby")).getValue().toString());
         // each value is numbered, the way an iterator field numbers its records
         for (int i = 0; i < result.size(); i++) {
-            assertEquals(String.valueOf(i), result.get(i).get("Hobby.#").getValue());
+            assertEquals(String.valueOf(i), Objects.requireNonNull(result.get(i).get("Hobby.#")).getValue());
         }
     }
 
@@ -120,7 +117,7 @@ public class ExpressionFieldTest {
         List<SolutionMapping> result = field.apply(Optional.of("{\"name\": \"matthieu\", \"age\": 30}"));
 
         assertEquals(1, result.size());
-        assertEquals("MATTHIEU", result.get(0).get("Name").getValue().toString());
+        assertEquals("\"MATTHIEU\"", Objects.requireNonNull(result.getFirst().get("Name")).getValue().toString());
     }
 
     @Test
@@ -132,7 +129,7 @@ public class ExpressionFieldTest {
         List<SolutionMapping> result = field.apply(Optional.of("<person><name>matthieu</name></person>"));
 
         assertEquals(1, result.size());
-        assertEquals("MATTHIEU", result.get(0).get("Name").getValue().toString());
+        assertEquals("\"MATTHIEU\"", Objects.requireNonNull(result.getFirst().get("Name")).getValue());
     }
 
     @Test
@@ -148,8 +145,8 @@ public class ExpressionFieldTest {
 
         assertEquals(1, result.size());
         // an XPath applied to the element's text would fail; the subfield gets the element
-        assertEquals("matthieu", result.get(0).get("person.name").getValue().toString());
-        assertEquals("matthieu", result.get(0).get("person").getValue().toString());
+        assertEquals("matthieu", Objects.requireNonNull(result.getFirst().get("person.name")).getValue().toString());
+        assertEquals("matthieu", Objects.requireNonNull(result.getFirst().get("person")).getValue().toString());
     }
 
     @Test
@@ -160,7 +157,7 @@ public class ExpressionFieldTest {
                 Optional.of("<people><person><name>matthieu</name><city>Ghent</city></person></people>"));
 
         assertEquals(1, result.size());
-        assertEquals("matthieuGhent", result.get(0).get("person").getValue().toString());
+        assertEquals("matthieuGhent", Objects.requireNonNull(result.getFirst().get("person")).getValue().toString());
     }
 
     @Test
@@ -174,8 +171,8 @@ public class ExpressionFieldTest {
         List<SolutionMapping> result = field.apply(Optional.of("name\nmatthieu\n"));
 
         assertEquals(1, result.size());
-        assertInstanceOf(IRINode.class, result.get(0).get("Type"));
-        assertEquals("http://example.com/Person", result.get(0).get("Type").getValue().toString());
+        assertInstanceOf(IRINode.class, result.getFirst().get("Type"));
+        assertEquals("http://example.com/Person", Objects.requireNonNull(result.getFirst().get("Type")).getValue().toString());
     }
 
     @Test
@@ -189,6 +186,6 @@ public class ExpressionFieldTest {
         List<SolutionMapping> result = field.apply(Optional.of("name\nmatthieu\n"));
 
         assertEquals(1, result.size());
-        assertTrue(result.get(0).get("Missing").isNull());
+        assertTrue(Objects.requireNonNull(result.getFirst().get("Missing")).isNull());
     }
 }

@@ -15,9 +15,9 @@ import java.util.List;
  * <p>
  * A collection is not itself an RDF term and has no Jena node.
  */
-public class CollectionNode extends RDFNode {
+public class CollectionNode<T extends AbstractRDFNode> extends AbstractRDFNode {
 
-    public CollectionNode(List<RDFNode> members) {
+    public CollectionNode(List<T> members) {
         super(List.copyOf(members));
     }
 
@@ -25,8 +25,8 @@ public class CollectionNode extends RDFNode {
      * The terms this value stands for, in order.
      */
     @SuppressWarnings("unchecked")
-    public List<RDFNode> members() {
-        return (List<RDFNode>) this.value;
+    public List<T> members() {
+        return (List<T>) this.value;
     }
 
     @Override

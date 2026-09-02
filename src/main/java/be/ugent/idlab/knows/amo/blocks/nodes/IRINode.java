@@ -5,7 +5,7 @@ import org.apache.jena.graph.NodeFactory;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
-public class IRINode extends RDFNode {
+public class IRINode extends AbstractRDFNode {
     public IRINode(String value) {
         super(value);
     }
