@@ -9,7 +9,8 @@ import be.ugent.idlab.knows.dataio.iterators.CSVSourceIterator;
 import be.ugent.idlab.knows.dataio.iterators.JSONSourceIterator;
 import be.ugent.idlab.knows.dataio.iterators.SourceIterator;
 import be.ugent.idlab.knows.dataio.iterators.XMLSourceIterator;
-import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.datatypes.TypeMapper;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
@@ -34,11 +35,16 @@ public abstract class Field implements Serializable {
             return new NullNode();
         }
 
-        if (value instanceof Number) {
-            return new LiteralNode(value, XSDDatatype.XSDinteger);
-        }
+        TypeMapper typeMapper = TypeMapper.getInstance();
+        RDFDatatype rdfDatatype = typeMapper.getTypeByValue(value);
 
-        return new LiteralNode(value);
+        // If the data type could not be derivbed, it is probably an "object" that is not a standard literal type.
+        // In that case, we convert the object to a string.
+        if (rdfDatatype == null) {
+            return new LiteralNode(value.toString());
+        } else {
+            return new LiteralNode(value, rdfDatatype);
+        }
     }
 
     public static FieldBuilder builder() {

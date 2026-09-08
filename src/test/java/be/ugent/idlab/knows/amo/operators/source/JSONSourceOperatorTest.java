@@ -63,17 +63,17 @@ public class JSONSourceOperatorTest {
                 new SolutionMapping(Map.of(
                         "name", new LiteralNode("alice"),
                         "item.type", new LiteralNode("sword"),
-                        "item.weight", new LiteralNode(1500, XSDDatatype.XSDinteger)
+                        "item.weight", new LiteralNode(1500, XSDDatatype.XSDint)
                 )),
                 new SolutionMapping(Map.of(
                         "name", new LiteralNode("alice"),
                         "item.type", new LiteralNode("shield"),
-                        "item.weight", new LiteralNode(2500, XSDDatatype.XSDinteger)
+                        "item.weight", new LiteralNode(2500, XSDDatatype.XSDint)
                 )),
                 new SolutionMapping(Map.of(
                         "name", new LiteralNode("bob"),
                         "item.type", new LiteralNode("flower"),
-                        "item.weight", new LiteralNode(15, XSDDatatype.XSDinteger)
+                        "item.weight", new LiteralNode(15, XSDDatatype.XSDint)
                 ))
         ));
 
@@ -107,19 +107,19 @@ public class JSONSourceOperatorTest {
                 new SolutionMapping(Map.of(
                         "name", new LiteralNode("alice"),
                         "item.type", new LiteralNode("sword"),
-                        "item.weight", new LiteralNode(1500, XSDDatatype.XSDinteger)
+                        "item.weight", new LiteralNode(1500, XSDDatatype.XSDint)
                 )),
                 // alice shield
                 new SolutionMapping(Map.of(
                         "name", new LiteralNode("alice"),
                         "item.type", new LiteralNode("shield"),
-                        "item.weight", new LiteralNode(2500, XSDDatatype.XSDinteger)
+                        "item.weight", new LiteralNode(2500, XSDDatatype.XSDint)
                 )),
                 // bob flower
                 new SolutionMapping(Map.of(
                         "name", new LiteralNode("bob"),
                         "item.type", new LiteralNode("flower"),
-                        "item.weight", new LiteralNode(15, XSDDatatype.XSDinteger)
+                        "item.weight", new LiteralNode(15, XSDDatatype.XSDint)
                 ))
         ));
 
@@ -187,17 +187,17 @@ public class JSONSourceOperatorTest {
                 new SolutionMapping(Map.of(
                         "name", new LiteralNode("alice"),
                         "item.type", new LiteralNode("sword"),
-                        "item.measures.weight", new LiteralNode(1500, XSDDatatype.XSDinteger)
+                        "item.measures.weight", new LiteralNode(1500, XSDDatatype.XSDint)
                 )),
                 new SolutionMapping(Map.of(
                         "name", new LiteralNode("alice"),
                         "item.type", new LiteralNode("shield"),
-                        "item.measures.weight", new LiteralNode(2500, XSDDatatype.XSDinteger)
+                        "item.measures.weight", new LiteralNode(2500, XSDDatatype.XSDint)
                 )),
                 new SolutionMapping(Map.of(
                         "name", new LiteralNode("bob"),
                         "item.type", new LiteralNode("flower"),
-                        "item.measures.weight", new LiteralNode(15, XSDDatatype.XSDinteger)
+                        "item.measures.weight", new LiteralNode(15, XSDDatatype.XSDint)
                 ))
         ));
 
@@ -227,13 +227,13 @@ public class JSONSourceOperatorTest {
                 new SolutionMapping(Map.of(
                         "name", new LiteralNode("alice"),
                         "items", new LiteralNode("sword"),
-                        "items.#", new LiteralNode(0, XSDDatatype.XSDinteger)
+                        "items.#", new LiteralNode(0, XSDDatatype.XSDnonNegativeInteger)
 
                 )),
                 new SolutionMapping(Map.of(
                         "name", new LiteralNode("alice"),
                         "items", new LiteralNode("shield"),
-                        "items.#", new LiteralNode(1, XSDDatatype.XSDinteger)
+                        "items.#", new LiteralNode(1, XSDDatatype.XSDnonNegativeInteger)
                 )),
                 new SolutionMapping(Map.of(
                         "name", new LiteralNode("bob"),
@@ -375,12 +375,12 @@ public class JSONSourceOperatorTest {
         MappingTuple expected = new MappingTuple();
         expected.setSolutionMaps("default", List.of(
                 new SolutionMapping(Map.of(
-                        "ID", new LiteralNode(10, XSDDatatype.XSDinteger),
-                        "Sport", new LiteralNode(100, XSDDatatype.XSDinteger),
+                        "ID", new LiteralNode(10, XSDDatatype.XSDint),
+                        "Sport", new LiteralNode(100, XSDDatatype.XSDint),
                         "Name", new LiteralNode("Venus Williams")
                 )),
                 new SolutionMapping(Map.of(
-                        "ID", new LiteralNode(20, XSDDatatype.XSDinteger),
+                        "ID", new LiteralNode(20, XSDDatatype.XSDint),
                         "Sport", new NullNode(),
                         "Name", new LiteralNode("Demi Moore")
                 ))

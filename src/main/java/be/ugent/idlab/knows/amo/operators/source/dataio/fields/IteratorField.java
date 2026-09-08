@@ -65,7 +65,7 @@ public class IteratorField extends Field {
 
         for (int i = 0; i < applied.size(); i++) {
             SolutionMapping sm = applied.get(i);
-            sm.put(this.name + ".#", new LiteralNode(i, XSDDatatype.XSDinteger));
+            sm.put(this.name + ".#", new LiteralNode(i, XSDDatatype.XSDnonNegativeInteger));
         }
 
 

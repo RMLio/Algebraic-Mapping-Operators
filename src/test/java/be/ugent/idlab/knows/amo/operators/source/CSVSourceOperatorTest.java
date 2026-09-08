@@ -69,20 +69,20 @@ public class CSVSourceOperatorTest {
         MappingTuple expected = new MappingTuple();
         expected.setSolutionMaps("default", List.of(
                 new SolutionMapping(Map.of(
-                        "#", new LiteralNode(0, XSDDatatype.XSDinteger),
+                        "#", new LiteralNode(0, XSDDatatype.XSDnonNegativeInteger),
                         "item.type", new LiteralNode("sword"),
                         "item.weight", new LiteralNode("1500"),
-                        "item.#", new LiteralNode(0, XSDDatatype.XSDinteger),
-                        "item.type.#", new LiteralNode(0, XSDDatatype.XSDinteger),
-                        "item.weight.#", new LiteralNode(0, XSDDatatype.XSDinteger)
+                        "item.#", new LiteralNode(0, XSDDatatype.XSDnonNegativeInteger),
+                        "item.type.#", new LiteralNode(0, XSDDatatype.XSDnonNegativeInteger),
+                        "item.weight.#", new LiteralNode(0, XSDDatatype.XSDnonNegativeInteger)
                 )),
                 new SolutionMapping(Map.of(
-                        "#", new LiteralNode(1, XSDDatatype.XSDinteger),
+                        "#", new LiteralNode(1, XSDDatatype.XSDnonNegativeInteger),
                         "item.type", new LiteralNode("shield"),
                         "item.weight", new LiteralNode("2500"),
-                        "item.#", new LiteralNode(0, XSDDatatype.XSDinteger),
-                        "item.type.#", new LiteralNode(0, XSDDatatype.XSDinteger),
-                        "item.weight.#", new LiteralNode(0, XSDDatatype.XSDinteger)
+                        "item.#", new LiteralNode(0, XSDDatatype.XSDnonNegativeInteger),
+                        "item.type.#", new LiteralNode(0, XSDDatatype.XSDnonNegativeInteger),
+                        "item.weight.#", new LiteralNode(0, XSDDatatype.XSDnonNegativeInteger)
                 ))
         ));
 
@@ -143,17 +143,17 @@ public class CSVSourceOperatorTest {
                 new SolutionMapping(Map.of(
                         "name", new LiteralNode("alice"),
                         "items.item.type", new LiteralNode("sword"),
-                        "items.item.weight", new LiteralNode(1500, XSDDatatype.XSDinteger)
+                        "items.item.weight", new LiteralNode(1500, XSDDatatype.XSDint)
                 )),
                 new SolutionMapping(Map.of(
                         "name", new LiteralNode("alice"),
                         "items.item.type", new LiteralNode("shield"),
-                        "items.item.weight", new LiteralNode(2500, XSDDatatype.XSDinteger)
+                        "items.item.weight", new LiteralNode(2500, XSDDatatype.XSDint)
                 )),
                 new SolutionMapping(Map.of(
                         "name", new LiteralNode("bob"),
                         "items.item.type", new LiteralNode("flower"),
-                        "items.item.weight", new LiteralNode(15, XSDDatatype.XSDinteger)
+                        "items.item.weight", new LiteralNode(15, XSDDatatype.XSDint)
                 ))
         ));
 
@@ -185,17 +185,17 @@ public class CSVSourceOperatorTest {
                 new SolutionMapping(Map.of(
                         "name", new LiteralNode("alice"),
                         "item.itemJson.type", new LiteralNode("sword"),
-                        "item.itemJson.weight", new LiteralNode(1500, XSDDatatype.XSDinteger)
+                        "item.itemJson.weight", new LiteralNode(1500, XSDDatatype.XSDint)
                 )),
                 new SolutionMapping(Map.of(
                         "name", new LiteralNode("alice"),
                         "item.itemJson.type", new LiteralNode("shield"),
-                        "item.itemJson.weight", new LiteralNode(2500, XSDDatatype.XSDinteger)
+                        "item.itemJson.weight", new LiteralNode(2500, XSDDatatype.XSDint)
                 )),
                 new SolutionMapping(Map.of(
                         "name", new LiteralNode("bob"),
                         "item.itemJson.type", new LiteralNode("flower"),
-                        "item.itemJson.weight", new LiteralNode(15, XSDDatatype.XSDinteger)
+                        "item.itemJson.weight", new LiteralNode(15, XSDDatatype.XSDint)
                 ))
         ));
         assertEquals(expected, actual);

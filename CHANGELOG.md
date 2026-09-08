@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Refactored ExtendOperator and Extend to only have a method `apply` that returns a collection of solution mappings, replacing `applyMulti`, `applyToNode`, and `applyMultiToNode`.
+- Use Jena to determine the datatype of a Literal; it converts the Java class of the value to the corresponding XSD datatype.
+- Use XSD `nonNegativeInteger` as data type for position of the record (`#` and `.#`).
+- Change the `dataType` constructor parameter of `LiteralNode` to be of type `RDFDatatype` (interface) instead of `XSDDatatype`.
 
 ## [4.2.0] - 2026-08-20
 

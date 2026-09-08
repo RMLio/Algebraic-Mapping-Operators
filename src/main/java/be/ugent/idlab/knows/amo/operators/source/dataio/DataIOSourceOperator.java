@@ -65,7 +65,7 @@ public abstract class DataIOSourceOperator extends SourceOperator {
             }
         }
 
-        mappings.forEach(m -> m.put("#", new LiteralNode(index, XSDDatatype.XSDinteger)));
+        mappings.forEach(m -> m.put("#", new LiteralNode(index, XSDDatatype.XSDnonNegativeInteger)));
 
         return mappings;
     }

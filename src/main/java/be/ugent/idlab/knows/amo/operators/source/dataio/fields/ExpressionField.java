@@ -1,9 +1,11 @@
 package be.ugent.idlab.knows.amo.operators.source.dataio.fields;
 
 import be.ugent.idlab.knows.amo.blocks.SolutionMapping;
+import be.ugent.idlab.knows.amo.blocks.nodes.LiteralNode;
 import be.ugent.idlab.knows.amo.blocks.nodes.RDFNode;
 import be.ugent.idlab.knows.amo.functions.ExtendFunction;
 import net.minidev.json.JSONObject;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 
 import java.util.*;
 
@@ -82,7 +84,7 @@ public class ExpressionField extends Field {
         if (values.isEmpty()) {
             out.add(new SolutionMapping(Map.of(
                     this.name, getLiteralNode(null),
-                    this.name + ".#", getLiteralNode(0)
+                    this.name + ".#", new LiteralNode(0, XSDDatatype.XSDnonNegativeInteger)
             )));
 
             return out;
@@ -95,12 +97,12 @@ public class ExpressionField extends Field {
             if (subfieldMaps.isEmpty()) {
                 out.add(new SolutionMapping(Map.of(
                         this.name, toNode(value.value()),
-                        this.name + ".#", getLiteralNode(i)
+                        this.name + ".#", new LiteralNode(i, XSDDatatype.XSDnonNegativeInteger)
                 )));
             } else {
                 for (SolutionMapping sm : subfieldMaps) {
                     sm.put(this.name, toNode(value.value()));
-                    sm.put(this.name + ".#", getLiteralNode(i));
+                    sm.put(this.name + ".#", new LiteralNode(i, XSDDatatype.XSDnonNegativeInteger));
                 }
 
                 out.addAll(subfieldMaps);
@@ -208,6 +210,10 @@ public class ExpressionField extends Field {
     private RDFNode toNode(Object value) {
         if (this.expression instanceof ConstantExpression constant) {
             return constant.node();
+        }
+
+        if (value instanceof RDFNode node) {
+            return node;
         }
 
         return getLiteralNode(value);

@@ -55,7 +55,7 @@ public class ExpressionFieldTest {
         List<SolutionMapping> result = field.apply(Optional.of("name\nmatthieu\n"));
 
         assertEquals(1, result.size());
-        assertEquals("\"MATTHIEU\"", Objects.requireNonNull(result.getFirst().get("Name")).getValue().toString());
+        assertEquals("MATTHIEU", Objects.requireNonNull(result.getFirst().get("Name")).getValue().toString());
         // the raw column is not leaked as a variable, only the computed field
         assertNull(result.getFirst().get("name"));
     }
@@ -97,9 +97,9 @@ public class ExpressionFieldTest {
         List<SolutionMapping> result = field.apply(Optional.of("name,hobbies\nmatthieu,chess;running;cooking\n"));
 
         assertEquals(3, result.size());
-        assertEquals("\"chess\"", Objects.requireNonNull(result.get(0).get("Hobby")).getValue().toString());
-        assertEquals("\"running\"", Objects.requireNonNull(result.get(1).get("Hobby")).getValue().toString());
-        assertEquals("\"cooking\"", Objects.requireNonNull(result.get(2).get("Hobby")).getValue().toString());
+        assertEquals("chess", Objects.requireNonNull(result.get(0).get("Hobby")).getValue().toString());
+        assertEquals("running", Objects.requireNonNull(result.get(1).get("Hobby")).getValue().toString());
+        assertEquals("cooking", Objects.requireNonNull(result.get(2).get("Hobby")).getValue().toString());
         // each value is numbered, the way an iterator field numbers its records
         for (int i = 0; i < result.size(); i++) {
             assertEquals(String.valueOf(i), Objects.requireNonNull(result.get(i).get("Hobby.#")).getValue());
@@ -117,7 +117,7 @@ public class ExpressionFieldTest {
         List<SolutionMapping> result = field.apply(Optional.of("{\"name\": \"matthieu\", \"age\": 30}"));
 
         assertEquals(1, result.size());
-        assertEquals("\"MATTHIEU\"", Objects.requireNonNull(result.getFirst().get("Name")).getValue().toString());
+        assertEquals("MATTHIEU", Objects.requireNonNull(result.getFirst().get("Name")).getValue().toString());
     }
 
     @Test
@@ -129,7 +129,7 @@ public class ExpressionFieldTest {
         List<SolutionMapping> result = field.apply(Optional.of("<person><name>matthieu</name></person>"));
 
         assertEquals(1, result.size());
-        assertEquals("\"MATTHIEU\"", Objects.requireNonNull(result.getFirst().get("Name")).getValue());
+        assertEquals("MATTHIEU", Objects.requireNonNull(result.getFirst().get("Name")).getValue());
     }
 
     @Test

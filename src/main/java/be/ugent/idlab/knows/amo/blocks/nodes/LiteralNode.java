@@ -3,7 +3,6 @@ package be.ugent.idlab.knows.amo.blocks.nodes;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.TypeMapper;
-import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.jspecify.annotations.NullMarked;
@@ -54,8 +53,8 @@ public class LiteralNode extends AbstractRDFNode {
             this.datatype = datatype;
         } else {
             try {
-                XSDDatatype xsdDataType = new XSDDatatype(datatype);
-                this.datatype = xsdDataType.getURI();
+                RDFDatatype rdfDatatype = TypeMapper.getInstance().getTypeByValue(value);
+                this.datatype = rdfDatatype.getURI();
             } catch (NullPointerException e) {
                 throw new IllegalArgumentException("Invalid datatype: must be either XSDDatatype name or a valid URL but is \"" + datatype + "\"");
             }
@@ -69,7 +68,7 @@ public class LiteralNode extends AbstractRDFNode {
      * @param value    value of the node, the lexical form
      * @param datatype datatype of the node.
      */
-    public LiteralNode(Object value, XSDDatatype datatype) {
+    public LiteralNode(Object value, RDFDatatype datatype) {
         this(value, datatype.getURI(), "");
     }
 
@@ -80,7 +79,7 @@ public class LiteralNode extends AbstractRDFNode {
      * @param datatype datatype of the node
      * @param language language of the node. Use an empty String to indicate no language.
      */
-    public LiteralNode(Object value, XSDDatatype datatype, String language) {
+    public LiteralNode(Object value, RDFDatatype datatype, String language) {
         /*
          * XSDDatatype is not serializable. Instead of writing a wrapper to enable
          * serializability,
