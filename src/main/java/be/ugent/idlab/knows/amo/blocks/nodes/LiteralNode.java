@@ -3,6 +3,7 @@ package be.ugent.idlab.knows.amo.blocks.nodes;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.TypeMapper;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.jspecify.annotations.NullMarked;
@@ -26,7 +27,10 @@ public class LiteralNode extends AbstractRDFNode {
      * @param value    value of the node, the lexical form
      */
     public LiteralNode(Object value) {
-        this(value, "string", "");
+        super(value);
+        RDFDatatype rdfDatatype = TypeMapper.getInstance().getTypeByValue(value);
+        this.datatype = rdfDatatype != null ? rdfDatatype.getURI() : XSDDatatype.XSDstring.getURI();
+        this.language = "";
     }
 
     /**
