@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [5.0.0] - 2026-09-09
+
 ### Changed
 - Refactored ExtendOperator and Extend to only have a method `apply` that returns a collection of solution mappings, replacing `applyMulti`, `applyToNode`, and `applyMultiToNode`.
 - Use Jena to determine the datatype of a Literal; it converts the Java class of the value to the corresponding XSD datatype.
@@ -101,6 +103,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - A set of operators
 
+[5.0.0]: https://github.com/RMLio/Algebraic-Mapping-Operators/compare/v4.2.0...v5.0.0
 [4.2.0]: https://github.com/RMLio/Algebraic-Mapping-Operators/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/RMLio/Algebraic-Mapping-Operators/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/RMLio/Algebraic-Mapping-Operators/compare/v3.0.0...v4.0.0
