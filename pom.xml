@@ -119,6 +119,36 @@
     <build>
         <sourceDirectory>src/main/java/</sourceDirectory>
         <testSourceDirectory>src/test/java/</testSourceDirectory>
+        <pluginManagement>
+            <plugins>
+                <!-- Linter, run on demand with `mvn compile spotbugs:check`; not bound to a phase, so the build does not fail on findings -->
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>4.10.3.0</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.github.spotbugs</groupId>
+                            <artifactId>spotbugs</artifactId>
+                            <version>4.10.3</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <!-- Formatter, run on demand with `mvn spotless:check` or `mvn spotless:apply` -->
+                <plugin>
+                    <groupId>com.diffplug.spotless</groupId>
+                    <artifactId>spotless-maven-plugin</artifactId>
+                    <version>3.10.3</version>
+                    <configuration>
+                        <java>
+                            <palantirJavaFormat>
+                                <version>2.102.0</version>
+                            </palantirJavaFormat>
+                        </java>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

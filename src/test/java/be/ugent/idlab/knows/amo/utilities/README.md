@@ -76,3 +76,18 @@ An example of a serialized MappingTuple
   ]
 }
 ```
+
+## Collection values
+A value that stands for several terms (as produced by a multi-valued function) has `type` `collection`. Its `value` is a JSON array of term objects, each in the format described above, and it is read as a `CollectionNode`. The members may be of any type, so a collection can hold IRIs, literals, blank nodes or null nodes. A `value` that is not an array, or an array member that is not a JSON object, makes `BlocksIO` throw an `IllegalArgumentException`.
+
+```json
+{
+  "?actions": {
+    "type": "collection",
+    "value": [
+      { "type": "literal", "value": "read" },
+      { "type": "literal", "value": "write" }
+    ]
+  }
+}
+```
