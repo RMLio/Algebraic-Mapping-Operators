@@ -25,7 +25,7 @@ Where things live:
 
 ## Agent request contract (for AI agents/LLMs)
 
-<!-- software-handbook contract: 2026-10-07 -->
+<!-- software-handbook contract: 2026-10-08 -->
 
 Every implementation request handled by an AI agent/LLM follows these constraints:
 
@@ -33,15 +33,16 @@ Every implementation request handled by an AI agent/LLM follows these constraint
   - fix the specific failing case or issue named in the request;
   - preserve existing passing behavior unless explicitly asked not to;
   - add or update a regression test when needed.
-- Make the smallest coherent patch.
+- Make the smallest coherent patch. A documentation error found along the way is fixed in the same patch.
 - Leave the code leaner after every request: remove what the change makes redundant (duplicate tests, parameters and options that no longer do anything, helpers that duplicate each other, comments that only repeat the code), and reuse shared functionality instead of adding a local variant. Use SpotBugs (`mvn compile spotbugs:check`), compiler warnings (`mvn compile`) and IDE inspection to find unused code, and keep Javadoc valid, since CI runs a Javadoc check.
+- Fix a transient environment problem (a stale PATH, a shell or editor that needs a restart) in the environment, by restarting or reconfiguring it; add no code that works around it.
 - **Push back** when a request would violate an established principle (e.g. breaking test hermeticity). Explain the principle and suggest a documentation-only fix instead of silently implementing the harmful change.
 - Update this handbook so the change is documented as well as implemented.
   - Document only the latest state, integrated in the surrounding narrative (principles, behavior, rationale), including the choices made and why.
   - This contract holds only general rules for handling a request; project-specific guidance goes in the chapter on that topic.
 - Do not stop at making tests green; align the implementation with the specification or intended design, and document the semantic reason in this handbook.
 - Never remove or change existing tests (code or fixtures) without explicit permission. A change to an existing fixture (expected output, input, or data) is validated by the maintainer before it is kept, also when a tool writes it: propose the change with its reason, and keep it only after approval.
-- Update `CHANGELOG.md` for implementation changes: keep `## Unreleased` a short summary of what changed since the last release. A feature that is new since the last release is one Added line, which later fixes update instead of getting lines of their own; lines are for what a user of the last release notices.
+- Update `CHANGELOG.md` for every change, internal ones included (tests, CI, refactoring, removed code): keep `## Unreleased` a short summary of what changed since the last release. A feature that is new since the last release is one Added line, which later fixes update instead of getting lines of their own.
 - Check whether `README.md` needs updates for user-visible behavior or workflow changes, and update it when needed.
 - Write documentation (this handbook, READMEs, `TODO.md`, `CHANGELOG.md`, code comments) as plain positive statements: say what is true and leave out the contrast ("X, not Y"). Keep a negative only when it is the point itself, such as a prohibition, a warning, or a known limitation.
 - If there are difficulties during fulfillment, document them in the most appropriate existing handbook location (create a new chapter only when truly necessary) so future requests start with better context.
@@ -70,6 +71,7 @@ Null-safety is annotated with JSpecify (`@NonNull`, `@Nullable`, `@NullMarked`).
 
 - Build: `mvn compile`; package the library jar with `mvn package`.
 - Run all tests: `mvn test`. Run one class: `mvn -Dtest=ProjectTest test`.
+- The dataio version is the property `dataio.version`. It defaults to the latest dataio release, so the committed build and CI resolve everything from Maven Central. A local build against a development version overrides it, e.g. `mvn install -Ddataio.version=2.4.1-SNAPSHOT` after installing that dataio locally.
 - Surefire's default excludes are cleared in `pom.xml` so that JUnit 5 `@Nested` test classes run.
 - CI (`.gitlab-ci.yml`, image `maven:3-eclipse-temurin-21`) has a lint stage from the shared `rml/util/ci-templates` project that checks that `CHANGELOG.md` is updated and that the Javadoc builds, and a unit-test stage that runs a parallel matrix with one job per test class via `mvn -Dtest="$TEST" test`. A test class runs in CI only when it is listed in that matrix. The matrix currently omits `NodeTests`, `CollectionNodeTest`, `ExtendMultiValueTest`, `ExpressionFieldTest`, `FieldReuseTest`, `MissingReferenceTest` and `BlocksIOTest`; these run with a local `mvn test`.
 - Disabled tests: `LeftJoinTest` is `@Disabled` (waiting for go-ahead), and the two timing tests in `performance/bgp/BGPReplaceTest` are `@Disabled`.
