@@ -8,13 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
-- `RELEASE.md`: step-by-step instructions for publishing a release.
+- `HANDBOOK.md`, `RELEASE.md` and `TODO.md`; the test utilities README documents the `collection` value format.
 
 ### Changed
-- `bump-version.sh` moves the version to the next patch `-SNAPSHOT` after a pushed release, replacing the manual "Prepare for next development cycle" commit.
-- Don't build fat jar.
-- Updated dependencies to Maven Central Publishing plugin.
-- The dataio version is the Maven property `dataio.version`, so a local build can use a development version of dataio.
+- The jar contains only this library; the POM declares its dependencies (Jena ARQ, dataio, json-smart, SLF4J, JSpecify), so Maven resolves them transitively.
+- The dataio version is the Maven property `dataio.version`.
+- `bump-version.sh` checks the version format and moves to the next patch `-SNAPSHOT` after a release; the compiler and release plugins are updated.
+- Spotless (palantir-java-format) and SpotBugs run on demand.
+
+### Removed
+- The empty `Main` class, `.prettierrc` and `wip_paper.pdf`.
+
+### Fixed
+- `README.md` names the Target operator as the root of a mapping plan and describes `SolutionMapping` as a map from variable names to values.
 
 ## [5.0.0] - 2026-09-09
 

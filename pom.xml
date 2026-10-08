@@ -6,7 +6,7 @@
     <name>Algebraic Mapping Operators</name>
     <groupId>be.ugent.idlab.knows</groupId>
     <artifactId>algebraic-mapping-operators</artifactId>
-    <version>5.0.1-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
     <url>https://github.com/RMLio/Algebraic-Mapping-Operators</url>
     <description>A library of Algebraic Mapping Operators. These operators serve the purpose of constructing a mapping language-independent mapping plan.</description>
     <licenses>
@@ -49,7 +49,6 @@
     </developers>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.10.0</junit.version>
@@ -151,6 +150,12 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <!-- Pinned so that maven.compiler.release applies with every Maven install -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.15.0</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

@@ -5,14 +5,14 @@ A library of Algebraic Mapping Operators. These operators serve the purpose of c
 This document contains an introduction and explanation for the operators, as first described [here](https://ceur-ws.org/Vol-3632/ISWC2023_paper_412.pdf) and further finalized in [this paper](http://doi.org/10.1007/978-3-031-94575-5_1).
 ## Building blocks
 ### Mapping plan
-A Mapping Plan is a graph consisting of operators that can be used to perform a mapping. This plan has a Serialize operator as its root, with Source operators as leafs.
+A Mapping Plan is a graph consisting of operators that can be used to perform a mapping. This plan has a Target operator as its root, with Source operators as leaves.
 Inner nodes of this graph can be different intermediate operators that perform operations on the mapping.
 
 ### Solution Mapping
 Mathematical definition: a partial function $\mu$ mapping from the set of variables (V) to the set of data values (D)
 
-In its essence, a solution mapping boils down to a key-value pair containing the name of the variable and its value. 
-It's Java equivalent is Map.Entry. It is used to realize string templates, replacing variables placed in them with the values.
+In its essence, a solution mapping is a set of key-value pairs, each containing the name of a variable and its value. 
+In Java, `SolutionMapping` is a `HashMap<String, RDFNode>` from variable names to values. It is used to realize string templates, replacing variables placed in them with the values.
 
 ### Fragment
 Mathematical definition: a grouping of a multiset of solution mappings.
@@ -117,6 +117,6 @@ This library is currently in alpha state and under active development.
 <dependency>
     <groupId>be.ugent.idlab.knows</groupId>
     <artifactId>algebraic-mapping-operators</artifactId>
-    <version>5.0.1-SNAPSHOT</version>
+    <version>5.0.0</version>
 </dependency>
 ```
