@@ -63,6 +63,17 @@
             <artifactId>jena-arq</artifactId>
             <version>${fuseki.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-core</artifactId>
+            <version>${fuseki.version}</version>
+        </dependency>
+        <!-- LiteralNode validates IRIs with UrlValidator -->
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>1.11.0</version>
+        </dependency>
 
         <dependency>
             <groupId>org.jspecify</groupId>

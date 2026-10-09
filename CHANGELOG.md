@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Updated dependency on dataio to 2.4.1.
+- `commons-validator` (1.11.0) and `jena-core` are declared dependencies, since AMO uses them; `commons-validator` came only through dataio's ODS support, at 1.7.
 
 ## [5.0.1] - 2026-10-08
 
