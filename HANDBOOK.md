@@ -4,12 +4,14 @@ Written for a CS student who wants to understand the Algebraic Mapping Operators
 
 ## Contents
 
-- [Preface](#preface)
-- [Agent request contract (for AI agents/LLMs)](#agent-request-contract-for-ai-agentsllms)
-- [Architecture](#architecture)
-- [Build and test](#build-and-test)
-- [Test resources](#test-resources)
-- [Release process](#release-process)
+- [Algebraic Mapping Operators Handbook](#algebraic-mapping-operators-handbook)
+  - [Contents](#contents)
+  - [Preface](#preface)
+  - [Agent request contract (for AI agents/LLMs)](#agent-request-contract-for-ai-agentsllms)
+  - [Architecture](#architecture)
+  - [Build and test](#build-and-test)
+  - [Test resources](#test-resources)
+  - [Release process](#release-process)
 
 ## Preface
 
@@ -72,12 +74,11 @@ Null-safety is annotated with JSpecify (`@NonNull`, `@Nullable`, `@NullMarked`).
 
 - Build: `mvn compile`; package the library jar with `mvn package`.
 - Run all tests: `mvn test`. Run one class: `mvn -Dtest=ProjectTest test`.
-- The dataio version is the property `dataio.version`. It defaults to a dataio release on Maven Central (2.4.0), so the committed build and CI resolve everything from Maven Central. A local build against a development version overrides it, e.g. `mvn install -Ddataio.version=2.4.1-SNAPSHOT` after installing that dataio locally.
 - Surefire's default excludes are cleared in `pom.xml` so that JUnit 5 `@Nested` test classes run.
 - CI (`.gitlab-ci.yml`, image `maven:3-eclipse-temurin-21`) has a lint stage from the shared `rml/util/ci-templates` project that checks that `CHANGELOG.md` is updated and that the Javadoc builds, and a unit-test stage that runs a parallel matrix with one job per test class via `mvn -Dtest="$TEST" test`. A test class runs in CI only when it is listed in that matrix; `TODO.md` lists the omitted classes, which run with a local `mvn test`.
 - `TODO.md` lists the `@Disabled` tests.
 - Linter: SpotBugs 4.10.3 is configured in `pom.xml` under `pluginManagement` and is not bound to a build phase, so findings never fail `mvn verify`. Run it with `mvn compile spotbugs:check`; it analyses the compiled main classes and exits with an error while findings exist.
-- Formatter: Spotless 3.10.3 with palantir-java-format 2.102.0 is configured in `pom.xml` under `pluginManagement`, next to SpotBugs and likewise not bound to a build phase. `mvn spotless:check` reports the Java sources that deviate from the format and `mvn spotless:apply` reformats them in place. Palantir-java-format is a Java-native formatter (4-space indent, line width 120, lambda- and stream-friendly line breaking), so it runs in seconds without Node.js.
+- Formatter: Spotless 3.10.3 with palantir-java-format 2.102.0 is configured in `pom.xml` under `pluginManagement`, next to SpotBugs and likewise not bound to a build phase. `mvn spotless:check` reports the Java sources that deviate from the format and `mvn spotless:apply` reformats them in place.
 
 ## Test resources
 

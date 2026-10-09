@@ -54,7 +54,7 @@
         <junit.version>5.10.0</junit.version>
         <slf4j.version>2.0.7</slf4j.version>
         <fuseki.version>5.5.0</fuseki.version>
-        <dataio.version>2.4.0</dataio.version>
+        <dataio.version>2.4.1</dataio.version>
     </properties>
 
     <dependencies>
