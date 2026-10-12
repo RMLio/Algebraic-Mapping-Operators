@@ -34,6 +34,13 @@ public class NodeTests {
         assertEquals(expected, node.toString());
     }
 
+    @Test
+    public void datatypeOfAnyScheme() {
+        LiteralNode node = new LiteralNode("2", "urn:example:datatype:int");
+
+        assertEquals("\"2\"^^<urn:example:datatype:int>", node.toString());
+    }
+
 //    static {
 //        Configuration.setDefaults(new Configuration.Defaults() {
 //

@@ -1,11 +1,12 @@
 package be.ugent.idlab.knows.amo.blocks.nodes;
 
-import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.datatypes.TypeMapper;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.irix.IRIException;
+import org.apache.jena.irix.IRIx;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -37,7 +38,7 @@ public class LiteralNode extends AbstractRDFNode {
      * Creates a new LiteralNode object with a given value, data type and no language.
      *
      * @param value    value of the node, the lexical form
-     * @param datatype datatype of the node. This must either be a valid XSDDatatype name (e.g.: @{code integer}) or a fully qualified URL
+     * @param datatype IRI of the datatype of the node; see {@link #LiteralNode(Object, String, String)}
      */
     public LiteralNode(Object value, String datatype) {
         this(value, datatype, "");
@@ -47,23 +48,32 @@ public class LiteralNode extends AbstractRDFNode {
      * Creates a new LiteralNode object with a given value, data type and a given language.
      *
      * @param value    value of the node, the lexical form
-     * @param datatype datatype of the node. This must either be a valid XSDDatatype name or a fully qualified URL
+     * @param datatype IRI of the datatype of the node. An absolute IRI (one with a scheme, any scheme, and optionally a fragment) is the datatype;
+     *                 for any other string, Jena derives the XSD datatype from the Java class of the value.
      * @param language language of the node. Use an empty String to indicate no language.
      */
     public LiteralNode(Object value, String datatype, String language) {
         super(value);
 
-        if (UrlValidator.getInstance().isValid(datatype)) {
+        if (isAbsoluteIri(datatype)) {
             this.datatype = datatype;
         } else {
             try {
                 RDFDatatype rdfDatatype = TypeMapper.getInstance().getTypeByValue(value);
                 this.datatype = rdfDatatype.getURI();
             } catch (NullPointerException e) {
-                throw new IllegalArgumentException("Invalid datatype: must be either XSDDatatype name or a valid URL but is \"" + datatype + "\"");
+                throw new IllegalArgumentException("Invalid datatype: must be an absolute IRI but is \"" + datatype + "\"");
             }
         }
         this.language = language;
+    }
+
+    private static boolean isAbsoluteIri(String value) {
+        try {
+            return IRIx.create(value).isReference();
+        } catch (IRIException e) {
+            return false;
+        }
     }
 
     /**

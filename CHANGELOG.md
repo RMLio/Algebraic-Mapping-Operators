@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+- Updated dependency on dataio to 2.4.2, which brings commons-beanutils 1.11.0 and commons-lang3 3.18.0 (CVE-2025-48734, CVE-2025-48924).
+
+### Removed
+- The `commons-validator` dependency, which AMO no longer uses.
+
+### Fixed
+- `LiteralNode` keeps a datatype that is an absolute IRI of any scheme (such as `urn:`); a datatype string that is not one gets the XSD datatype of the Java value.
+
 ## [5.1.0] - 2026-10-09
 
 ### Changed
